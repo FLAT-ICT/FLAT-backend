@@ -1,3 +1,6 @@
-FROM rust:1.54
+FROM rust:1.55
 
-WORKDIR /src
+WORKDIR /fun-location-backend/flat_backend/src
+COPY . /src
+RUN cargo install --path .
+

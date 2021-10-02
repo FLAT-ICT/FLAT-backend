@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  flat-backend:
+    image: rust:latest
+    container_name: flat
+    working_dir: /app
+    volumes:
+      - ./flat_backend:/app
+    tty: true
+    environment:
+      USER: "flat"
+      CARGO_BUILD_TARGET_DIR: /flat_backend/target
+    command: cargo run
