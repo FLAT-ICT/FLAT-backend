@@ -1,40 +1,47 @@
-use serde::{Deserialize, Serialize};
-use validator::{Validate, ValidationError, ValidationErrors};
+pub mod add_friend;
 
-// 友だち追加の流れ
-// API -> (id, id): (String, String)
+// use regex::Regex;
 
-fn is_exist_id(id: String) -> bool {
-    // db に接続。チェックする
-    true
-}
+// use serde::{Deserialize, Serialize};
+// use validator::{Validate, ValidationError, ValidationErrors};
 
-fn add_friend(id: String, friend_id: String) {
-    // IDがレコードに存在してるかチェック
-    is_exist_id(id);
-    is_exist_id(friend_id);
-    // DBにインサート
-    // bool か Result を返す
-}
+// use once_cell::sync::Lazy;
 
-fn get_friend() -> Option {}
+// // 友だち追加の流れ
+// // API -> (id, id): (String, String)
 
-lazy_static! {
-    static ref USER_ID: Regex = Regex::new(r"[A-Z]{6}").unwrap();
-}
+// fn is_exist_id(id: UserId) -> bool {
+//     let user_id = id.id;
+//     // db に接続。チェックする
+//     true
+// }
 
-#[derive(Debug, Validate, Deserialize)]
-pub struct UserId {
-    #[validate(regex = "USER_ID")]
-    pub id: String,
-}
+// fn add_friend(id: UserId, friend_id: UserId) {
+//     // IDがレコードに存在してるかチェック
+//     is_exist_id(id);
+//     is_exist_id(friend_id);
+//     // DBにインサート
+//     // bool か Result を返す
+// }
 
-struct User {
-    id: UserId,
-}
+// // fn get_friend() -> Option {}
 
-// struct UserId {}
-// type UserId = String;
-// impl UserId {}
+// // 正規表現をグローバルに宣言
+// static USER_ID: Lazy<regex::Regex> = Lazy::new(|| Regex::new(r"[A-Z0-9]{6}$").unwrap());
 
-struct Friend {}
+// #[derive(Debug, Validate, Deserialize, Serialize)]
+// pub struct UserId {
+//     #[validate(regex = "USER_ID")]
+//     pub id: String,
+// }
+
+// #[derive(Debug, Validate, Deserialize)]
+// struct User {
+//     id: UserId,
+// }
+
+// // struct UserId {}
+// // type UserId = String;
+// // impl UserId {}
+
+// struct Friend {}
