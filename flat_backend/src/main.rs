@@ -10,6 +10,8 @@ use tracing_subscriber;
 mod user;
 use user::controller;
 
+mod friends;
+
 #[tokio::main]
 async fn main() {
     // トレーサーを初期化
