@@ -1,6 +1,17 @@
 version: "3.9"
 
 services:
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test_database
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+      TZ: 'Asia/Tokyo'
+    ports:
+      - 3306:3306
+
   flat-backend:
     image: rust:latest
     container_name: flat
@@ -11,4 +22,6 @@ services:
     environment:
       USER: "flat"
       CARGO_BUILD_TARGET_DIR: /flat_backend/target
+    depends_on: 
+      - mysql
     command: cargo run
