@@ -1,3 +1,4 @@
+<<<<<<< HEAD:src/main.rs
 use axum::{
     handler::{get, post},
     Router,
@@ -37,3 +38,8 @@ async fn main() {
 async fn root() -> &'static str {
     "Hello, World!"
 }
+=======
+fn main() {
+    println!("Hello, world!");
+}
+>>>>>>> ec140aa9c6d39592522d013466f3fa18057eb24b:flat_backend/src/main.rs

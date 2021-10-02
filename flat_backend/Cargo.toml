@@ -1,5 +1,5 @@
 [package]
-name = "fun-location-backend"
+name = "flat_backend"
 version = "0.1.0"
 edition = "2018"
 
