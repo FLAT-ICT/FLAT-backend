@@ -8,9 +8,10 @@ use tracing;
 use tracing_subscriber;
 
 mod user;
-use user::controller;
+use user::controller as user_controller;
 
 mod friends;
+use friends::controller as friends_controller;
 
 #[tokio::main]
 async fn main() {
@@ -22,10 +23,11 @@ async fn main() {
         // `GET /` goes to `root`
         .route("/", get(root))
         // `POST /users` goes to `create_user`
-        .route("/users", post(controller::create_user));
+        .route("/users", post(user_controller::create_user))
+        .route("/v1/friends/add", post(friends_controller::add_friend));
 
     // バインドするアドレス
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
 
     tracing::debug!("listening on {}", addr);
 

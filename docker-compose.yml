@@ -22,6 +22,8 @@ services:
     environment:
       USER: "flat"
       CARGO_BUILD_TARGET_DIR: /flat_backend/target
+    ports:
+      - 3000:3000
     depends_on: 
       - mysql
     command: cargo run

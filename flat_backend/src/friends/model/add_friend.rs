@@ -5,18 +5,25 @@ use validator::{Validate, ValidationError, ValidationErrors};
 
 use once_cell::sync::Lazy;
 
+use crate::friends::view::IdPair;
+
 // 友だち追加の流れ
 // API -> (id, id): (String, String)
 
-fn is_exist_id(id: UserId) -> bool {
-    let user_id = id.id;
+fn is_exist_id(id: String) -> bool {
+    let user_id = id;
+    if user_id.len() != 6 {
+        return false;
+    }
     // db に接続。チェックする
     true
 }
 
-fn add_friend(id: UserId, friend_id: UserId) {
+pub fn add_friend(id_pair: IdPair) {
+    let my_id = id_pair.my_id;
+    let friend_id = id_pair.friend_id;
     // IDがレコードに存在してるかチェック
-    is_exist_id(id);
+    is_exist_id(my_id);
     is_exist_id(friend_id);
     // DBにインサート
     // bool か Result を返す
