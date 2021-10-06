@@ -11,9 +11,6 @@ services:
       TZ: "Asia/Tokyo"
     ports:
       - 3306:3306
-    networks:
-      nw:
-        ipv4_address: 172.10.0.2
 
   flat-backend:
     image: rust:latest
@@ -30,10 +27,3 @@ services:
     depends_on:
       - mysql
     command: cargo run
-    networks:
-      nw:
-        ipv4_address: 172.10.1.2
-
-networks:
-  nw:
-    external: true
