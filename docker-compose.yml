@@ -2,13 +2,13 @@ version: "3.9"
 
 services:
   mysql:
-    image: mysql:5.7
+    image: mysql:8
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: test_database
+      MYSQL_DATABASE: diesel_demo
       MYSQL_USER: docker
-      MYSQL_PASSWORD: docker
-      TZ: 'Asia/Tokyo'
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: 9Xu84SA1
+      TZ: "Asia/Tokyo"
     ports:
       - 3306:3306
 
@@ -24,6 +24,6 @@ services:
       CARGO_BUILD_TARGET_DIR: /flat_backend/target
     ports:
       - 3000:3000
-    depends_on: 
+    depends_on:
       - mysql
     command: cargo run
