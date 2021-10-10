@@ -10,8 +10,11 @@ pub async fn create_user(
 ) -> impl IntoResponse {
     // insert your application logic here
     let user = User {
-        id: 1337,
-        username: payload.username,
+        id: "000000".to_string(),
+        user_name: payload.username,
+        status: 1,
+        icon_path: "".to_string(),
+        beacon: "595教室".to_string(),
     };
 
     // this will be converted into a JSON response

@@ -31,8 +31,12 @@ pub struct CreateUser {
 }
 
 // the output to our `create_user` handler
-#[derive(Serialize)]
+#[derive(Validate, Serialize)]
 pub struct User {
-    pub id: u64,
-    pub username: String,
+    #[validate(regex = "USER_ID")]
+    pub id: String,
+    pub user_name: String,
+    pub status: u8,
+    pub icon_path: String,
+    pub beacon: String,
 }
