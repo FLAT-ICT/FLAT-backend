@@ -1,8 +1,6 @@
 #[macro_use]
 extern crate diesel;
 
-
-
 use axum::{
     handler::{get, post},
     Router,

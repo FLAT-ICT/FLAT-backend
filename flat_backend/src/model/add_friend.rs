@@ -10,7 +10,6 @@ use once_cell::sync::Lazy;
 use super::super::view::IdPair;
 
 use super::db_connect;
-
 // 友だち追加の流れ
 // API -> (id, id): (String, String)
 
@@ -22,7 +21,6 @@ fn is_exist_id(id: String) -> bool {
 
     let conn = db_connect::establish_connection();
     // let results = p
-
 
     // db に接続。チェックする
     true
