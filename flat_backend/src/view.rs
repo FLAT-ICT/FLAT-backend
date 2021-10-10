@@ -4,8 +4,6 @@ use serde::{Deserialize, Serialize};
 
 use validator::{Validate, ValidationError, ValidationErrors};
 
-use super::model::add_friend::UserId;
-
 #[derive(Serialize)]
 pub struct Friend {}
 
@@ -24,4 +22,17 @@ pub struct IdPair {
 #[derive(Serialize)]
 pub struct ResultMessage {
     pub message: String,
+}
+
+// the input to our `create_user` handler
+#[derive(Deserialize)]
+pub struct CreateUser {
+    pub username: String,
+}
+
+// the output to our `create_user` handler
+#[derive(Serialize)]
+pub struct User {
+    pub id: u64,
+    pub username: String,
 }

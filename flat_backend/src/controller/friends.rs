@@ -1,9 +1,10 @@
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 
-use super::view::{self, ResultMessage};
+use super::super::view::{self, ResultMessage};
 
-use super::model::add_friend;
+use super::super::model::add_friend;
+
 
 pub async fn add_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse {
     let api_result = add_friend::add_friend(payload);

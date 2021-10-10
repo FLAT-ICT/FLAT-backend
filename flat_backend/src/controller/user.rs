@@ -1,7 +1,7 @@
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 
-use super::view::{self, User};
+use super::super::view::{self, User};
 
 pub async fn create_user(
     // this argument tells axum to parse the request body

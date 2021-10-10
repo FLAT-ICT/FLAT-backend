@@ -7,12 +7,13 @@ use std::net::SocketAddr;
 use tracing;
 use tracing_subscriber;
 
-mod user;
-// mod util;
-use user::controller as user_controller;
+mod model;
+mod view;
 
-mod friends;
-use friends::controller as friends_controller;
+mod controller;
+// use controller::
+use controller::friends::add_friend;
+use controller::user::create_user;
 
 #[tokio::main]
 async fn main() {
@@ -24,8 +25,8 @@ async fn main() {
         // `GET /` goes to `root`
         .route("/", get(root))
         // `POST /users` goes to `create_user`
-        .route("/users", post(user_controller::create_user))
-        .route("/v1/friends/add", post(friends_controller::add_friend));
+        .route("/users", post(create_user))
+        .route("/v1/friends/add", post(add_friend));
 
     // バインドするアドレス
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));

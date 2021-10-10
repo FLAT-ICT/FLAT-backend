@@ -5,7 +5,9 @@ use validator::{Validate, ValidationError, ValidationErrors};
 
 use once_cell::sync::Lazy;
 
-use crate::friends::view::IdPair;
+// use crate::friends::view::IdPair;
+
+use super::super::view::IdPair;
 
 use super::connect_db;
 
