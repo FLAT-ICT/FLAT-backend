@@ -1,2 +1,2 @@
 pub mod add_friend;
-pub mod connect_db;
+pub mod db_connect;

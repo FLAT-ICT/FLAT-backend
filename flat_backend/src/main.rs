@@ -1,3 +1,8 @@
+#[macro_use]
+extern crate diesel;
+
+
+
 use axum::{
     handler::{get, post},
     Router,
@@ -14,6 +19,9 @@ mod controller;
 // use controller::
 use controller::friends::add_friend;
 use controller::user::create_user;
+
+mod schema;
+
 
 #[tokio::main]
 async fn main() {
