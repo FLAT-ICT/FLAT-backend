@@ -9,3 +9,12 @@ table! {
         hashed_password -> Text,
     }
 }
+
+table! {
+    friends(id) {
+        id -> Integer,
+        acctive -> Text,
+        pussive -> Text,
+        delete_flag -> Bool,
+    }
+}

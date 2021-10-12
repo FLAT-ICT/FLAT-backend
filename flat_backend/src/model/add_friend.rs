@@ -13,10 +13,11 @@ use super::super::view::IdPair;
 use super::super::schema;
 
 use super::db_connect;
+
 // 友だち追加の流れ
 // API -> (id, id): (String, String)
 
-fn is_exist_id(target_id: String) -> bool {
+fn is_exist_id(target_id: &str) -> bool {
     // let user_id = id;
     // if id.len() != 6 {
     //     return false;
@@ -45,10 +46,22 @@ pub fn add_friend(id_pair: IdPair) -> bool {
     let my_id = id_pair.my_id;
     let friend_id = id_pair.friend_id;
     // IDがレコードに存在してるかチェック
-    if !is_exist_id(my_id) || !is_exist_id(friend_id) {
+    if !is_exist_id(&my_id) || !is_exist_id(&friend_id) {
         return false;
     }
-    return false;
+
+    let ids = AddFriend {
+        acctive: &my_id,
+        pussive: &friend_id,
+    };
+
+    let conn = db_connect::establish_connection();
+    diesel::insert_into(friends::table)
+        .values(&ids)
+        .execute(&conn)
+        .expect("挿入失敗");
+
+    return true;
     // DBにインサート
     // bool か Result を返す
 }
@@ -79,4 +92,18 @@ struct User {
 // type UserId = String;
 // impl UserId {}
 
-struct Friend {}
+#[derive(Queryable)]
+struct Friend {
+    pub id: i32,
+    pub acctive: String,
+    pub passive: String,
+    pub block_flag: bool,
+}
+
+use schema::friends;
+#[derive(Insertable)]
+#[table_name = "friends"]
+pub struct AddFriend<'a> {
+    pub acctive: &'a str,
+    pub pussive: &'a str,
+}
