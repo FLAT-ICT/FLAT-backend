@@ -45,8 +45,8 @@ pub fn add_friend(id_pair: IdPair) -> bool {
     let my_id = id_pair.my_id;
     let friend_id = id_pair.friend_id;
     // IDがレコードに存在してるかチェック
-    if is_exist_id(my_id) && is_exist_id(friend_id) {
-        return true;
+    if !is_exist_id(my_id) || !is_exist_id(friend_id) {
+        return false;
     }
     return false;
     // DBにインサート
@@ -56,7 +56,7 @@ pub fn add_friend(id_pair: IdPair) -> bool {
 // fn get_friend() -> Option {}
 
 // 正規表現をグローバルに宣言
-static USER_ID: Lazy<regex::Regex> = Lazy::new(|| Regex::new(r"[A-Z0-9]{6}$").unwrap());
+static USER_ID: Lazy<regex::Regex> = Lazy::new(|| Regex::new(r"[0-9]{6}$").unwrap());
 
 #[derive(Debug, Validate, Deserialize, Serialize)]
 pub struct UserId {
