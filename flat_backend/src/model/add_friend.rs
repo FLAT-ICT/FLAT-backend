@@ -1,3 +1,6 @@
+use diesel::ExpressionMethods;
+use diesel::QueryDsl;
+use diesel::RunQueryDsl;
 use regex::Regex;
 
 use serde::{Deserialize, Serialize};
@@ -5,25 +8,37 @@ use validator::{Validate, ValidationError, ValidationErrors};
 
 use once_cell::sync::Lazy;
 
-// use crate::friends::view::IdPair;
-
 use super::super::view::IdPair;
+
+use super::super::schema;
 
 use super::db_connect;
 // 友だち追加の流れ
 // API -> (id, id): (String, String)
 
-fn is_exist_id(id: String) -> bool {
-    let user_id = id;
-    if user_id.len() != 6 {
-        return false;
-    }
+fn is_exist_id(target_id: String) -> bool {
+    // let user_id = id;
+    // if id.len() != 6 {
+    //     return false;
+    // }
+
+    use schema::user::dsl::*;
 
     let conn = db_connect::establish_connection();
-    // let results = p
+    let users = user.filter(user_id.eq(target_id)).load::<User>(&conn);
 
-    // db に接続。チェックする
-    true
+    match users {
+        Ok(v) => {
+            if v.len() == 0 {
+                return false;
+            }
+            return true;
+        }
+        Err(e) => {
+            println!("{}", e);
+            return false;
+        }
+    }
 }
 
 pub fn add_friend(id_pair: IdPair) -> bool {
@@ -49,9 +64,15 @@ pub struct UserId {
     pub id: String,
 }
 
-#[derive(Debug, Validate, Deserialize)]
+#[derive(Debug, Validate, Deserialize, Queryable)]
 struct User {
-    id: UserId,
+    pub id: i32,
+    pub user_id: String,
+    pub user_name: String,
+    pub status: i32,
+    pub icon_path: String,
+    pub beacon: String,
+    pub hashed_password: String,
 }
 
 // struct UserId {}
