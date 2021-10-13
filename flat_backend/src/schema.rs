@@ -3,10 +3,10 @@ table! {
         id -> Integer,
         user_id -> Text,
         user_name -> Text,
-        status -> Nullable<Integer>,
-        beacon -> Nullable<Text>,
-        icon_path -> Nullable<Text>,
-        hashed_password -> Nullable<Text>,
+        status -> Integer,
+        beacon ->Text,
+        icon_path -> Text,
+        hashed_password -> Text,
     }
 }
 
