@@ -25,12 +25,12 @@ fn is_exist_id(target_id: &str) -> bool {
 
     println!("is_exist_id({})", target_id);
 
-    use schema::user::dsl::*;
+    use schema::users::dsl::*;
 
     let conn = db_connect::establish_connection();
-    let users = user.filter(user_id.eq(target_id)).load::<User>(&conn);
+    let user = users.filter(user_id.eq(target_id)).load::<User>(&conn);
 
-    match users {
+    match user {
         Ok(v) => {
             if v.len() == 0 {
                 return false;

@@ -1,5 +1,5 @@
 table! {
-    user(id) {
+    users(id) {
         id -> Integer,
         user_id -> Text,
         user_name -> Text,
