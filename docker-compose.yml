@@ -11,12 +11,18 @@ services:
       TZ: "Asia/Tokyo"
     ports:
       - 3306:3306
+    healthcheck:
+      test: mysql -udocker -p9Xu84SA1 -h127.0.0.1 diesel_demo
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 0s
 
   flat-backend:
     # image: rust:latest
     build:
-      context: /fun-location/flat_backend
-      # dockerfile: ./Docker/rust/Dockerfile
+      context: .
+      dockerfile: ./Docker/rust/Dockerfile
     container_name: flat
     working_dir: /app
     volumes:
@@ -27,6 +33,9 @@ services:
       CARGO_BUILD_TARGET_DIR: /flat_backend/target
     ports:
       - 3000:3000
+    # depends_on:
+    #   - mysql
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     command: cargo run

@@ -1,12 +1,12 @@
 table! {
-    users(id) {
+    users (id) {
         id -> Integer,
         user_id -> Text,
         user_name -> Text,
-        status -> Integer,
-        beacon -> Text,
-        icon_path -> Text,
-        hashed_password -> Text,
+        status -> Nullable<Integer>,
+        beacon -> Nullable<Text>,
+        icon_path -> Nullable<Text>,
+        hashed_password -> Nullable<Text>,
     }
 }
 
