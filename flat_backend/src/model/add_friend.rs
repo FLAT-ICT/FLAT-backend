@@ -23,6 +23,8 @@ fn is_exist_id(target_id: &str) -> bool {
     //     return false;
     // }
 
+    println!("is_exist_id({})", target_id);
+
     use schema::user::dsl::*;
 
     let conn = db_connect::establish_connection();
@@ -44,7 +46,7 @@ fn is_exist_id(target_id: &str) -> bool {
 
 pub fn add_friend(id_pair: IdPair) -> bool {
     let my_id = id_pair.my_id;
-    let friend_id = id_pair.friend_id;
+    let friend_id = id_pair.target_id;
     // IDがレコードに存在してるかチェック
     if !is_exist_id(&my_id) || !is_exist_id(&friend_id) {
         return false;

@@ -16,7 +16,7 @@ pub struct IdPair {
     #[validate(regex = "USER_ID")]
     pub my_id: String,
     #[validate(regex = "USER_ID")]
-    pub friend_id: String,
+    pub target_id: String,
 }
 
 #[derive(Serialize)]

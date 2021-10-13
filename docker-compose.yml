@@ -6,14 +6,17 @@ services:
     environment:
       MYSQL_DATABASE: diesel_demo
       MYSQL_USER: docker
-      MYSQL_PASSWORD: root
+      MYSQL_PASSWORD: 9Xu84SA1
       MYSQL_ROOT_PASSWORD: 9Xu84SA1
       TZ: "Asia/Tokyo"
     ports:
       - 3306:3306
 
   flat-backend:
-    image: rust:latest
+    # image: rust:latest
+    build:
+      context: /fun-location/flat_backend
+      # dockerfile: ./Docker/rust/Dockerfile
     container_name: flat
     working_dir: /app
     volumes:
