@@ -85,8 +85,8 @@ struct User {
     pub user_id: String,
     pub user_name: String,
     pub status: i32,
+    pub beacon: Option<String>,
     pub icon_path: String,
-    pub beacon: String,
     pub hashed_password: String,
 }
 

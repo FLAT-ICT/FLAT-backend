@@ -4,7 +4,7 @@ table! {
         user_id -> Text,
         user_name -> Text,
         status -> Integer,
-        beacon ->Text,
+        beacon -> Nullable<Text>,
         icon_path -> Text,
         hashed_password -> Text,
     }
