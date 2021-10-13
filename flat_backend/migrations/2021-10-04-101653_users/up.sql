@@ -5,7 +5,7 @@ CREATE TABLE users (
     user_name TEXT NOT NULL,
     status INT NOT NULL DEFAULT 0,
     beacon TEXT ,
-    icon_path TEXT DEFAULT "this_is_path",
+    icon_path TEXT NOT NULL ,
     hashed_password TEXT NOT NULL,
     PRIMARY KEY(id)
 );

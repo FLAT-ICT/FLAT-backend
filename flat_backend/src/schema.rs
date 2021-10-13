@@ -1,4 +1,13 @@
 table! {
+    friends (id) {
+        id -> Integer,
+        acctive -> Text,
+        pussive -> Text,
+        delete_flag -> Bool,
+    }
+}
+
+table! {
     users (id) {
         id -> Integer,
         user_id -> Text,
@@ -10,11 +19,7 @@ table! {
     }
 }
 
-table! {
-    friends(id) {
-        id -> Integer,
-        acctive -> Text,
-        pussive -> Text,
-        delete_flag -> Bool,
-    }
-}
+allow_tables_to_appear_in_same_query!(
+    friends,
+    users,
+);
