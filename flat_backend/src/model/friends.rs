@@ -74,6 +74,10 @@ pub fn add_friend(id_pair: IdPair) -> bool {
     // bool か Result を返す
 }
 
+pub fn check_friend_status(id_pair: IdPair) -> (u16, String) {
+    return (200, "Ok".to_string());
+}
+
 // fn get_friend() -> Option {}
 
 // 正規表現をグローバルに宣言
