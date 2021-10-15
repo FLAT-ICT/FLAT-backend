@@ -3,11 +3,11 @@ use hyper::StatusCode;
 
 use super::super::view::{self, ResultMessage};
 
-use super::super::model::add_friend;
+use super::super::model::friends;
 
 
 pub async fn add_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse {
-    let api_result = add_friend::add_friend(payload);
+    let api_result = friends::add_friend(payload);
 
     let ok_or_ng: String;
     if let true = api_result {
