@@ -2,7 +2,7 @@ use diesel::RunQueryDsl;
 use regex::Regex;
 
 use serde::{Deserialize, Serialize};
-use validator::{Validate, ValidationError, ValidationErrors};
+use validator::Validate;
 
 use once_cell::sync::Lazy;
 
@@ -65,7 +65,7 @@ pub fn search_user(id_pair: IdPair) -> Result<SearchUser, SomeError> {
     let friend_id = &id_pair.target_id;
 
     // バリデーション
-    if let Err(r) = &id_pair.validate() {
+    if let Err(_r) = &id_pair.validate() {
         // return (422, r.to_string());
         return Err(SomeError::ValidationError);
     }

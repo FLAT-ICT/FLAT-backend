@@ -31,7 +31,7 @@ pub async fn check_friend_status(Json(payload): Json<view::IdPair>) -> impl Into
     // 422: invalid structure
     // 471: can't assign same id
 
-    let result = friends::search_user(payload);
+    let _result = friends::search_user(payload);
 
     // 200のときの処理
 

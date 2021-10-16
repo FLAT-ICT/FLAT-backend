@@ -2,7 +2,7 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
-use validator::{Validate, ValidationError, ValidationErrors};
+use validator::{Validate};
 
 #[derive(Serialize)]
 pub struct Friend {}
