@@ -6,6 +6,8 @@ use validator::Validate;
 
 use once_cell::sync::Lazy;
 
+use crate::model::db_util::{get_friends_relation, get_user_id_name_path};
+
 use super::super::view::IdPair;
 
 use super::super::schema;
@@ -61,14 +63,15 @@ pub enum SomeError {
 }
 pub fn search_user(id_pair: IdPair) -> Result<SearchUser, SomeError> {
     // pub fn search_user(id_pair: IdPair) -> (u16, String) {
-    let my_id = &id_pair.my_id;
-    let friend_id = &id_pair.target_id;
 
     // バリデーション
     if let Err(_r) = &id_pair.validate() {
         // return (422, r.to_string());
         return Err(SomeError::ValidationError);
     }
+
+    let my_id = id_pair.my_id;
+    let friend_id = id_pair.target_id;
 
     // レコード存在確認
     if !is_exist_id(&my_id) || !is_exist_id(&friend_id) {
@@ -86,12 +89,17 @@ pub fn search_user(id_pair: IdPair) -> Result<SearchUser, SomeError> {
         return Err(SomeError::SameIdError);
     }
 
+    // db_util::get_user_id_name_path(id) -> (id, name, path)
+    // db_util::get_friends_relation(id1, id2) -> (bool, bool)
+
+    let (id, name, path) = get_user_id_name_path(&friend_id);
+    let (ap, req) = get_friends_relation(&my_id, &friend_id);
     return Ok(SearchUser {
-        user_id: todo!(),
-        user_name: todo!(),
-        icon_path: todo!(),
-        applied: todo!(),
-        requested: todo!(),
+        user_id: id,
+        user_name: name,
+        icon_path: path,
+        applied: ap,
+        requested: req,
     });
 }
 
@@ -122,7 +130,7 @@ pub struct User {
 // impl UserId {}
 
 #[derive(Queryable)]
-struct Friend {
+pub struct Friend {
     pub id: i32,
     pub acctive: String,
     pub passive: String,
