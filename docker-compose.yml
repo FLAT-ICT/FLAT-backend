@@ -1,23 +1,6 @@
-version: "3.9"
+version: "3"
 
 services:
-  mysql:
-    image: mysql:8
-    environment:
-      MYSQL_DATABASE: diesel_demo
-      MYSQL_USER: docker
-      MYSQL_PASSWORD: 9Xu84SA1
-      MYSQL_ROOT_PASSWORD: 9Xu84SA1
-      TZ: "Asia/Tokyo"
-    ports:
-      - 3306:3306
-    healthcheck:
-      test: mysql -udocker -p9Xu84SA1 -h127.0.0.1 diesel_demo
-      interval: 10s
-      timeout: 10s
-      retries: 10
-      start_period: 0s
-
   flat-backend:
     # image: rust:latest
     build:
@@ -33,9 +16,30 @@ services:
       CARGO_BUILD_TARGET_DIR: /flat_backend/target
     ports:
       - 3000:3000
-    # depends_on:
-    #   - mysql
     depends_on:
-      mysql:
-        condition: service_healthy
+      - mysql
+    # depends_on:
+    #   mysql:
+    #     condition: service_healthy
     command: cargo run
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: diesel_demo
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: 9Xu84SA1
+      MYSQL_ROOT_PASSWORD: 9Xu84SA1
+      TZ: "Asia/Tokyo"
+    ports:
+      - 3306:3306
+    command: mysqld
+      # depends_on:
+    #   - flat_backend
+    # healthcheck:
+    #   test: mysql -udocker -p9Xu84SA1 -h127.0.0.1 diesel_demo
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 10
+    #   start_period: 0s
+
