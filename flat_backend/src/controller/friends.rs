@@ -1,6 +1,8 @@
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 
+use crate::model::friends::{SearchUser, SomeError};
+
 use super::super::view::{self, ResultMessage};
 
 use super::super::model::friends;
@@ -19,23 +21,17 @@ pub async fn add_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse 
     (StatusCode::OK, Json(result_message))
 }
 
-pub async fn check_friend_status(Json(payload): Json<view::IdPair>) -> impl IntoResponse {
-    // if Ok
-    //   (id: String, name: String, icon_path: String, applied: bool, requested: bool)
-    // if Error
-    //   (status_code: int, message: String)
-    //
-    // 200: Ok
-    // 404: id is not found
-    // 422: invalid validation
-    // 422: invalid structure
-    // 471: can't assign same id
-
-    let _result = friends::search_user(payload);
+pub async fn check_friend_status(
+    Json(payload): Json<view::IdPair>,
+) -> Result<(StatusCode, axum::Json<SearchUser>), SomeError> {
+    let result = friends::search_user(payload);
+    match result {
+        Ok(v) => return Ok((StatusCode::OK, Json(v))),
+        Err(e) => return Err(e),
+    };
 
     // 200のときの処理
 
     // それ以外のときの処理
     // (StatusCode::from_u16(result).unwrap(), Json(ResultMessage { message: result.1 }))
-    ()
 }

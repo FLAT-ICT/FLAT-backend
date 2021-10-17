@@ -1,4 +1,7 @@
+use axum::body::HttpBody;
+use axum::response::IntoResponse;
 use diesel::RunQueryDsl;
+use hyper::{Body, Response, StatusCode};
 use regex::Regex;
 
 use serde::{Deserialize, Serialize};
@@ -48,6 +51,7 @@ pub fn add_friend(id_pair: IdPair) -> bool {
     // bool か Result を返す
 }
 
+#[derive(Queryable, Serialize)]
 pub struct SearchUser {
     user_id: String,
     user_name: String,
@@ -61,6 +65,24 @@ pub enum SomeError {
     NotExistError,
     SameIdError,
 }
+
+impl IntoResponse for SomeError {
+    type Body = Body;
+    type BodyError = <Self::Body as axum::body::HttpBody>::Error;
+    fn into_response(self) -> Response<Self::Body> {
+        let body = match self {
+            SomeError::ValidationError => Body::from("something went wrong"),
+            SomeError::NotExistError => Body::from("something else went wrong"),
+            SomeError::SameIdError => Body::from("something else went wrong"),
+        };
+
+        Response::builder()
+            .status(StatusCode::INTERNAL_SERVER_ERROR)
+            .body(body)
+            .unwrap()
+    }
+}
+
 pub fn search_user(id_pair: IdPair) -> Result<SearchUser, SomeError> {
     // pub fn search_user(id_pair: IdPair) -> (u16, String) {
 
