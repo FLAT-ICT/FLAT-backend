@@ -40,9 +40,7 @@ pub async fn check_friend_status(
     // (StatusCode::from_u16(result).unwrap(), Json(ResultMessage { message: result.1 }))
 }
 
-pub async fn friend_list(
-    Path(my_id): Path<String>,
-) -> (StatusCode, Json<FriendList>) {
+pub async fn friend_list(Path(my_id): Path<String>) -> (StatusCode, Json<FriendList>) {
     let fl = get_friend_list(my_id);
     return (StatusCode::OK, Json(fl));
 }
