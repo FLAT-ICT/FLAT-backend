@@ -2,8 +2,10 @@ use super::super::schema::friends;
 use super::super::view::IdPair;
 use super::db_util;
 use super::db_util::is_exist_id;
-use super::types::{AddFriend, SearchUser, SomeError};
-use crate::model::db_util::{get_friends_relation, get_user_id_name_path};
+use super::types::{AddFriend, FriendList, SearchUser, SomeError};
+use crate::model::db_util::{
+    get_applied_record, get_friends_relation, get_requested_record, get_user_id_name_path,
+};
 use axum::response::IntoResponse;
 use diesel::RunQueryDsl;
 use hyper::{Body, Response, StatusCode};
@@ -101,8 +103,21 @@ pub fn search_user(id_pair: IdPair) -> Result<SearchUser, SomeError> {
     });
 }
 
-// fn get_friend() -> Option {}
+pub fn get_friend_list(my_id: String) -> FriendList {
+    // applied: id  自分 -> 誰か という関係があるUserIdを持ってくる
+    // requested: id 誰か -> 自分 という関係があるUserIdを持ってくる
+    // applied の各要素が、reqested に含まれるかどうかで
+    // mutual と one_side に振り分ける
+    // idを基にUserViewをとってくる -> JOINしたほうが良さそう
 
+    let applid = get_applied_record(&my_id);
+    let req = get_requested_record(&my_id);
+    let (mutual, one_side): (Vec<_>, Vec<_>) =
+        applid.into_iter().partition(|a| req.contains(&a.user_id));
+
+    return FriendList { one_side, mutual };
+    // todo!()
+}
 
 #[cfg(test)]
 mod tests {
