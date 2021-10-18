@@ -2,10 +2,8 @@ use crate::model::friends::Friend;
 use crate::model::friends::User;
 
 use super::super::schema;
-use axum::http::request;
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
-use diesel::serialize::Result;
 use diesel::ExpressionMethods;
 use diesel::QueryDsl;
 use dotenv::dotenv;
