@@ -8,7 +8,7 @@ table! {
 }
 
 table! {
-    users (id) {
+    users (user_id) {
         id -> Integer,
         user_id -> Text,
         user_name -> Text,
@@ -19,7 +19,4 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(
-    friends,
-    users,
-);
+allow_tables_to_appear_in_same_query!(friends, users,);

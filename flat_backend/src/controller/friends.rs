@@ -1,7 +1,10 @@
+use axum::extract::Path;
 use axum::{response::IntoResponse, Json};
+// use diesel::serialize::Result;
 use hyper::StatusCode;
 
-use crate::model::friends::{SearchUser, SomeError};
+use crate::model::friends::get_friend_list;
+use crate::model::types::{FriendList, SearchUser, SomeError};
 
 use super::super::view::{self, ResultMessage};
 
@@ -21,6 +24,7 @@ pub async fn add_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse 
     (StatusCode::OK, Json(result_message))
 }
 
+// todo:  引数をJsonじゃなくてParamsにする
 pub async fn check_friend_status(
     Json(payload): Json<view::IdPair>,
 ) -> Result<(StatusCode, axum::Json<SearchUser>), SomeError> {
@@ -34,4 +38,9 @@ pub async fn check_friend_status(
 
     // それ以外のときの処理
     // (StatusCode::from_u16(result).unwrap(), Json(ResultMessage { message: result.1 }))
+}
+
+pub async fn friend_list(Path(my_id): Path<String>) -> (StatusCode, Json<FriendList>) {
+    let fl = get_friend_list(my_id);
+    return (StatusCode::OK, Json(fl));
 }

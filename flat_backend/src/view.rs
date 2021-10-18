@@ -2,7 +2,7 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
-use validator::{Validate};
+use validator::Validate;
 
 #[derive(Serialize)]
 pub struct Friend {}
@@ -31,12 +31,12 @@ pub struct CreateUser {
 }
 
 // the output to our `create_user` handler
-#[derive(Validate, Serialize)]
-pub struct User {
+#[derive(Validate, Serialize, Queryable)]
+pub struct UserView {
     #[validate(regex = "USER_ID")]
-    pub id: String,
+    pub user_id: String,
     pub user_name: String,
-    pub status: u8,
+    pub status: i32,
     pub icon_path: String,
-    pub beacon: String,
+    pub beacon: Option<String>,
 }

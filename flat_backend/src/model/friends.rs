@@ -1,21 +1,15 @@
+use super::super::schema::friends;
+use super::super::view::IdPair;
+use super::db_util;
+use super::db_util::is_exist_id;
+use super::types::{AddFriend, FriendList, SearchUser, SomeError};
+use crate::model::db_util::{
+    get_applied_record, get_friends_relation, get_requested_record, get_user_id_name_path,
+};
 use axum::response::IntoResponse;
 use diesel::RunQueryDsl;
 use hyper::{Body, Response, StatusCode};
-use regex::Regex;
-
-use serde::{Deserialize, Serialize};
 use validator::Validate;
-
-use once_cell::sync::Lazy;
-
-use crate::model::db_util::{get_friends_relation, get_user_id_name_path};
-
-use super::super::view::IdPair;
-
-use super::super::schema;
-
-use super::db_util;
-use super::db_util::is_exist_id;
 
 // 友だち追加の流れ
 // API -> (id, id): (String, String)
@@ -48,21 +42,6 @@ pub fn add_friend(id_pair: IdPair) -> bool {
     return true;
     // DBにインサート
     // bool か Result を返す
-}
-
-#[derive(Queryable, Serialize)]
-pub struct SearchUser {
-    user_id: String,
-    user_name: String,
-    icon_path: String,
-    applied: bool,
-    requested: bool,
-}
-
-pub enum SomeError {
-    ValidationError,
-    NotExistError,
-    SameIdError,
 }
 
 impl IntoResponse for SomeError {
@@ -124,46 +103,20 @@ pub fn search_user(id_pair: IdPair) -> Result<SearchUser, SomeError> {
     });
 }
 
-// fn get_friend() -> Option {}
+pub fn get_friend_list(my_id: String) -> FriendList {
+    // applied: id  自分 -> 誰か という関係があるUserIdを持ってくる
+    // requested: id 誰か -> 自分 という関係があるUserIdを持ってくる
+    // applied の各要素が、reqested に含まれるかどうかで
+    // mutual と one_side に振り分ける
+    // idを基にUserViewをとってくる -> JOINしたほうが良さそう
 
-// 正規表現をグローバルに宣言
-static USER_ID: Lazy<regex::Regex> = Lazy::new(|| Regex::new(r"[0-9]{6}$").unwrap());
+    let applid = get_applied_record(&my_id);
+    let req = get_requested_record(&my_id);
+    let (mutual, one_side): (Vec<_>, Vec<_>) =
+        applid.into_iter().partition(|a| req.contains(&a.user_id));
 
-#[derive(Debug, Validate, Deserialize, Serialize)]
-pub struct UserId {
-    #[validate(regex = "USER_ID")]
-    pub id: String,
-}
-
-#[derive(Debug, Validate, Deserialize, Queryable)]
-pub struct User {
-    pub id: i32,
-    pub user_id: String,
-    pub user_name: String,
-    pub status: i32,
-    pub beacon: Option<String>,
-    pub icon_path: String,
-    pub hashed_password: String,
-}
-
-// struct UserId {}
-// type UserId = String;
-// impl UserId {}
-
-#[derive(Queryable)]
-pub struct Friend {
-    pub id: i32,
-    pub acctive: String,
-    pub passive: String,
-    pub block_flag: bool,
-}
-
-use schema::friends;
-#[derive(Insertable)]
-#[table_name = "friends"]
-pub struct AddFriend<'a> {
-    pub acctive: &'a str,
-    pub pussive: &'a str,
+    return FriendList { one_side, mutual };
+    // todo!()
 }
 
 #[cfg(test)]

@@ -1,5 +1,6 @@
-use crate::model::friends::Friend;
-use crate::model::friends::User;
+use crate::model::types::Friend;
+use crate::model::types::User;
+use crate::model::types::UserView;
 
 use super::super::schema;
 use diesel::mysql::MysqlConnection;
@@ -76,4 +77,35 @@ pub fn get_friends_relation(my_id: &String, target_id: &String) -> (bool, bool) 
     let requested = is_exist_record(get_friend_relation(&conn, &target_id, &my_id));
 
     (applied, requested)
+}
+
+use schema::{friends, users};
+joinable!(friends -> users(acctive));
+
+pub fn get_applied_record(my_id: &String) -> Vec<UserView> {
+    let conn = establish_connection();
+    let applied = friends
+        .inner_join(users)
+        .filter(friends::acctive.eq(my_id))
+        .select((
+            users::user_id,
+            users::user_name,
+            users::status,
+            users::icon_path,
+            users::beacon,
+        ))
+        .load::<UserView>(&conn)
+        .unwrap();
+    return applied;
+}
+// allow_tables_to_appear_in_same_query!(friends, users);
+
+pub fn get_requested_record(my_id: &String) -> Vec<String> {
+    let conn = establish_connection();
+    let applied = friends
+        .filter(pussive.eq(my_id))
+        .select(acctive)
+        .load::<String>(&conn)
+        .unwrap();
+    return applied;
 }
