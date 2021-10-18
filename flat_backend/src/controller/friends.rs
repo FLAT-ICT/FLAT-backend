@@ -1,7 +1,7 @@
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 
-use crate::model::friends::{SearchUser, SomeError};
+use crate::model::types::{SearchUser, SomeError};
 
 use super::super::view::{self, ResultMessage};
 

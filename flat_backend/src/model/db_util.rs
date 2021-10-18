@@ -1,5 +1,5 @@
-use crate::model::friends::Friend;
-use crate::model::friends::User;
+use crate::model::types::Friend;
+use crate::model::types::User;
 
 use super::super::schema;
 use diesel::mysql::MysqlConnection;
