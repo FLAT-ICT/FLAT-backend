@@ -18,7 +18,7 @@ mod controller;
 use controller::friends::add_friend;
 use controller::user::create_user;
 
-use crate::controller::friends::{check_friend_status, friend_list};
+use crate::controller::friends::{check_friend_status, friend_list, reject_friend};
 
 mod schema;
 
@@ -35,7 +35,9 @@ async fn main() {
         .route("/users", post(create_user))
         .route("/v1/friends/add", post(add_friend))
         .route("/v1/users/check", get(check_friend_status))
-        .route("/v1/friends", get(friend_list));
+        .route("/v1/friends", get(friend_list))
+        .route("/v1/friends/add", post(add_friend))
+        .route("/v1/friends/reject", post(reject_friend));
 
     // バインドするアドレス
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));

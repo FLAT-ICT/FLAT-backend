@@ -1,7 +1,7 @@
 use super::super::schema::friends;
 use super::super::view::IdPair;
-use super::db_util;
 use super::db_util::is_exist_id;
+use super::db_util::{self, insert_friend};
 use super::types::{AddFriend, FriendList, SearchUser, SomeError};
 use crate::model::db_util::{
     get_applied_record, get_friends_relation, get_requested_record, get_user_id_name_path,
@@ -42,6 +42,28 @@ pub fn add_friend(id_pair: IdPair) -> bool {
     return true;
     // DBにインサート
     // bool か Result を返す
+}
+
+pub fn reject_friend(id_pair: IdPair) -> bool {
+    let my_id = id_pair.my_id;
+    let friend_id = id_pair.target_id;
+
+    if my_id == friend_id {
+        return false;
+    }
+
+    // IDがレコードに存在してるかチェック
+    if !is_exist_id(&my_id) || !is_exist_id(&friend_id) {
+        return false;
+    };
+
+    let ids = AddFriend {
+        acctive: &my_id,
+        pussive: &friend_id,
+    };
+
+    insert_friend(ids);
+    return true;
 }
 
 impl IntoResponse for SomeError {
