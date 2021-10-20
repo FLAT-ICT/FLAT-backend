@@ -24,9 +24,8 @@ pub async fn add_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse 
     (StatusCode::OK, Json(result_message))
 }
 
-// todo:  引数をJsonじゃなくてParamsにする
 pub async fn check_friend_status(
-    Json(payload): Json<view::IdPair>,
+    Path(payload): Path<view::IdPair>,
 ) -> Result<(StatusCode, axum::Json<SearchUser>), SomeError> {
     let result = friends::search_user(payload);
     match result {

@@ -7,5 +7,5 @@ CREATE TABLE users (
     beacon TEXT ,
     icon_path TEXT NOT NULL ,
     hashed_password TEXT NOT NULL,
-    PRIMARY KEY(id)
+    PRIMARY KEY(user_id)
 );
