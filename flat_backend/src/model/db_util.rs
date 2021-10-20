@@ -3,8 +3,10 @@ use crate::model::types::User;
 use crate::model::types::UserView;
 
 use super::super::schema;
+use super::types::AddFriend;
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
+use diesel::serialize::Result;
 use diesel::ExpressionMethods;
 use diesel::QueryDsl;
 use dotenv::dotenv;
@@ -108,4 +110,23 @@ pub fn get_requested_record(my_id: &String) -> Vec<String> {
         .load::<String>(&conn)
         .unwrap();
     return applied;
+}
+
+pub fn insert_friend(ids: AddFriend) {
+    let conn = establish_connection();
+    diesel::insert_into(friends::table)
+        .values(&ids)
+        .execute(&conn)
+        .expect("挿入失敗");
+}
+
+pub fn delete_friend(ids: AddFriend) {
+    let conn = establish_connection();
+    diesel::delete(
+        friends
+            .filter(acctive.eq(&ids.acctive))
+            .filter(pussive.eq(&ids.pussive)),
+    )
+    .execute(&conn)
+    .expect("削除失敗");
 }

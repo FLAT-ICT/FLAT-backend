@@ -24,6 +24,10 @@ pub async fn add_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse 
     (StatusCode::OK, Json(result_message))
 }
 
+pub async fn reject_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse {
+    
+}
+
 pub async fn check_friend_status(
     Path(payload): Path<view::IdPair>,
 ) -> Result<(StatusCode, axum::Json<SearchUser>), SomeError> {
