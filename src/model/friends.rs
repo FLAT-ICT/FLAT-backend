@@ -141,59 +141,59 @@ pub fn get_friend_list(my_id: String) -> FriendList {
     // todo!()
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::{model::friends::add_friend, view::IdPair};
+// #[cfg(test)]
+// mod tests {
+//     use crate::{model::friends::add_friend, view::IdPair};
 
-    #[test]
-    fn t_add_friend() {
-        // insert 000000
-        // insert 000001
+//     #[test]
+//     fn t_add_friend() {
+//         // insert 000000
+//         // insert 000001
 
-        // 上の状態までDBを復帰させる必要あり
+//         // 上の状態までDBを復帰させる必要あり
 
-        // 正常
-        assert_eq!(
-            add_friend(IdPair {
-                my_id: "000000".to_string(),
-                target_id: "000001".to_string()
-            }),
-            true
-        );
-        // 同じIDが挿入されるのはおかしい
-        assert_eq!(
-            add_friend(IdPair {
-                my_id: "000000".to_string(),
-                target_id: "000000".to_string()
-            }),
-            false
-        );
+//         // 正常
+//         assert_eq!(
+//             add_friend(IdPair {
+//                 my_id: "000000".to_string(),
+//                 target_id: "000001".to_string()
+//             }),
+//             true
+//         );
+//         // 同じIDが挿入されるのはおかしい
+//         assert_eq!(
+//             add_friend(IdPair {
+//                 my_id: "000000".to_string(),
+//                 target_id: "000000".to_string()
+//             }),
+//             false
+//         );
 
-        // 存在しないIDに友だち申請するのはおかしい
-        assert_eq!(
-            add_friend(IdPair {
-                my_id: "000000".to_string(),
-                target_id: "000002".to_string()
-            }),
-            false
-        );
+//         // 存在しないIDに友だち申請するのはおかしい
+//         assert_eq!(
+//             add_friend(IdPair {
+//                 my_id: "000000".to_string(),
+//                 target_id: "000002".to_string()
+//             }),
+//             false
+//         );
 
-        // 不正なID
-        assert_eq!(
-            add_friend(IdPair {
-                my_id: "abcdef".to_string(),
-                target_id: "000000".to_string()
-            }),
-            false
-        );
+//         // 不正なID
+//         assert_eq!(
+//             add_friend(IdPair {
+//                 my_id: "abcdef".to_string(),
+//                 target_id: "000000".to_string()
+//             }),
+//             false
+//         );
 
-        // 不正なID
-        assert_eq!(
-            add_friend(IdPair {
-                my_id: "12345".to_string(),
-                target_id: "000000".to_string()
-            }),
-            false
-        );
-    }
-}
+//         // 不正なID
+//         assert_eq!(
+//             add_friend(IdPair {
+//                 my_id: "12345".to_string(),
+//                 target_id: "000000".to_string()
+//             }),
+//             false
+//         );
+//     }
+// }
