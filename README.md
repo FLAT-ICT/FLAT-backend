@@ -1,6 +1,16 @@
 # fun-location-backend
 API
 
+起動
+```
+docker compsoe up --build -d
+```
+
+ボリューム削除(DB消す)
+```
+docker compse down -v
+```
+
 
 `diesel`  
 WSL Ubuntu 20.04
