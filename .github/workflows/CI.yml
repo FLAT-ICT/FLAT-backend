@@ -35,9 +35,16 @@ jobs:
         args: --all -- --check
 
   test:
+    needs: check
     runs-on: ubuntu-latest
     steps:
-      - name: Run test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+    - uses: actions/checkout@master
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: ${{ matrix.rust }}
+        override: true
+        profile: minimal
+    - name: Run tests
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
