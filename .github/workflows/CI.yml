@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  check:
+    # Run `cargo check` first to ensure that the pushed code at least compiles.
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+        profile: minimal
+        components: clippy
+    - uses: Swatinem/rust-cache@v1
+    - name: Check
+      uses: actions-rs/cargo@v1
+      with:
+        command: clippy
+        args: --all --all-targets --all-features
+    - name: rustfmt
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --all -- --check
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
