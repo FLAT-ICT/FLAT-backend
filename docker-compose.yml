@@ -9,12 +9,12 @@ services:
     container_name: flat
     working_dir: /app
     volumes:
-      - ./flat_backend:/app
-      - ./scripts:/app/scripts
+      - ./:/app
+      # - ./scripts:/app
     tty: true
     environment:
       USER: "flat"
-      CARGO_BUILD_TARGET_DIR: /flat_backend/target
+      CARGO_BUILD_TARGET_DIR: /target
       DATABASE_URL: mysql://docker:9Xu84SA1@mysql:3306/diesel_demo
     ports:
       - 3000:3000

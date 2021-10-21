@@ -1,6 +1,7 @@
 FROM rust:1.55
 
-WORKDIR /fun-location-backend/flat_backend
+# WORKDIR /fun-location-backend/flat_backend
+WORKDIR /fun-location-backend
 # WORKDIR /app
 # WORKDIR /fun-location-backend/flat_backend
 # COPY . .
@@ -15,7 +16,8 @@ RUN apt-get -y install default-mysql-client
 RUN cargo install diesel_cli --no-default-features --features mysql 
 # RUN cargo install --path ./src
 
-COPY /flat_backend .
-COPY /scripts .
+COPY . . 
+# COPY /flat_backend .
+# COPY /scripts .
 # RUN diesel setup
 # RUN diesel migration run 
