@@ -23,7 +23,7 @@ COPY ./src ./src
 # ★2.b
 # build を test では使用していないので冗長
 RUN cargo install --locked --path .
-RUN cargo build --release
+# RUN cargo build --release
 # cargo install command をキャッシュする方法がわからん。こいつに時間食われてる
 
 # ★2.a
