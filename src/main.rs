@@ -53,3 +53,11 @@ async fn main() {
 async fn root() -> &'static str {
     "Hello, World!"
 }
+
+#[cfg(test)]
+mod tests {
+    #[tokio::test]
+    async fn my_test() {
+        assert!(true);
+    }
+}

@@ -14,7 +14,7 @@ pub struct UserId {
 
 #[derive(Debug, Validate, Deserialize, Queryable)]
 pub struct User {
-    pub id: i32,
+    // pub id: i32,
     pub user_id: String,
     pub user_name: String,
     pub status: i32,
@@ -29,7 +29,7 @@ pub struct User {
 
 #[derive(Queryable)]
 pub struct Friend {
-    pub id: i32,
+    // pub id: i32,
     pub acctive: String,
     pub passive: String,
     pub block_flag: bool,

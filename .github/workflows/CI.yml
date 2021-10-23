@@ -1,10 +1,9 @@
 name: CI
 
 on:
-  # push:
-  #   branches:
-  #     - develop
-  #     - main
+  push:
+    branches:
+      - feature/workflow_setting
   pull_request:
     branches:
       - develop
@@ -45,7 +44,11 @@ jobs:
         override: true
         profile: minimal
     - uses: Swatinem/rust-cache@v1
-    - name: Run tests
-      uses: actions-rs/cargo@v1
-      with:
-        command: test
+    # - name: Run tests
+    #   uses: actions-rs/cargo@v1
+    #   with:
+    #     command: test
+    - name: compose tests
+      shell: bash
+      run: | 
+        docker-compose up --build flat-backend-test

@@ -1,6 +1,5 @@
 table! {
-    friends (id) {
-        id -> Integer,
+    friends (acctive, pussive) {
         acctive -> Text,
         pussive -> Text,
         delete_flag -> Bool,
@@ -9,7 +8,6 @@ table! {
 
 table! {
     users (user_id) {
-        id -> Integer,
         user_id -> Text,
         user_name -> Text,
         status -> Integer,
