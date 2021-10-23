@@ -27,6 +27,25 @@ services:
     command: ./scripts/start.sh && cargo run
     # restart: always
 
+  flat-backend-test:
+    build:
+      context: .
+      dockerfile: ./Docker/rust/Dockerfile
+    container_name: flat
+    working_dir: /app
+    volumes:
+      - ./:/app
+    tty: true
+    environment:
+      USER: "flat"
+      CARGO_BUILD_TARGET_DIR: /target
+      DATABASE_URL: mysql://docker:9Xu84SA1@mysql:3306/diesel_demo
+    ports:
+      - 3000:3000
+    depends_on:
+      - mysql
+    command: ./scripts/start_test.sh 
+
   mysql:
     image: mysql:5.7
     environment:
@@ -38,7 +57,7 @@ services:
     ports:
       - 3306:3306
     # command: mysqld
-      # depends_on:
+    # depends_on:
     #   - flat_backend
     # healthcheck:
     #   test: mysql -udocker -p9Xu84SA1 -h127.0.0.1 diesel_demo
@@ -46,4 +65,3 @@ services:
     #   timeout: 10s
     #   retries: 10
     #   start_period: 0s
-
