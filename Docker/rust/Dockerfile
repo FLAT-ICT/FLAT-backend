@@ -1,23 +1,40 @@
-FROM rust:1.55
+# 参考にした記事
+# [RustのDocker Build時間短縮したい](https://zenn.dev/ucwork/articles/acec204571362b)
 
-# WORKDIR /fun-location-backend/flat_backend
-WORKDIR /fun-location-backend
-# WORKDIR /app
-# WORKDIR /fun-location-backend/flat_backend
-# COPY . .
-# COPY /fun-location-backend/flat_backend/Cargo.toml Cargo.toml
+FROM rust:1.55.0 as builder
+# ★1.a
+RUN USER=root cargo new --bin app
+WORKDIR /app
 
-RUN apt-get update
-RUN apt-get -y install default-mysql-client
-# COPY /Docker/rust/wait-for-it.sh .
+# Install dependencies first for cache ★1.b
+COPY ./Cargo.lock ./Cargo.lock
+COPY ./Cargo.toml ./Cargo.toml
+RUN rustup component add rustfmt
+RUN cargo build --release
+RUN rm src/*.rs
+# 消さないと、Hello, world! が実行された
+RUN rm -rf target/*
 
-# RUN ./wait-for-it.sh mysql:3306 -- mysql -udocker -p9Xu84SA1 -h mysql diesel_demo
+# Build my app ★1.c
+RUN cargo install diesel_cli --no-default-features --features mysql
+COPY ./scripts ./scripts
+COPY ./migrations ./migrations
+COPY ./src ./src
+# ★2.b
+# build を test では使用していないので冗長
+RUN cargo install --locked --path .
+RUN cargo build --release
+# cargo install command をキャッシュする方法がわからん。こいつに時間食われてる
 
-RUN cargo install diesel_cli --no-default-features --features mysql 
-# RUN cargo install --path ./src
+# ★2.a
+# FROM debian:buster-slim as final
+# あとでcargoを使いたいので、rust:busterを使う
+FROM rust:buster as test
+COPY --from=builder /usr/local/cargo/bin/diesel /usr/local/bin/diesel
+# COPY --from=builder /app/target/release/flat_backend /usr/local/bin/flat_backend
+RUN apt-get update && apt-get -y install default-mysql-client && rm -rf /var/lib/apt/lists/*
 
-COPY . . 
-# COPY /flat_backend .
-# COPY /scripts .
-# RUN diesel setup
-# RUN diesel migration run 
+FROM debian:buster-slim as prod
+COPY --from=builder /usr/local/cargo/bin/diesel /usr/local/bin/diesel
+COPY --from=builder /app/target/release/flat_backend /usr/local/bin/flat_backend
+RUN apt-get update && apt-get -y install default-mysql-client && rm -rf /var/lib/apt/lists/*
