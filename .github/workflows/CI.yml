@@ -1,10 +1,9 @@
 name: CI
 
 on:
-  # push:
-  #   branches:
-  #     - develop
-  #     - main
+  push:
+    branches:
+      - feature/workflow_setting
   pull_request:
     branches:
       - develop
