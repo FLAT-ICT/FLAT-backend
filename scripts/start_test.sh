@@ -7,4 +7,4 @@ echo $('pwd')
 $('pwd')/scripts/wait-for-it.sh --timeout=90 --strict mysql:3306 -- diesel setup
 # diesel setup
 diesel migration run
-cargo run 
+cargo test
