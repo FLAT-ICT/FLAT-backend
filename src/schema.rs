@@ -1,23 +1,23 @@
 table! {
     friends (acctive, pussive) {
-        acctive -> Text,
-        pussive -> Text,
-        delete_flag -> Bool,
+        acctive -> Integer,
+        pussive -> Integer,
+        created_at -> Timestamp,
+        blocked_at -> Nullable<Timestamp>,
     }
 }
 
 table! {
     users (user_id) {
-        user_id -> Text,
+        user_id -> Integer,
         user_name -> Text,
         status -> Integer,
         beacon -> Nullable<Text>,
         icon_path -> Text,
         hashed_password -> Text,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
-allow_tables_to_appear_in_same_query!(
-    friends,
-    users,
-);
+allow_tables_to_appear_in_same_query!(friends, users,);

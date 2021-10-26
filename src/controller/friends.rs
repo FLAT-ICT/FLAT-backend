@@ -1,16 +1,13 @@
+use crate::model;
+use crate::model::friends::search_user;
+use crate::view::{FriendList, IdPair, ResultMessage, SearchUser};
 use axum::extract::Path;
 use axum::{response::IntoResponse, Json};
-// use diesel::serialize::Result;
 use hyper::StatusCode;
+use model::friends::{self, get_friend_list};
+use model::types::SomeError;
 
-use crate::model::friends::get_friend_list;
-use crate::model::types::{FriendList, SearchUser, SomeError};
-
-use super::super::view::{self, ResultMessage};
-
-use super::super::model::friends;
-
-pub async fn add_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse {
+pub async fn add_friend(Json(payload): Json<IdPair>) -> impl IntoResponse {
     let api_result = friends::add_friend(payload);
 
     let ok_or_ng: String;
@@ -24,12 +21,12 @@ pub async fn add_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse 
     (StatusCode::OK, Json(result_message))
 }
 
-pub async fn reject_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse {}
+pub async fn reject_friend(Json(payload): Json<IdPair>) -> impl IntoResponse {}
 
 pub async fn check_friend_status(
-    Path(payload): Path<view::IdPair>,
+    Path(payload): Path<IdPair>,
 ) -> Result<(StatusCode, axum::Json<SearchUser>), SomeError> {
-    let result = friends::search_user(payload);
+    let result = search_user(payload);
     match result {
         Ok(v) => return Ok((StatusCode::OK, Json(v))),
         Err(e) => return Err(e),
@@ -41,7 +38,7 @@ pub async fn check_friend_status(
     // (StatusCode::from_u16(result).unwrap(), Json(ResultMessage { message: result.1 }))
 }
 
-pub async fn friend_list(Path(my_id): Path<String>) -> (StatusCode, Json<FriendList>) {
+pub async fn friend_list(Path(my_id): Path<i32>) -> (StatusCode, Json<FriendList>) {
     let fl = get_friend_list(my_id);
     return (StatusCode::OK, Json(fl));
 }
