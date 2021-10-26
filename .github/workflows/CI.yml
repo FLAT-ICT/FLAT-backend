@@ -27,11 +27,11 @@ jobs:
         with:
           command: clippy
           args: --all --all-targets --all-features
-      - name: rustfmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+      # - name: rustfmt
+      #   uses: actions-rs/cargo@v1
+      #   with:
+      #     command: fmt
+      #     args: --all -- --check
 
   #TODO dieselをインストールする
   #TODO SQL起動する
