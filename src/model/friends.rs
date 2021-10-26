@@ -1,12 +1,14 @@
+use std::ops::Deref;
+
 use crate::model::db_util::*;
 use crate::model::types::SomeError;
-use crate::repository::AddFriend;
+use crate::repository::{AddFriend, IdNamePath};
 use crate::schema::friends;
-use crate::view::{FriendList, IdPair, SearchUser};
+use crate::view::{FriendList, IdAndName, IdPair, SearchUser};
 use axum::response::IntoResponse;
 use diesel::RunQueryDsl;
 use hyper::{Body, Response, StatusCode};
-use validator::Validate;
+// use validator::Validate;
 
 // 友だち追加の流れ
 // API -> (id, id): (String, String)
@@ -76,20 +78,35 @@ impl IntoResponse for SomeError {
     }
 }
 
-pub fn search_user(id_pair: IdPair) -> Result<SearchUser, SomeError> {
-    // pub fn search_user(id_pair: IdPair) -> (u16, String) {
+pub fn search_user(id_and_name: IdAndName) -> Result<Vec<SearchUser>, SomeError> {
+    // Input
+    // id: 自分のID
+    // target_name: 検索したい相手の名前の部分文字列
+
+    // Output
+    // Ok() => Vec<SearchUser>
+    //
+    // where SearchUser =   struct SearchUser {
+    //                              pub user_id: i32,
+    //                              pub user_name: String,
+    //                              pub icon_path: String,
+    //                              pub applied: bool,
+    //                              pub requested: bool,
+    //                      }
+    //
+    // Err() => SomeError
 
     // バリデーション
-    if let Err(_r) = &id_pair.validate() {
-        // return (422, r.to_string());
-        return Err(SomeError::ValidationError);
-    }
+    // if let Err(_r) = &id_and_name.validate() {
+    //     // return (422, r.to_string());
+    //     return Err(SomeError::ValidationError);
+    // }
 
-    let my_id = id_pair.my_id;
-    let friend_id = id_pair.target_id;
+    let my_id = id_and_name.user_id;
+    let target_name = id_and_name.target_name;
 
     // レコード存在確認
-    if !is_exist_id(my_id) || !is_exist_id(friend_id) {
+    if !is_exist_id(my_id) {
         // return (404, "Err, id not found".to_string());
         return Err(SomeError::NotExistError);
     }
@@ -98,24 +115,41 @@ pub fn search_user(id_pair: IdPair) -> Result<SearchUser, SomeError> {
     //      どこでキャッチすればいいのかわかってない。axumの仕様調べる。
     // }
 
-    // 自身を登録
-    if my_id == friend_id {
-        // return (471, "Err, send same id".to_string());
-        return Err(SomeError::SameIdError);
-    }
+    // // 自身を登録
+    // if my_id == friend_id {
+    //     // return (471, "Err, send same id".to_string());
+    //     return Err(SomeError::SameIdError);
+    // }
 
     // db_util::get_user_id_name_path(id) -> (id, name, path)
     // db_util::get_friends_relation(id1, id2) -> (bool, bool)
 
-    let (id, name, path) = get_user_id_name_path(friend_id);
-    let (ap, req) = get_friends_relation(my_id, friend_id);
-    return Ok(SearchUser {
-        user_id: id,
-        user_name: name,
-        icon_path: path,
-        applied: ap,
-        requested: req,
-    });
+    let id_name_path: Vec<IdNamePath> = get_user_id_name_path(target_name);
+    let applied_and_requested = &id_name_path
+        .iter()
+        .map(|x| get_friends_relation(my_id, x.id))
+        .collect::<Vec<_>>();
+    let searched_users = id_name_path
+        .into_iter()
+        .zip(applied_and_requested)
+        .map(|(x, y)| SearchUser {
+            user_id: x.id,
+            user_name: x.name,
+            icon_path: x.icon_path,
+            applied: y.0,
+            requested: y.1,
+        })
+        .collect::<Vec<SearchUser>>();
+
+    return Ok(searched_users);
+    // let (ap, req) = get_friends_relation(my_id, target_name);
+    // return Ok(vec![SearchUser {
+    //     user_id: id,
+    //     user_name: name,
+    //     icon_path: path,
+    //     applied: ap,
+    //     requested: req,
+    // }]);
 }
 
 pub fn get_friend_list(my_id: i32) -> FriendList {
