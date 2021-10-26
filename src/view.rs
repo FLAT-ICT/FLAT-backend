@@ -1,5 +1,5 @@
-use once_cell::sync::Lazy;
-use regex::Regex;
+// use once_cell::sync::Lazy;
+// use regex::Regex;
 use serde::{Deserialize, Serialize};
 
 use validator::Validate;
@@ -8,7 +8,7 @@ use validator::Validate;
 pub struct Friend {}
 
 // 正規表現をグローバルに宣言
-static USER_ID: Lazy<regex::Regex> = Lazy::new(|| Regex::new(r"[A-Z0-9]{6}$").unwrap());
+// static USER_ID: Lazy<regex::Regex> = Lazy::new(|| Regex::new(r"[A-Z0-9]{6}$").unwrap());
 
 #[derive(Debug, Validate, Deserialize, Serialize)]
 pub struct IdPair {
