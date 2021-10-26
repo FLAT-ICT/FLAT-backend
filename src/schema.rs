@@ -1,14 +1,14 @@
 table! {
     friends (acctive, pussive) {
-        acctive -> Text,
-        pussive -> Text,
+        acctive -> Integer,
+        pussive -> Integer,
         delete_flag -> Bool,
     }
 }
 
 table! {
     users (user_id) {
-        user_id -> Text,
+        user_id -> Integer,
         user_name -> Text,
         status -> Integer,
         beacon -> Nullable<Text>,
@@ -17,7 +17,4 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(
-    friends,
-    users,
-);
+allow_tables_to_appear_in_same_query!(friends, users,);

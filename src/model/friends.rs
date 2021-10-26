@@ -24,7 +24,7 @@ pub fn add_friend(id_pair: IdPair) -> bool {
     }
 
     // IDがレコードに存在してるかチェック
-    if !is_exist_id(&my_id) || !is_exist_id(&friend_id) {
+    if !is_exist_id(my_id) || !is_exist_id(friend_id) {
         return false;
     }
 
@@ -53,7 +53,7 @@ pub fn reject_friend(id_pair: IdPair) -> bool {
     }
 
     // IDがレコードに存在してるかチェック
-    if !is_exist_id(&my_id) || !is_exist_id(&friend_id) {
+    if !is_exist_id(my_id) || !is_exist_id(friend_id) {
         return false;
     };
 
@@ -96,7 +96,7 @@ pub fn search_user(id_pair: IdPair) -> Result<SearchUser, SomeError> {
     let friend_id = id_pair.target_id;
 
     // レコード存在確認
-    if !is_exist_id(&my_id) || !is_exist_id(&friend_id) {
+    if !is_exist_id(my_id) || !is_exist_id(friend_id) {
         // return (404, "Err, id not found".to_string());
         return Err(SomeError::NotExistError);
     }
@@ -114,8 +114,8 @@ pub fn search_user(id_pair: IdPair) -> Result<SearchUser, SomeError> {
     // db_util::get_user_id_name_path(id) -> (id, name, path)
     // db_util::get_friends_relation(id1, id2) -> (bool, bool)
 
-    let (id, name, path) = get_user_id_name_path(&friend_id);
-    let (ap, req) = get_friends_relation(&my_id, &friend_id);
+    let (id, name, path) = get_user_id_name_path(friend_id);
+    let (ap, req) = get_friends_relation(my_id, friend_id);
     return Ok(SearchUser {
         user_id: id,
         user_name: name,
@@ -125,15 +125,15 @@ pub fn search_user(id_pair: IdPair) -> Result<SearchUser, SomeError> {
     });
 }
 
-pub fn get_friend_list(my_id: String) -> FriendList {
+pub fn get_friend_list(my_id: i32) -> FriendList {
     // applied: id  自分 -> 誰か という関係があるUserIdを持ってくる
     // requested: id 誰か -> 自分 という関係があるUserIdを持ってくる
     // applied の各要素が、reqested に含まれるかどうかで
     // mutual と one_side に振り分ける
     // idを基にUserViewをとってくる -> JOINしたほうが良さそう
 
-    let applid = get_applied_record(&my_id);
-    let req = get_requested_record(&my_id);
+    let applid = get_applied_record(my_id);
+    let req = get_requested_record(my_id);
     let (mutual, one_side): (Vec<_>, Vec<_>) =
         applid.into_iter().partition(|a| req.contains(&a.user_id));
 

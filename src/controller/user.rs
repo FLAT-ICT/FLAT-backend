@@ -10,7 +10,7 @@ pub async fn create_user(
 ) -> impl IntoResponse {
     // insert your application logic here
     let user = UserView {
-        user_id: "000000".to_string(),
+        user_id: 0,
         user_name: payload.username,
         status: 1,
         icon_path: "".to_string(),

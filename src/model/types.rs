@@ -15,7 +15,7 @@ pub struct UserId {
 #[derive(Debug, Validate, Deserialize, Queryable)]
 pub struct User {
     // pub id: i32,
-    pub user_id: String,
+    pub user_id: i32,
     pub user_name: String,
     pub status: i32,
     pub beacon: Option<String>,
@@ -30,8 +30,8 @@ pub struct User {
 #[derive(Queryable)]
 pub struct Friend {
     // pub id: i32,
-    pub acctive: String,
-    pub passive: String,
+    pub acctive: i32,
+    pub passive: i32,
     pub block_flag: bool,
 }
 
@@ -39,13 +39,13 @@ use crate::schema::friends;
 #[derive(Insertable)]
 #[table_name = "friends"]
 pub struct AddFriend<'a> {
-    pub acctive: &'a str,
-    pub pussive: &'a str,
+    pub acctive: &'a i32,
+    pub pussive: &'a i32,
 }
 
 #[derive(Queryable, Serialize)]
 pub struct SearchUser {
-    pub user_id: String,
+    pub user_id: i32,
     pub user_name: String,
     pub icon_path: String,
     pub applied: bool,
@@ -59,7 +59,7 @@ pub enum SomeError {
 }
 
 struct IdAndName {
-    pub user_id: String,
+    pub user_id: i32,
     pub user_name: String,
 }
 
@@ -71,8 +71,8 @@ pub struct FriendList {
 
 #[derive(Validate, Serialize, Queryable)]
 pub struct UserView {
-    #[validate(regex = "USER_ID")]
-    pub user_id: String,
+    // #[validate(regex = "USER_ID")]
+    pub user_id: i32,
     pub user_name: String,
     pub status: i32,
     pub icon_path: String,

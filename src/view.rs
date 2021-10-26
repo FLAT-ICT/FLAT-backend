@@ -13,10 +13,10 @@ static USER_ID: Lazy<regex::Regex> = Lazy::new(|| Regex::new(r"[A-Z0-9]{6}$").un
 #[derive(Debug, Validate, Deserialize, Serialize)]
 pub struct IdPair {
     // String replace UserId
-    #[validate(regex = "USER_ID")]
-    pub my_id: String,
-    #[validate(regex = "USER_ID")]
-    pub target_id: String,
+    // #[validate(regex = "USER_ID")]
+    pub my_id: i32,
+    // #[validate(regex = "USER_ID")]
+    pub target_id: i32,
 }
 
 #[derive(Serialize)]
@@ -31,10 +31,10 @@ pub struct CreateUser {
 }
 
 // the output to our `create_user` handler
-#[derive(Validate, Serialize, Queryable)]
+#[derive(Serialize, Queryable)]
 pub struct UserView {
-    #[validate(regex = "USER_ID")]
-    pub user_id: String,
+    // #[validate(regex = "USER_ID")]
+    pub user_id: i32,
     pub user_name: String,
     pub status: i32,
     pub icon_path: String,

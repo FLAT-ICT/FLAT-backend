@@ -6,7 +6,7 @@ use super::super::schema;
 use super::types::AddFriend;
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
-use diesel::serialize::Result;
+// use diesel::serialize::Result;
 use diesel::ExpressionMethods;
 use diesel::QueryDsl;
 use dotenv::dotenv;
@@ -22,7 +22,7 @@ pub fn establish_connection() -> MysqlConnection {
         .expect(&format!("Error connetincg to {}", database_url))
 }
 
-pub fn is_exist_id(target_id: &str) -> bool {
+pub fn is_exist_id(target_id: i32) -> bool {
     // let user_id = id;
     // if id.len() != 6 {
     //     return false;
@@ -47,17 +47,17 @@ pub fn is_exist_id(target_id: &str) -> bool {
     }
 }
 
-pub fn get_user_id_name_path(target_id: &String) -> (String, String, String) {
+pub fn get_user_id_name_path(target_id: i32) -> (i32, String, String) {
     let conn = establish_connection();
     let result = users
         .filter(user_id.eq(target_id))
         .select((user_id, user_name, icon_path))
-        .first::<(String, String, String)>(&conn)
+        .first::<(i32, String, String)>(&conn)
         .unwrap();
     result
 }
 
-pub fn get_friends_relation(my_id: &String, target_id: &String) -> (bool, bool) {
+pub fn get_friends_relation(my_id: i32, target_id: i32) -> (bool, bool) {
     // レコードがあるかどうか
     fn is_exist_record(arg: Vec<Friend>) -> bool {
         if let Some(_) = arg.get(0) {
@@ -67,7 +67,7 @@ pub fn get_friends_relation(my_id: &String, target_id: &String) -> (bool, bool) 
         }
     }
     // レコードをとってくる
-    fn get_friend_relation(conn: &MysqlConnection, id1: &String, id2: &String) -> Vec<Friend> {
+    fn get_friend_relation(conn: &MysqlConnection, id1: i32, id2: i32) -> Vec<Friend> {
         friends
             .filter(acctive.eq(id1))
             .filter(pussive.eq(id2))
@@ -75,8 +75,8 @@ pub fn get_friends_relation(my_id: &String, target_id: &String) -> (bool, bool) 
             .unwrap()
     }
     let conn = establish_connection();
-    let applied = is_exist_record(get_friend_relation(&conn, &my_id, &target_id));
-    let requested = is_exist_record(get_friend_relation(&conn, &target_id, &my_id));
+    let applied = is_exist_record(get_friend_relation(&conn, my_id, target_id));
+    let requested = is_exist_record(get_friend_relation(&conn, target_id, my_id));
 
     (applied, requested)
 }
@@ -84,7 +84,7 @@ pub fn get_friends_relation(my_id: &String, target_id: &String) -> (bool, bool) 
 use schema::{friends, users};
 joinable!(friends -> users(acctive));
 
-pub fn get_applied_record(my_id: &String) -> Vec<UserView> {
+pub fn get_applied_record(my_id: i32) -> Vec<UserView> {
     let conn = establish_connection();
     let applied = friends
         .inner_join(users)
@@ -102,12 +102,12 @@ pub fn get_applied_record(my_id: &String) -> Vec<UserView> {
 }
 // allow_tables_to_appear_in_same_query!(friends, users);
 
-pub fn get_requested_record(my_id: &String) -> Vec<String> {
+pub fn get_requested_record(my_id: i32) -> Vec<i32> {
     let conn = establish_connection();
     let applied = friends
         .filter(pussive.eq(my_id))
         .select(acctive)
-        .load::<String>(&conn)
+        .load::<i32>(&conn)
         .unwrap();
     return applied;
 }
