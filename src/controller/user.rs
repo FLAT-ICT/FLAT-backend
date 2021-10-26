@@ -1,7 +1,6 @@
+use crate::view::{self, UserView};
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
-
-use super::super::view::{self, UserView};
 
 pub async fn create_user(
     // this argument tells axum to parse the request body

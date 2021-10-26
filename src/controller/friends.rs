@@ -1,14 +1,10 @@
+use crate::model;
+use crate::view::{self, FriendList, ResultMessage};
 use axum::extract::Path;
 use axum::{response::IntoResponse, Json};
-// use diesel::serialize::Result;
 use hyper::StatusCode;
-
-use crate::model::friends::get_friend_list;
-use crate::model::types::{FriendList, SearchUser, SomeError};
-
-use super::super::view::{self, ResultMessage};
-
-use super::super::model::friends;
+use model::friends::{self, get_friend_list};
+use model::types::{SearchUser, SomeError};
 
 pub async fn add_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse {
     let api_result = friends::add_friend(payload);

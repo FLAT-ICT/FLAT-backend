@@ -1,11 +1,8 @@
-use super::super::schema::friends;
-use super::super::view::IdPair;
-use super::db_util::is_exist_id;
-use super::db_util::{self, insert_friend};
-use super::types::{AddFriend, FriendList, SearchUser, SomeError};
-use crate::model::db_util::{
-    get_applied_record, get_friends_relation, get_requested_record, get_user_id_name_path,
-};
+use crate::model::db_util::*;
+use crate::model::types::{AddFriend, SearchUser, SomeError};
+use crate::schema::friends;
+use crate::view::FriendList;
+use crate::view::IdPair;
 use axum::response::IntoResponse;
 use diesel::RunQueryDsl;
 use hyper::{Body, Response, StatusCode};
@@ -33,7 +30,7 @@ pub fn add_friend(id_pair: IdPair) -> bool {
         pussive: &friend_id,
     };
 
-    let conn = db_util::establish_connection();
+    let conn = establish_connection();
     diesel::insert_into(friends::table)
         .values(&ids)
         .execute(&conn)

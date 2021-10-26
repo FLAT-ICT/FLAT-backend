@@ -1,12 +1,8 @@
-use crate::model::types::Friend;
-use crate::model::types::User;
-use crate::model::types::UserView;
-
-use super::super::schema;
-use super::types::AddFriend;
+use crate::model::types::{AddFriend, Friend, User};
+use crate::schema;
+use crate::view::UserView;
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
-// use diesel::serialize::Result;
 use diesel::ExpressionMethods;
 use diesel::QueryDsl;
 use dotenv::dotenv;
