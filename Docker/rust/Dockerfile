@@ -9,10 +9,10 @@ WORKDIR /app
 # Install dependencies first for cache ★1.b
 # Cargo.lock ないって怒られることがある
 # COPY ./Cargo.lock ./Cargo.lock
-# COPY ./Cargo.toml ./Cargo.toml
-COPY Cargo.toml Cargo.lock /app/
+COPY Cargo.toml /app/
 RUN rustup component add rustfmt
 RUN cargo build --release
+COPY ./Cargo.toml ./Cargo.toml
 RUN rm src/*.rs
 # 消さないと、Hello, world! が実行された
 RUN rm -rf target/*
