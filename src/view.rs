@@ -37,8 +37,8 @@ pub struct FriendList {
     pub mutual: Vec<UserView>,
 }
 
-#[derive(Serialize)]
-pub struct Friend {}
+// #[derive(Serialize)]
+// pub struct Friend {}
 
 // 正規表現をグローバルに宣言
 // static USER_ID: Lazy<regex::Regex> = Lazy::new(|| Regex::new(r"[A-Z0-9]{6}$").unwrap());

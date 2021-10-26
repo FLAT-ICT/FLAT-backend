@@ -1,50 +1,17 @@
-use chrono::NaiveDateTime;
-use once_cell::sync::Lazy;
-use regex::Regex;
+// use chrono::NaiveDateTime;
+// use once_cell::sync::Lazy;
+// use regex::Regex;
 use serde::{Deserialize, Serialize};
-use validator::Validate;
+// use validator::Validate;
 
 // 正規表現をグローバルに宣言
-static USER_ID: Lazy<regex::Regex> = Lazy::new(|| Regex::new(r"[0-9]{6}$").unwrap());
+// static USER_ID: Lazy<regex::Regex> = Lazy::new(|| Regex::new(r"[0-9]{6}$").unwrap());
 
-#[derive(Debug, Validate, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct UserId {
-    #[validate(regex = "USER_ID")]
-    pub id: String,
+    // #[validate(regex = "USER_ID")]
+    pub id: i32,
 }
-
-#[derive(Debug, Validate, Deserialize, Queryable)]
-pub struct User {
-    pub user_id: i32,
-    pub user_name: String,
-    pub status: i32,
-    pub beacon: Option<String>,
-    pub icon_path: String,
-    pub hashed_password: String,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
-}
-
-// struct UserId {}
-// type UserId = String;
-// impl UserId {}
-
-#[derive(Queryable)]
-pub struct Friend {
-    pub acctive: i32,
-    pub passive: i32,
-    pub created_at: NaiveDateTime,
-    pub blocked_at: Option<NaiveDateTime>,
-}
-
-// #[derive(Queryable, Serialize)]
-// pub struct SearchUser {
-//     pub user_id: i32,
-//     pub user_name: String,
-//     pub icon_path: String,
-//     pub applied: bool,
-//     pub requested: bool,
-// }
 
 pub enum SomeError {
     ValidationError,
