@@ -2,7 +2,8 @@ table! {
     friends (acctive, pussive) {
         acctive -> Integer,
         pussive -> Integer,
-        delete_flag -> Bool,
+        created_at -> Timestamp,
+        blocked_at -> Nullable<Timestamp>,
     }
 }
 
@@ -14,7 +15,12 @@ table! {
         beacon -> Nullable<Text>,
         icon_path -> Text,
         hashed_password -> Text,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
-allow_tables_to_appear_in_same_query!(friends, users,);
+allow_tables_to_appear_in_same_query!(
+    friends,
+    users,
+);
