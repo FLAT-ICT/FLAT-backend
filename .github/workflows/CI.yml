@@ -41,14 +41,18 @@ jobs:
     needs: check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          profile: minimal
-      - uses: Swatinem/rust-cache@v1
-      - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+    - uses: actions/checkout@master
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+        profile: minimal
+    - uses: Swatinem/rust-cache@v1
+    # - name: Run tests
+    #   uses: actions-rs/cargo@v1
+    #   with:
+    #     command: test
+    - name: compose tests
+      shell: bash
+      run: | 
+        docker-compose up --build flat-backend-test 

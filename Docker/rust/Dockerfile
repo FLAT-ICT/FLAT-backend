@@ -7,8 +7,10 @@ RUN USER=root cargo new --bin app
 WORKDIR /app
 
 # Install dependencies first for cache ★1.b
-COPY ./Cargo.lock ./Cargo.lock
-COPY ./Cargo.toml ./Cargo.toml
+# Cargo.lock ないって怒られることがある
+# COPY ./Cargo.lock ./Cargo.lock
+# COPY ./Cargo.toml ./Cargo.toml
+COPY Cargo.toml Cargo.lock /app/
 RUN rustup component add rustfmt
 RUN cargo build --release
 RUN rm src/*.rs
