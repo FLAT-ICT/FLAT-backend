@@ -28,8 +28,8 @@ pub fn add_friend(id_pair: IdPair) -> bool {
     let conn = establish_connection();
     diesel::insert_into(friends::table)
         .values(AddFriend {
-            acctive: &my_id,
-            pussive: &friend_id,
+            acctive: my_id,
+            pussive: friend_id,
         })
         .execute(&conn)
         .expect("挿入失敗");
@@ -53,8 +53,8 @@ pub fn reject_friend(id_pair: IdPair) -> bool {
     };
 
     insert_friend(AddFriend {
-        acctive: &my_id,
-        pussive: &friend_id,
+        acctive: my_id,
+        pussive: friend_id,
     });
     return true;
 }

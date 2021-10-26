@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -14,13 +15,14 @@ pub struct UserId {
 
 #[derive(Debug, Validate, Deserialize, Queryable)]
 pub struct User {
-    // pub id: i32,
     pub user_id: i32,
     pub user_name: String,
     pub status: i32,
     pub beacon: Option<String>,
     pub icon_path: String,
     pub hashed_password: String,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 // struct UserId {}
@@ -29,10 +31,10 @@ pub struct User {
 
 #[derive(Queryable)]
 pub struct Friend {
-    // pub id: i32,
     pub acctive: i32,
     pub passive: i32,
-    pub block_flag: bool,
+    pub created_at: NaiveDateTime,
+    pub blocked_at: Option<NaiveDateTime>,
 }
 
 // #[derive(Queryable, Serialize)]

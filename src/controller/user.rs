@@ -1,11 +1,11 @@
-use crate::view::{self, UserView};
+use crate::view::{CreateUser, UserView};
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 
 pub async fn create_user(
     // this argument tells axum to parse the request body
     // as JSON into a `CreateUser` type
-    Json(payload): Json<view::CreateUser>,
+    Json(payload): Json<CreateUser>,
 ) -> impl IntoResponse {
     // insert your application logic here
     let user = UserView {

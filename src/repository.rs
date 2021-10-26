@@ -10,7 +10,7 @@
 use crate::schema::friends;
 #[derive(Insertable)]
 #[table_name = "friends"]
-pub struct AddFriend<'a> {
-    pub acctive: &'a i32,
-    pub pussive: &'a i32,
+pub struct AddFriend {
+    pub acctive: i32,
+    pub pussive: i32,
 }
