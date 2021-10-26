@@ -6,20 +6,14 @@ use axum::{
     Router,
 };
 use std::net::SocketAddr;
-
 use tracing;
 use tracing_subscriber;
-
+mod controller;
 mod model;
 mod view;
-
-mod controller;
-// use controller::
-use controller::friends::add_friend;
+use controller::friends::{add_friend, check_friend_status, friend_list, reject_friend};
 use controller::user::create_user;
-
-use crate::controller::friends::{check_friend_status, friend_list, reject_friend};
-
+mod repository;
 mod schema;
 
 #[tokio::main]

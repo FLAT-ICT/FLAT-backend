@@ -1,8 +1,8 @@
 use crate::model::db_util::*;
-use crate::model::types::{AddFriend, SearchUser, SomeError};
+use crate::model::types::SomeError;
+use crate::repository::AddFriend;
 use crate::schema::friends;
-use crate::view::FriendList;
-use crate::view::IdPair;
+use crate::view::{FriendList, IdPair, SearchUser};
 use axum::response::IntoResponse;
 use diesel::RunQueryDsl;
 use hyper::{Body, Response, StatusCode};
@@ -25,14 +25,12 @@ pub fn add_friend(id_pair: IdPair) -> bool {
         return false;
     }
 
-    let ids = AddFriend {
-        acctive: &my_id,
-        pussive: &friend_id,
-    };
-
     let conn = establish_connection();
     diesel::insert_into(friends::table)
-        .values(&ids)
+        .values(AddFriend {
+            acctive: &my_id,
+            pussive: &friend_id,
+        })
         .execute(&conn)
         .expect("挿入失敗");
 
@@ -54,12 +52,10 @@ pub fn reject_friend(id_pair: IdPair) -> bool {
         return false;
     };
 
-    let ids = AddFriend {
+    insert_friend(AddFriend {
         acctive: &my_id,
         pussive: &friend_id,
-    };
-
-    insert_friend(ids);
+    });
     return true;
 }
 

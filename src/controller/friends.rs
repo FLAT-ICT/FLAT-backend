@@ -1,12 +1,13 @@
 use crate::model;
-use crate::view::{self, FriendList, ResultMessage};
+use crate::model::friends::search_user;
+use crate::view::{FriendList, IdPair, ResultMessage, SearchUser};
 use axum::extract::Path;
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 use model::friends::{self, get_friend_list};
-use model::types::{SearchUser, SomeError};
+use model::types::SomeError;
 
-pub async fn add_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse {
+pub async fn add_friend(Json(payload): Json<IdPair>) -> impl IntoResponse {
     let api_result = friends::add_friend(payload);
 
     let ok_or_ng: String;
@@ -20,12 +21,12 @@ pub async fn add_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse 
     (StatusCode::OK, Json(result_message))
 }
 
-pub async fn reject_friend(Json(payload): Json<view::IdPair>) -> impl IntoResponse {}
+pub async fn reject_friend(Json(payload): Json<IdPair>) -> impl IntoResponse {}
 
 pub async fn check_friend_status(
-    Path(payload): Path<view::IdPair>,
+    Path(payload): Path<IdPair>,
 ) -> Result<(StatusCode, axum::Json<SearchUser>), SomeError> {
-    let result = friends::search_user(payload);
+    let result = search_user(payload);
     match result {
         Ok(v) => return Ok((StatusCode::OK, Json(v))),
         Err(e) => return Err(e),

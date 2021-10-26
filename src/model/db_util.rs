@@ -1,4 +1,5 @@
-use crate::model::types::{AddFriend, Friend, User};
+use crate::model::types::{Friend, User};
+use crate::repository::AddFriend;
 use crate::schema;
 use crate::view::UserView;
 use diesel::mysql::MysqlConnection;
