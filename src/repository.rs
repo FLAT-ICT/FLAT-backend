@@ -27,3 +27,10 @@ pub struct User {
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
+
+#[derive(Queryable)]
+pub struct IdNamePath {
+    pub id: i32,
+    pub name: String,
+    pub icon_path: String,
+}

@@ -1,6 +1,6 @@
 use crate::model;
 use crate::model::friends::search_user;
-use crate::view::{FriendList, IdPair, ResultMessage, SearchUser};
+use crate::view::{FriendList, IdAndName, IdPair, ResultMessage, SearchUser};
 use axum::extract::Path;
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
@@ -24,8 +24,8 @@ pub async fn add_friend(Json(payload): Json<IdPair>) -> impl IntoResponse {
 pub async fn reject_friend(Json(payload): Json<IdPair>) -> impl IntoResponse {}
 
 pub async fn check_friend_status(
-    Path(payload): Path<IdPair>,
-) -> Result<(StatusCode, axum::Json<SearchUser>), SomeError> {
+    Path(payload): Path<IdAndName>,
+) -> Result<(StatusCode, axum::Json<Vec<SearchUser>>), SomeError> {
     let result = search_user(payload);
     match result {
         Ok(v) => return Ok((StatusCode::OK, Json(v))),

@@ -1,6 +1,7 @@
 // use crate::model::types::User;
 use crate::repository::AddFriend;
 use crate::repository::Friend;
+use crate::repository::IdNamePath;
 use crate::repository::User;
 use crate::schema;
 use crate::view::UserView;
@@ -46,13 +47,15 @@ pub fn is_exist_id(target_id: i32) -> bool {
     }
 }
 
-pub fn get_user_id_name_path(target_id: i32) -> (i32, String, String) {
+pub fn get_user_id_name_path(target_name: String) -> Vec<IdNamePath> {
     let conn = establish_connection();
     let result = users
-        .filter(user_id.eq(target_id))
+        .filter(user_name.like(target_name))
         .select((user_id, user_name, icon_path))
-        .first::<(i32, String, String)>(&conn)
+        .load::<IdNamePath>(&conn)
         .unwrap();
+    // .first::<(i32, String, String)>(&conn)
+    // .unwrap();
     result
 }
 
