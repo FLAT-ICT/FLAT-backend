@@ -33,7 +33,7 @@ RUN cargo install --locked --path .
 # あとでcargoを使いたいので、rust:busterを使う
 FROM rust:buster as test
 COPY --from=builder /usr/local/cargo/bin/diesel /usr/local/bin/diesel
-# COPY --from=builder /app/target/release/flat_backend /usr/local/bin/flat_backend
+COPY --from=builder /app/target/release/flat_backend /usr/local/bin/flat_backend
 RUN apt-get update && apt-get -y install default-mysql-client && rm -rf /var/lib/apt/lists/*
 
 FROM debian:buster-slim as prod

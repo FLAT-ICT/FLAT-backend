@@ -27,7 +27,7 @@ async fn main() {
         .route("/", get(root))
         // `POST /users` goes to `create_user`
         .route("/users", post(create_user))
-        .route("/v1/users/check", get(check_friend_status))
+        .route("/v1/users/search", get(check_friend_status))
         .route("/v1/friends", get(friend_list))
         .route("/v1/friends/add", post(add_friend))
         .route("/v1/friends/reject", post(reject_friend));
@@ -50,8 +50,26 @@ async fn root() -> &'static str {
 
 #[cfg(test)]
 mod tests {
+    use axum::http;
+
     #[tokio::test]
     async fn my_test() {
         assert!(true);
+    }
+
+    #[tokio::test]
+    async fn get_root() {
+        let client = reqwest::Client::new();
+        let res = client.get("http://localhost:3000").send().await.unwrap();
+        assert_eq!(res.status(), http::StatusCode::OK);
+    }
+    #[tokio::test]
+    async fn get_users_check() {
+        // usr1作成
+        // usr2作成
+        // usr1 -> usr2 に友だち申請
+        // その後叩く
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
     }
 }
