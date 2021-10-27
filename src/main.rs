@@ -26,7 +26,7 @@ async fn main() {
         // `GET /` goes to `root`
         .route("/", get(root))
         // `POST /users` goes to `create_user`
-        .route("/users", post(create_user))
+        .route("/v1/users", post(create_user))
         .route("/v1/users/search", get(check_friend_status))
         .route("/v1/friends", get(friend_list))
         .route("/v1/friends/add", post(add_friend))
@@ -63,13 +63,38 @@ mod tests {
         let res = client.get("http://localhost:3000").send().await.unwrap();
         assert_eq!(res.status(), http::StatusCode::OK);
     }
+}
+
+#[cfg(test)]
+mod search_user {
+    use crate::view::CreateUser;
+
     #[tokio::test]
-    async fn get_users_check() {
+    async fn basic() {
         // usr1作成
         // usr2作成
         // usr1 -> usr2 に友だち申請
-        // その後叩く
+        // search_user
+        // レコード初期化
         let base_url = "http://localhost:3000";
         let client = reqwest::Client::new();
+        let _create_usr1 = client
+            .post(base_url.to_string() + "/v1/users")
+            .json(&CreateUser {
+                username: "usr1".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+
+        let _create_usr2 = client
+            .post(base_url.to_string() + "/v1/users")
+            .json(&CreateUser {
+                username: "usr2".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        // let _friend_request = client.post(base_url);
     }
 }
