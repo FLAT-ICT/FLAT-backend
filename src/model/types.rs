@@ -19,10 +19,10 @@ pub enum SomeError {
     SameIdError,
 }
 
-struct IdAndName {
-    pub user_id: i32,
-    pub user_name: String,
-}
+// struct IdAndName {
+//     pub user_id: i32,
+//     pub target_name: String,
+// }
 
 // #[derive(Serialize)]
 // pub struct FriendList {
