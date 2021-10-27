@@ -21,7 +21,19 @@ pub async fn add_friend(Json(payload): Json<IdPair>) -> impl IntoResponse {
     (StatusCode::OK, Json(result_message))
 }
 
-pub async fn reject_friend(Json(payload): Json<IdPair>) -> impl IntoResponse {}
+pub async fn reject_friend(Json(payload): Json<IdPair>) -> impl IntoResponse {
+    let api_result = friends::reject_friend(payload);
+
+    let ok_or_ng: String;
+    if let true = api_result {
+        ok_or_ng = "Ok".to_string()
+    } else {
+        ok_or_ng = "Ng".to_string()
+    }
+
+    let result_message = ResultMessage { message: ok_or_ng };
+    (StatusCode::OK, Json(result_message))
+}
 
 pub async fn check_friend_status(
     Path(payload): Path<IdAndName>,
