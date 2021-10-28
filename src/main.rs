@@ -67,7 +67,9 @@ mod tests {
 
 #[cfg(test)]
 mod search_user {
-    use crate::view::CreateUser;
+    use axum::http;
+
+    use crate::view::{CreateUser, IdPair};
 
     #[tokio::test]
     async fn basic() {
@@ -95,6 +97,29 @@ mod search_user {
             .send()
             .await
             .unwrap();
-        // let _friend_request = client.post(base_url);
+        let _friend_request = client
+            .post(base_url.to_string() + "/v1/friends/add")
+            .json(&IdPair {
+                my_id: 1,
+                target_id: 2,
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(_friend_request.status(), http::StatusCode::OK);
+
+        let _get_friend_list = client
+            .get(
+                base_url.to_string()
+                    + "/v1/users/search?user_id="
+                    + &0.to_string()
+                    + "&target_name=usr2",
+            )
+            .send()
+            .await
+            .unwrap();
+
+        println!("{:#?}", _get_friend_list);
+        assert_eq!(_get_friend_list.status(), http::StatusCode::OK);
     }
 }
