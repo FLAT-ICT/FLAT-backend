@@ -67,9 +67,15 @@ mod tests {
 
 #[cfg(test)]
 mod search_user {
+    use crate::repository::{Friend, User};
+    use crate::schema::users::dsl::*;
+    use crate::schema::friends::dsl::*;
+    use crate::{
+        model::db_util::establish_connection,
+        view::{CreateUser, IdPair},
+    };
     use axum::http;
-
-    use crate::view::{CreateUser, IdPair};
+    use diesel::{QueryDsl, RunQueryDsl, result};
 
     #[tokio::test]
     async fn basic() {
@@ -88,6 +94,7 @@ mod search_user {
             .send()
             .await
             .unwrap();
+        assert_eq!(_create_usr1.status(), http::StatusCode::CREATED);
 
         let _create_usr2 = client
             .post(base_url.to_string() + "/v1/users")
@@ -97,16 +104,24 @@ mod search_user {
             .send()
             .await
             .unwrap();
+        assert_eq!(_create_usr2.status(), http::StatusCode::CREATED);
+
         let _friend_request = client
             .post(base_url.to_string() + "/v1/friends/add")
             .json(&IdPair {
-                my_id: 1,
-                target_id: 2,
+                my_id: 0,
+                target_id: 1,
             })
             .send()
             .await
             .unwrap();
         assert_eq!(_friend_request.status(), http::StatusCode::OK);
+
+        let conn = establish_connection();
+        let result = users.load::<User>(&conn).unwrap();
+        println!("{:#?}", result);
+        let result = friends.load::<Friend>(&conn).unwrap();
+        println!("{:#?}", result);
 
         let _get_friend_list = client
             .get(

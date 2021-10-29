@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 use crate::model::db_util::*;
 use crate::model::types::SomeError;
 use crate::repository::{AddFriend, IdNamePath};
@@ -27,14 +25,10 @@ pub fn add_friend(id_pair: IdPair) -> bool {
         return false;
     }
 
-    let conn = establish_connection();
-    diesel::insert_into(friends::table)
-        .values(AddFriend {
-            acctive: my_id,
-            pussive: friend_id,
-        })
-        .execute(&conn)
-        .expect("挿入失敗");
+    insert_friend(AddFriend {
+        acctive: my_id,
+        pussive: friend_id,
+    });
 
     return true;
     // DBにインサート

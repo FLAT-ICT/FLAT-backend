@@ -120,6 +120,7 @@ pub fn insert_friend(ids: AddFriend) {
         .values(&ids)
         .execute(&conn)
         .expect("挿入失敗");
+    println!("insert_friend")
 }
 
 pub fn delete_friend(ids: AddFriend) {

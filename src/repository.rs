@@ -8,7 +8,7 @@ pub struct AddFriend {
     pub pussive: i32,
 }
 
-#[derive(Queryable)]
+#[derive(Debug, Queryable)]
 pub struct Friend {
     pub acctive: i32,
     pub passive: i32,
