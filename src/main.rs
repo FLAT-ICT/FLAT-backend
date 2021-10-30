@@ -5,11 +5,12 @@ use axum::{
     handler::{get, post},
     Router,
 };
-use std::net::SocketAddr;
+use std::{net::SocketAddr, process};
 use tracing;
 use tracing_subscriber;
 mod controller;
 mod model;
+mod read_csv;
 mod view;
 use controller::friends::{add_friend, check_friend_status, friend_list, reject_friend};
 use controller::user::create_user;
@@ -18,6 +19,11 @@ mod schema;
 
 #[tokio::main]
 async fn main() {
+    if let Err(err) = read_csv::run() {
+        println!("{}", err);
+        process::exit(1);
+    }
+
     // トレーサーを初期化
     tracing_subscriber::fmt::init();
 

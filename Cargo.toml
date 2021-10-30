@@ -20,3 +20,4 @@ diesel = { version = "1.4.8", features = ["mysql", "chrono"] }
 dotenv = "0.15.0"
 chrono = { version = "0.4.19", features = ["serde"] }
 reqwest = "0.11.6"
+csv = "1.1"

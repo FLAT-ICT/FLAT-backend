@@ -9,13 +9,14 @@ table! {
 
 table! {
     spots (major, minor) {
-        ja_spot -> Text,
-        en_spot -> Text,
-        region_identifire -> Text,
-        from_date -> Timestamp,
-        to_date -> Nullable<Timestamp>,
+        name_ja -> Text,
+        name_en -> Text,
+        region_identifier -> Text,
+        available_term_from -> Timestamp,
+        available_term_to -> Nullable<Timestamp>,
         major -> Integer,
         minor -> Integer,
+        note -> Nullable<Text>,
     }
 }
 

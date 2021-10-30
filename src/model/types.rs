@@ -1,7 +1,3 @@
-use chrono::{NaiveDate, NaiveDateTime};
-// use chrono::NaiveDateTime;
-// use once_cell::sync::Lazy;
-// use regex::Regex;
 use serde::{Deserialize, Serialize};
 // use validator::Validate;
 
@@ -64,18 +60,6 @@ pub struct Scan {
 pub enum _ScannedBeacon {
     Beacon(Beacon),
     Scan(Scan),
-}
-
-pub struct Spot {
-    pub ja_spot: String,
-    pub en_spot: String,
-    pub region_identifer: Region,
-    pub from: NaiveDateTime,
-    pub to: Option<NaiveDate>,
-    // note: Option<String>
-    // & Omit<Beacon, "uuid">
-    pub major: u32,
-    pub minor: u32,
 }
 
 pub struct Region {

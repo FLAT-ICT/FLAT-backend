@@ -1,11 +1,12 @@
 -- Your SQL goes here
 CREATE TABLE spots (
-    ja_spot TEXT NOT NULL,
-    en_spot TEXT NOT NULL,
-    region_identifire TEXT NOT NULL,
-    from_date TIMESTAMP NOT NULL,
-    to_date TIMESTAMP NULL DEFAULT NULL,
+    name_ja TEXT NOT NULL,
+    name_en TEXT NOT NULL,
+    region_identifier TEXT NOT NULL,
+    available_term_from TIMESTAMP NOT NULL,
+    available_term_to TIMESTAMP NULL DEFAULT NULL,
     major INTEGER NOT NULL,
     minor INTEGER NOT NULL,
+    note TEXT,
     PRIMARY KEY (major, minor)
 );

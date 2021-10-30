@@ -2,6 +2,7 @@
 use crate::repository::AddFriend;
 use crate::repository::Friend;
 use crate::repository::IdNamePath;
+use crate::repository::InsertableSpot;
 use crate::repository::User;
 use crate::schema;
 use crate::view::UserView;
@@ -11,6 +12,7 @@ use diesel::ExpressionMethods;
 use diesel::QueryDsl;
 use dotenv::dotenv;
 use schema::friends::dsl::*;
+use schema::spots::dsl::*;
 use schema::users::dsl::*;
 use std::env;
 
@@ -84,6 +86,7 @@ pub fn get_friends_relation(my_id: i32, target_id: i32) -> (bool, bool) {
 }
 
 use schema::{friends, users};
+
 joinable!(friends -> users(acctive));
 
 pub fn get_applied_record(my_id: i32) -> Vec<UserView> {
@@ -131,4 +134,12 @@ pub fn delete_friend(ids: AddFriend) {
     )
     .execute(&conn)
     .expect("削除失敗");
+}
+
+pub fn insert_spot(spot: InsertableSpot) {
+    let conn = establish_connection();
+    diesel::insert_into(spots)
+        .values(&spot)
+        .execute(&conn)
+        .expect("挿入失敗");
 }
