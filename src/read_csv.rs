@@ -1,5 +1,4 @@
 use std::{error::Error, fs::File};
-
 use crate::{model::db_util, repository::DeserializableSpot};
 
 pub(crate) fn run() -> Result<(), Box<dyn Error>> {

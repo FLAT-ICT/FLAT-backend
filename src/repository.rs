@@ -1,7 +1,6 @@
 use crate::schema::friends;
 use crate::schema::spots;
 use chrono::DateTime;
-use chrono::NaiveDate;
 use chrono::NaiveDateTime;
 use chrono::Utc;
 use serde::Deserialize;
