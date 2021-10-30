@@ -1,0 +1,3 @@
+[submodule "espresso-beacons"]
+	path = espresso-beacons
+	url = git@github.com:fun-dev/espresso-beacons.git

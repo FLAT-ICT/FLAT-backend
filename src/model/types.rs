@@ -1,3 +1,4 @@
+use chrono::{NaiveDate, NaiveDateTime};
 // use chrono::NaiveDateTime;
 // use once_cell::sync::Lazy;
 // use regex::Regex;
@@ -39,3 +40,45 @@ pub enum SomeError {
 //     pub icon_path: String,
 //     pub beacon: Option<String>,
 // }
+
+pub struct Beacon {
+    pub uuid: String,
+    pub major: u32,
+    pub minor: u32,
+}
+
+pub struct ScannedBeacon {
+    // Beacon & {rssi, distance}
+    pub uuid: String,
+    pub major: u32,
+    pub minor: u32,
+    pub rssi: f32,
+    pub distance: f32,
+}
+
+pub struct Scan {
+    pub rssi: f32,
+    pub distance: f32,
+}
+
+pub enum _ScannedBeacon {
+    Beacon(Beacon),
+    Scan(Scan),
+}
+
+pub struct Spot {
+    pub ja_spot: String,
+    pub en_spot: String,
+    pub region_identifer: Region,
+    pub from: NaiveDateTime,
+    pub to: Option<NaiveDate>,
+    // note: Option<String>
+    // & Omit<Beacon, "uuid">
+    pub major: u32,
+    pub minor: u32,
+}
+
+pub struct Region {
+    identifier: String,
+    uuid: String,
+}
