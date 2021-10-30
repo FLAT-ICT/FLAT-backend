@@ -68,14 +68,14 @@ mod tests {
 #[cfg(test)]
 mod search_user {
     use crate::repository::{Friend, User};
-    use crate::schema::users::dsl::*;
     use crate::schema::friends::dsl::*;
+    use crate::schema::users::dsl::*;
     use crate::{
         model::db_util::establish_connection,
         view::{CreateUser, IdPair},
     };
     use axum::http;
-    use diesel::{QueryDsl, RunQueryDsl, result};
+    use diesel::{result, QueryDsl, RunQueryDsl};
 
     #[tokio::test]
     async fn basic() {
@@ -89,7 +89,8 @@ mod search_user {
         let _create_usr1 = client
             .post(base_url.to_string() + "/v1/users")
             .json(&CreateUser {
-                username: "usr1".to_string(),
+                user_name: "usr1".to_string(),
+                password: "".to_string(),
             })
             .send()
             .await
@@ -99,7 +100,8 @@ mod search_user {
         let _create_usr2 = client
             .post(base_url.to_string() + "/v1/users")
             .json(&CreateUser {
-                username: "usr2".to_string(),
+                user_name: "usr2".to_string(),
+                password: "".to_string(),
             })
             .send()
             .await

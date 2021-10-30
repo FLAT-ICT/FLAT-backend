@@ -1,6 +1,7 @@
+use crate::schema::friends;
+use crate::schema::users;
 use chrono::NaiveDateTime;
 
-use crate::schema::friends;
 #[derive(Insertable)]
 #[table_name = "friends"]
 pub struct AddFriend {
@@ -33,4 +34,11 @@ pub struct IdNamePath {
     pub id: i32,
     pub name: String,
     pub icon_path: String,
+}
+
+#[derive(Insertable)]
+#[table_name = "users"]
+pub struct NameAndPassword<'a> {
+    pub user_name: &'a String,
+    pub hashed_password: &'a String,
 }
