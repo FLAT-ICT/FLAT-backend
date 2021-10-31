@@ -1,6 +1,3 @@
-// use chrono::NaiveDateTime;
-// use once_cell::sync::Lazy;
-// use regex::Regex;
 use serde::{Deserialize, Serialize};
 // use validator::Validate;
 
@@ -39,3 +36,25 @@ pub enum SomeError {
 //     pub icon_path: String,
 //     pub beacon: Option<String>,
 // }
+
+pub struct Beacon {
+    pub uuid: String,
+    pub major: u32,
+    pub minor: u32,
+}
+
+
+pub struct Scan {
+    pub rssi: f32,
+    pub distance: f32,
+}
+
+pub enum _ScannedBeacon {
+    Beacon(Beacon),
+    Scan(Scan),
+}
+
+pub struct Region {
+    identifier: String,
+    uuid: String,
+}
