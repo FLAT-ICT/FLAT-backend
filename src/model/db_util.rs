@@ -2,6 +2,7 @@
 use crate::repository::AddFriend;
 use crate::repository::Friend;
 use crate::repository::IdNamePath;
+use crate::repository::NameAndPassword;
 use crate::repository::InsertableSpot;
 use crate::repository::User;
 use crate::schema;
@@ -47,6 +48,28 @@ pub fn is_exist_id(target_id: i32) -> bool {
             return false;
         }
     }
+}
+
+pub fn insert_user(name_and_pass: NameAndPassword) -> UserView {
+    let name = name_and_pass.user_name;
+    let pass = name_and_pass.hashed_password;
+
+    let conn = establish_connection();
+    let inserted_row = diesel::insert_into(users)
+        .values((user_name.eq(name), hashed_password.eq(pass)))
+        .execute(&conn)
+        .unwrap();
+
+    let last_insert_user = users.order(user_id.desc()).first::<User>(&conn).unwrap();
+
+    let user_view = UserView {
+        user_id: last_insert_user.user_id,
+        user_name: last_insert_user.user_name.to_string(),
+        status: last_insert_user.status,
+        icon_path: last_insert_user.icon_path,
+        beacon: last_insert_user.beacon,
+    };
+    return user_view;
 }
 
 pub fn get_user_id_name_path(target_name: String) -> Vec<IdNamePath> {
@@ -125,6 +148,7 @@ pub fn insert_friend(ids: AddFriend) {
         .values(&ids)
         .execute(&conn)
         .expect("挿入失敗");
+    println!("insert_friend")
 }
 
 pub fn delete_friend(ids: AddFriend) {

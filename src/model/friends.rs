@@ -1,8 +1,10 @@
 use crate::model::db_util::*;
 use crate::model::types::SomeError;
 use crate::repository::{AddFriend, IdNamePath};
+use crate::schema::friends;
 use crate::view::{FriendList, IdAndName, IdPair, SearchUser};
 use axum::response::IntoResponse;
+use diesel::RunQueryDsl;
 use hyper::{Body, Response, StatusCode};
 // use validator::Validate;
 
@@ -27,6 +29,7 @@ pub fn add_friend(id_pair: IdPair) -> bool {
         acctive: my_id,
         pussive: friend_id,
     });
+
     return true;
     // DBにインサート
     // bool か Result を返す

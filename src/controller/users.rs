@@ -1,6 +1,7 @@
 use crate::{
-    model::users,
-    view::{CreateUser, UserView},
+    model::{db_util::insert_user, users},
+    repository::NameAndPassword,
+    view::CreateUser,
 };
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
@@ -12,17 +13,22 @@ pub async fn create_user(
     Json(payload): Json<CreateUser>,
 ) -> impl IntoResponse {
     // insert your application logic here
-    let user = UserView {
-        user_id: 0,
-        user_name: payload.username,
-        status: 1,
-        icon_path: "".to_string(),
-        beacon: Some("595教室".to_string()),
-    };
+    // let user = UserView {
+    //     user_id: 0,
+    //     user_name: payload.user_name,
+    //     status: 1,
+    //     icon_path: "".to_string(),
+    //     beacon: Some("595教室".to_string()),
+    // };
+
+    let inserted = insert_user(NameAndPassword {
+        user_name: &payload.user_name,
+        hashed_password: &payload.password,
+    });
 
     // this will be converted into a JSON response
     // with a status code of `201 Created`
-    (StatusCode::CREATED, Json(user))
+    (StatusCode::CREATED, Json(inserted))
 }
 
 #[derive(Deserialize)]

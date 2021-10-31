@@ -49,9 +49,10 @@ pub struct ResultMessage {
 }
 
 // the input to our `create_user` handler
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct CreateUser {
-    pub username: String,
+    pub user_name: String,
+    pub password: String,
 }
 
 #[derive(Serialize, Queryable)]

@@ -10,11 +10,10 @@ use tracing;
 use tracing_subscriber;
 mod controller;
 mod model;
-mod read_csv_and_write_db;
 mod view;
 use controller::friends::{add_friend, check_friend_status, friend_list, reject_friend};
 use controller::users::create_user;
-use controller::users::update_beacon;
+mod read_csv_and_write_db;
 mod repository;
 mod schema;
 
@@ -33,13 +32,11 @@ async fn main() {
         // `GET /` goes to `root`
         .route("/", get(root))
         // `POST /users` goes to `create_user`
-        .route("/users", post(create_user))
+        .route("/v1/users", post(create_user))
         .route("/v1/users/search", get(check_friend_status))
-        .route("/v1/users/beacon", post(update_beacon))
         .route("/v1/friends", get(friend_list))
         .route("/v1/friends/add", post(add_friend))
         .route("/v1/friends/reject", post(reject_friend));
-    // .route("/v1/beacon/, post(beacon)")
 
     // バインドするアドレス
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
@@ -72,13 +69,80 @@ mod tests {
         let res = client.get("http://localhost:3000").send().await.unwrap();
         assert_eq!(res.status(), http::StatusCode::OK);
     }
+}
+
+#[cfg(test)]
+mod search_user {
+    use crate::repository::{Friend, User};
+    use crate::schema::friends::dsl::*;
+    use crate::schema::users::dsl::*;
+    use crate::{
+        model::db_util::establish_connection,
+        view::{CreateUser, IdPair},
+    };
+    use axum::http;
+    use diesel::{result, QueryDsl, RunQueryDsl};
+
     #[tokio::test]
-    async fn get_users_check() {
+    async fn basic() {
         // usr1作成
         // usr2作成
         // usr1 -> usr2 に友だち申請
-        // その後叩く
+        // search_user
+        // レコード初期化
         let base_url = "http://localhost:3000";
         let client = reqwest::Client::new();
+        let _create_usr1 = client
+            .post(base_url.to_string() + "/v1/users")
+            .json(&CreateUser {
+                user_name: "usr1".to_string(),
+                password: "".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(_create_usr1.status(), http::StatusCode::CREATED);
+
+        let _create_usr2 = client
+            .post(base_url.to_string() + "/v1/users")
+            .json(&CreateUser {
+                user_name: "usr2".to_string(),
+                password: "".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(_create_usr2.status(), http::StatusCode::CREATED);
+
+        let _friend_request = client
+            .post(base_url.to_string() + "/v1/friends/add")
+            .json(&IdPair {
+                my_id: 0,
+                target_id: 1,
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(_friend_request.status(), http::StatusCode::OK);
+
+        let conn = establish_connection();
+        let result = users.load::<User>(&conn).unwrap();
+        println!("{:#?}", result);
+        let result = friends.load::<Friend>(&conn).unwrap();
+        println!("{:#?}", result);
+
+        let _get_friend_list = client
+            .get(
+                base_url.to_string()
+                    + "/v1/users/search?user_id="
+                    + &0.to_string()
+                    + "&target_name=usr2",
+            )
+            .send()
+            .await
+            .unwrap();
+
+        println!("{:#?}", _get_friend_list);
+        assert_eq!(_get_friend_list.status(), http::StatusCode::OK);
     }
 }

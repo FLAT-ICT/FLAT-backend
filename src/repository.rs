@@ -1,9 +1,11 @@
 use crate::schema::friends;
 use crate::schema::spots;
+use crate::schema::users;
 use chrono::DateTime;
 use chrono::NaiveDateTime;
 use chrono::Utc;
 use serde::Deserialize;
+
 #[derive(Insertable)]
 #[table_name = "friends"]
 pub struct AddFriend {
@@ -11,7 +13,7 @@ pub struct AddFriend {
     pub pussive: i32,
 }
 
-#[derive(Queryable)]
+#[derive(Debug, Queryable)]
 pub struct Friend {
     pub acctive: i32,
     pub passive: i32,
@@ -38,6 +40,12 @@ pub struct IdNamePath {
     pub icon_path: String,
 }
 
+#[derive(Insertable)]
+#[table_name = "users"]
+pub struct NameAndPassword<'a> {
+    pub user_name: &'a String,
+    pub hashed_password: &'a String,
+}
 #[derive(Debug, Insertable)]
 #[table_name = "spots"]
 pub struct InsertableSpot {
