@@ -1,5 +1,5 @@
-use std::{error::Error, fs::File};
 use crate::{model::db_util, repository::DeserializableSpot};
+use std::{error::Error, fs::File};
 
 pub(crate) fn run() -> Result<(), Box<dyn Error>> {
     let file_path = "espresso-beacons/src/spots.csv";
@@ -11,4 +11,28 @@ pub(crate) fn run() -> Result<(), Box<dyn Error>> {
         db_util::insert_spot(record.to_insertable());
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod beacon_tests {
+
+    use crate::model::db_util::establish_connection;
+    use crate::schema::spots;
+    use crate::schema::spots::dsl::*;
+    use diesel::ExpressionMethods;
+    use diesel::QueryDsl;
+    use diesel::RunQueryDsl;
+    #[tokio::test]
+    async fn test_get_spot() {
+        let minor_id = 43303;
+        let major_id = 0;
+        let conn = establish_connection();
+        let result = spots
+            .filter(major.eq(&major_id))
+            .filter(minor.eq(&minor_id))
+            .select(name_ja)
+            .first::<String>(&conn)
+            .unwrap();
+        assert_eq!(result, "127教員室".to_string());
+    }
 }
