@@ -48,7 +48,7 @@ pub fn reject_friend(id_pair: IdPair) -> bool {
         return false;
     };
 
-    insert_friend(AddFriend {
+    delete_friend(AddFriend {
         acctive: my_id,
         pussive: friend_id,
     });
@@ -126,6 +126,7 @@ pub fn search_user(id_and_name: IdAndName) -> Result<Vec<SearchUser>, SomeError>
     let searched_users = id_name_path
         .into_iter()
         .zip(applied_and_requested)
+        .filter(|(_, &y)| !(y.0 & y.1)) // 相互の友だちを落とす
         .map(|(x, y)| SearchUser {
             user_id: x.id,
             user_name: x.name,
