@@ -10,7 +10,7 @@ use tracing;
 use tracing_subscriber;
 mod controller;
 mod model;
-mod read_csv;
+mod read_csv_and_write_db;
 mod view;
 use controller::friends::{add_friend, check_friend_status, friend_list, reject_friend};
 use controller::user::create_user;
@@ -19,7 +19,7 @@ mod schema;
 
 #[tokio::main]
 async fn main() {
-    if let Err(err) = read_csv::run() {
+    if let Err(err) = read_csv_and_write_db::run() {
         println!("{}", err);
         process::exit(1);
     }
