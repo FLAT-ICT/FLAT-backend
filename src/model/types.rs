@@ -43,14 +43,6 @@ pub struct Beacon {
     pub minor: u32,
 }
 
-pub struct ScannedBeacon {
-    // Beacon & {rssi, distance}
-    pub uuid: String,
-    pub major: u32,
-    pub minor: u32,
-    pub rssi: f32,
-    pub distance: f32,
-}
 
 pub struct Scan {
     pub rssi: f32,

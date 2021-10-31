@@ -13,7 +13,8 @@ mod model;
 mod read_csv_and_write_db;
 mod view;
 use controller::friends::{add_friend, check_friend_status, friend_list, reject_friend};
-use controller::user::create_user;
+use controller::users::create_user;
+use controller::users::update_beacon;
 mod repository;
 mod schema;
 
@@ -34,9 +35,11 @@ async fn main() {
         // `POST /users` goes to `create_user`
         .route("/users", post(create_user))
         .route("/v1/users/search", get(check_friend_status))
+        .route("/v1/users/beacon", post(update_beacon))
         .route("/v1/friends", get(friend_list))
         .route("/v1/friends/add", post(add_friend))
         .route("/v1/friends/reject", post(reject_friend));
+    // .route("/v1/beacon/, post(beacon)")
 
     // バインドするアドレス
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));

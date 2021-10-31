@@ -87,6 +87,8 @@ pub fn get_friends_relation(my_id: i32, target_id: i32) -> (bool, bool) {
 
 use schema::{friends, users};
 
+use super::types::Beacon;
+
 joinable!(friends -> users(acctive));
 
 pub fn get_applied_record(my_id: i32) -> Vec<UserView> {
@@ -136,10 +138,30 @@ pub fn delete_friend(ids: AddFriend) {
     .expect("削除失敗");
 }
 
-pub fn insert_spot(spot: InsertableSpot) {
+pub fn insert_spots_from_csv(spot: InsertableSpot) {
     let conn = establish_connection();
     diesel::insert_into(spots)
         .values(&spot)
         .execute(&conn)
         .expect("挿入失敗");
+}
+
+pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) {
+    let conn = establish_connection();
+
+    diesel::update(users.find(&my_id))
+        .set(beacon.eq(get_spot(&conn, major_id, minor_id)))
+        .execute(&conn)
+        .expect("更新失敗");
+
+    pub fn get_spot(conn: &MysqlConnection, major_id: i32, minor_id: i32) -> String {
+        // let conn = establish_connection();
+        let result = spots
+            .filter(major.eq(&major_id))
+            .filter(minor.eq(&minor_id))
+            .select(name_ja)
+            .first::<String>(conn)
+            .unwrap();
+        return result;
+    }
 }

@@ -8,7 +8,7 @@ pub(crate) fn run() -> Result<(), Box<dyn Error>> {
     let mut rdr = csv::Reader::from_reader(file);
     for result in rdr.deserialize() {
         let record: DeserializableSpot = result?;
-        db_util::insert_spot(record.to_insertable());
+        db_util::insert_spots_from_csv(record.to_insertable());
     }
     Ok(())
 }
@@ -17,7 +17,6 @@ pub(crate) fn run() -> Result<(), Box<dyn Error>> {
 mod beacon_tests {
 
     use crate::model::db_util::establish_connection;
-    use crate::schema::spots;
     use crate::schema::spots::dsl::*;
     use diesel::ExpressionMethods;
     use diesel::QueryDsl;
