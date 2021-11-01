@@ -1,7 +1,7 @@
 use crate::model;
 use crate::model::friends::search_user;
 use crate::view::{FriendList, IdAndName, IdPair, ResultMessage, SearchUser};
-use axum::extract::Path;
+use axum::extract::{Path, Query};
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 use model::friends::{self, get_friend_list};
@@ -36,12 +36,15 @@ pub async fn reject_friend(Json(payload): Json<IdPair>) -> impl IntoResponse {
 }
 
 pub async fn check_friend_status(
-    Path(payload): Path<IdAndName>,
+    Query(payload): Query<IdAndName>,
 ) -> Result<(StatusCode, axum::Json<Vec<SearchUser>>), SomeError> {
     let result = search_user(payload);
     match result {
         Ok(v) => return Ok((StatusCode::OK, Json(v))),
-        Err(e) => return Err(e),
+        Err(e) => {
+            println!("{:#?}", e);
+            return Err(e);
+        }
     };
 
     // 200のときの処理

@@ -81,7 +81,7 @@ pub fn insert_user(name_and_pass: NameAndPassword) -> UserView {
 pub fn get_user_id_name_path(target_name: String) -> Vec<IdNamePath> {
     let conn = establish_connection();
     let result = users
-        .filter(user_name.like(target_name))
+        .filter(user_name.like("%".to_string() + &target_name + "%"))
         .select((user_id, user_name, icon_path))
         .load::<IdNamePath>(&conn)
         .unwrap();
@@ -168,7 +168,7 @@ pub fn delete_friend(ids: AddFriend) {
     .expect("削除失敗");
 }
 
-pub fn insert_spots_from_csv(spot: InsertableSpot) -> Result<usize, diesel::result::Error>{
+pub fn insert_spots_from_csv(spot: InsertableSpot) -> Result<usize, diesel::result::Error> {
     let conn = establish_connection();
     diesel::insert_into(spots).values(&spot).execute(&conn)
 }

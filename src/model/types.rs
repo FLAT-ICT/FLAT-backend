@@ -10,6 +10,8 @@ pub struct UserId {
     pub id: i32,
 }
 
+
+#[derive(Debug)]
 pub enum SomeError {
     ValidationError,
     NotExistError,
