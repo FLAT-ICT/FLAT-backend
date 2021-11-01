@@ -1,4 +1,4 @@
-use crate::{model::db_util, repository::DeserializableSpot};
+use crate::{model::db_util::insert_spots_from_csv, repository::DeserializableSpot};
 use std::{error::Error, fs::File};
 
 pub(crate) fn run() -> Result<(), Box<dyn Error>> {
@@ -8,7 +8,9 @@ pub(crate) fn run() -> Result<(), Box<dyn Error>> {
     let mut rdr = csv::Reader::from_reader(file);
     for result in rdr.deserialize() {
         let record: DeserializableSpot = result?;
-        db_util::insert_spots_from_csv(record.to_insertable());
+        if let Err(e) = insert_spots_from_csv(record.to_insertable()) {
+            println!("{}", e)
+        }
     }
     Ok(())
 }

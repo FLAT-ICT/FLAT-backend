@@ -2,13 +2,14 @@
 use crate::repository::AddFriend;
 use crate::repository::Friend;
 use crate::repository::IdNamePath;
-use crate::repository::NameAndPassword;
 use crate::repository::InsertableSpot;
+use crate::repository::NameAndPassword;
 use crate::repository::User;
 use crate::schema;
 use crate::view::UserView;
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
+// use diesel::serialize::Result;
 use diesel::ExpressionMethods;
 use diesel::QueryDsl;
 use dotenv::dotenv;
@@ -56,7 +57,12 @@ pub fn insert_user(name_and_pass: NameAndPassword) -> UserView {
 
     let conn = establish_connection();
     let inserted_row = diesel::insert_into(users)
-        .values((user_name.eq(name), hashed_password.eq(pass)))
+        .values((
+            user_name.eq(name),
+            hashed_password.eq(pass),
+            icon_path
+                .eq(&"https://dev.mysql.com/doc/refman/5.6/ja/data-type-defaults.html".to_string()),
+        ))
         .execute(&conn)
         .unwrap();
 
@@ -162,12 +168,9 @@ pub fn delete_friend(ids: AddFriend) {
     .expect("削除失敗");
 }
 
-pub fn insert_spots_from_csv(spot: InsertableSpot) {
+pub fn insert_spots_from_csv(spot: InsertableSpot) -> Result<usize, diesel::result::Error>{
     let conn = establish_connection();
-    diesel::insert_into(spots)
-        .values(&spot)
-        .execute(&conn)
-        .expect("挿入失敗");
+    diesel::insert_into(spots).values(&spot).execute(&conn)
 }
 
 pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) {

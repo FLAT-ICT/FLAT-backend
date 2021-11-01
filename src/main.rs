@@ -21,7 +21,7 @@ mod schema;
 async fn main() {
     if let Err(err) = read_csv_and_write_db::run() {
         println!("{}", err);
-        process::exit(1);
+        // process::exit(1);
     }
 
     // トレーサーを初期化
@@ -117,8 +117,8 @@ mod search_user {
         let _friend_request = client
             .post(base_url.to_string() + "/v1/friends/add")
             .json(&IdPair {
-                my_id: 0,
-                target_id: 1,
+                my_id: 1,
+                target_id: 2,
             })
             .send()
             .await
@@ -135,7 +135,7 @@ mod search_user {
             .get(
                 base_url.to_string()
                     + "/v1/users/search?user_id="
-                    + &0.to_string()
+                    + &1.to_string()
                     + "&target_name=usr2",
             )
             .send()
