@@ -55,7 +55,7 @@ pub struct CreateUser {
     pub password: String,
 }
 
-#[derive(Serialize, Queryable, Debug)]
+#[derive(Serialize, Queryable, Debug, Deserialize)]
 pub struct UserView {
     pub user_id: i32,
     pub user_name: String,

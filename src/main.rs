@@ -150,17 +150,18 @@ mod search_user {
         // DBをきれいにする
         diesel::delete(users).execute(&conn).unwrap();
         // assert_eq!(0, get_count());
-        diesel::delete(friends).execute(&conn).unwrap();
-        // assert_eq!(0, get_count());
+        let count = diesel::delete(friends).execute(&conn).unwrap();
+        assert_eq!(1, count);
     }
 }
 
 #[cfg(test)]
 mod beacon {
+    use crate::model::db_util::establish_connection;
+    use crate::schema::users::dsl::*;
+    use crate::view::{CreateUser, ScannedBeacon, UserView};
     use axum::http;
     use diesel::RunQueryDsl;
-
-    use crate::view::{CreateUser, ScannedBeacon, UserView};
 
     #[tokio::test]
     async fn fn1() {
@@ -169,7 +170,7 @@ mod beacon {
         // ユーザー情報を返却
         let base_url = "http://localhost:3000";
         let client = reqwest::Client::new();
-        let create_usr1 = client
+        match client
             .post(base_url.to_string() + "/v1/users")
             .json(&CreateUser {
                 user_name: "usr1".to_string(),
@@ -177,14 +178,18 @@ mod beacon {
             })
             .send()
             .await
-            .unwrap();
-        assert_eq!(create_usr1.status(), http::StatusCode::CREATED);
+        {
+            Ok(v) => {
+                assert_eq!(v.status(), http::StatusCode::CREATED);
+            }
+            Err(e) => println!("{:?}", e),
+        }
 
-        let update_spot = client
+        match client
             .post(base_url.to_string() + "/v1/users/beacon")
             .json(&ScannedBeacon {
                 user_id: 1,
-                uuid: "9717f39c-a676-46ff-90c7-2d27a4d2477f",
+                uuid: "9717f39c-a676-46ff-90c7-2d27a4d2477f".to_string(),
                 major: 0,
                 minor: 43303,
                 rssi: 0.,
@@ -192,20 +197,32 @@ mod beacon {
             })
             .send()
             .await
-            .unwrap();
-        assert_eq!(update_spot.status(), http::StatusCode::OK);
+        {
+            Ok(v) => {
+                assert_eq!(v.status(), http::StatusCode::OK);
+                println!("update spot");
+            }
+            Err(e) => println!("{:?}", e),
+        };
+        // .unwrap();
 
-        let user_info: UserView = client
-            .get(base_url.to_string() + "v1/users?user_id=1")
+        let conn = establish_connection();
+        match client
+            .get(base_url.to_string() + "/v1/users?user_id=1")
             .send()
             .await
-            .unwrap()
-            .json()
-            .await
-            .unwrap();
-        println!("{:#?}", user_info);
-        assert_eq!(user_info.beacon, Some("127教員室".to_string()));
+        {
+            Ok(v) => match v.json::<UserView>().await {
+                Ok(user_info) => {
+                    println!("{:#?}", &user_info);
+                    assert_eq!((&user_info).beacon, Some("127教員室".to_string()));
+                }
+                Err(e) => println!("{:?}", e),
+            },
+            Err(e) => println!("{:?}", e),
+        }
+
         // DBをきれいにする
-        diesel::delete(users).execute(&conn).unwrap();
+        // diesel::delete(users).execute(&conn).unwrap();
     }
 }
