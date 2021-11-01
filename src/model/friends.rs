@@ -29,6 +29,7 @@ pub fn add_friend(id_pair: IdPair) -> bool {
         acctive: my_id,
         pussive: friend_id,
     });
+
     return true;
     // DBにインサート
     // bool か Result を返す

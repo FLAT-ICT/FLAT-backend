@@ -8,6 +8,19 @@ table! {
 }
 
 table! {
+    spots (major, minor) {
+        name_ja -> Text,
+        name_en -> Text,
+        region_identifier -> Text,
+        available_term_from -> Timestamp,
+        available_term_to -> Nullable<Timestamp>,
+        major -> Integer,
+        minor -> Integer,
+        note -> Nullable<Text>,
+    }
+}
+
+table! {
     users (user_id) {
         user_id -> Integer,
         user_name -> Text,
@@ -22,5 +35,6 @@ table! {
 
 allow_tables_to_appear_in_same_query!(
     friends,
+    spots,
     users,
 );

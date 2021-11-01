@@ -6,7 +6,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-axum = "0.2.6"
+axum = "0.2.8"
 hyper = { version = "0.14.13", features = ["full"] }
 serde = { version = "1.0.130", features = ["derive"] }
 serde_json = "1.0.68"
@@ -19,4 +19,5 @@ regex = "1.5.4"
 diesel = { version = "1.4.8", features = ["mysql", "chrono"] }
 dotenv = "0.15.0"
 chrono = { version = "0.4.19", features = ["serde"] }
-reqwest = "0.11.6"
+reqwest = {version = "0.11.6", features = ["json"]}
+csv = "1.1"

@@ -49,12 +49,13 @@ pub struct ResultMessage {
 }
 
 // the input to our `create_user` handler
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct CreateUser {
-    pub username: String,
+    pub user_name: String,
+    pub password: String,
 }
 
-#[derive(Serialize, Queryable)]
+#[derive(Serialize, Queryable, Debug, Deserialize)]
 pub struct UserView {
     pub user_id: i32,
     pub user_name: String,
@@ -67,4 +68,15 @@ pub struct UserView {
 pub struct IdAndName {
     pub user_id: i32,
     pub target_name: String,
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct ScannedBeacon {
+    pub user_id: i32,
+    // Beacon & {rssi, distance}
+    pub uuid: String,
+    pub major: i32,
+    pub minor: i32,
+    pub rssi: f32,
+    pub distance: f32,
 }
