@@ -1,8 +1,4 @@
-use crate::{
-    model::{db_util::insert_user, users},
-    repository::NameAndPassword,
-    view::CreateUser,
-};
+use crate::{model::{db_util::insert_user, users}, repository::NameAndPassword, view::{CreateUser, ScannedBeacon}};
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 use serde::Deserialize;
@@ -37,16 +33,6 @@ pub struct BeaconIdnetifier {
     minor: i32,
 }
 
-#[derive(Deserialize)]
-pub struct ScannedBeacon {
-    pub user_id: i32,
-    // Beacon & {rssi, distance}
-    pub uuid: String,
-    pub major: i32,
-    pub minor: i32,
-    pub rssi: f32,
-    pub distance: f32,
-}
 
 pub async fn update_beacon(Json(payload): Json<ScannedBeacon>) -> impl IntoResponse {
     users::udpate_beacon(payload.user_id, payload.major, payload.minor)

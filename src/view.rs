@@ -55,7 +55,7 @@ pub struct CreateUser {
     pub password: String,
 }
 
-#[derive(Serialize, Queryable)]
+#[derive(Serialize, Queryable, Debug)]
 pub struct UserView {
     pub user_id: i32,
     pub user_name: String,
@@ -68,4 +68,15 @@ pub struct UserView {
 pub struct IdAndName {
     pub user_id: i32,
     pub target_name: String,
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct ScannedBeacon {
+    pub user_id: i32,
+    // Beacon & {rssi, distance}
+    pub uuid: String,
+    pub major: i32,
+    pub minor: i32,
+    pub rssi: f32,
+    pub distance: f32,
 }

@@ -1,7 +1,7 @@
 # 参考にした記事
 # [RustのDocker Build時間短縮したい](https://zenn.dev/ucwork/articles/acec204571362b)
 
-FROM rust:1.55.0 as builder
+FROM rust:1.56.0 as builder
 # ★1.a
 RUN USER=root cargo new --bin app
 WORKDIR /app

@@ -5,7 +5,7 @@ use axum::{
     handler::{get, post},
     Router,
 };
-use std::{net::SocketAddr, process};
+use std::net::SocketAddr;
 use tracing;
 use tracing_subscriber;
 mod controller;
@@ -13,6 +13,7 @@ mod model;
 mod view;
 use controller::friends::{add_friend, check_friend_status, friend_list, reject_friend};
 use controller::users::create_user;
+use controller::users::update_beacon;
 mod read_csv_and_write_db;
 mod repository;
 mod schema;
@@ -34,6 +35,7 @@ async fn main() {
         // `POST /users` goes to `create_user`
         .route("/v1/users", post(create_user))
         .route("/v1/users/search", get(check_friend_status))
+        .route("/v1/users/beacon", post(update_beacon))
         .route("/v1/friends", get(friend_list))
         .route("/v1/friends/add", post(add_friend))
         .route("/v1/friends/reject", post(reject_friend));
@@ -73,6 +75,7 @@ mod tests {
 
 #[cfg(test)]
 mod search_user {
+
     use crate::repository::{Friend, User};
     use crate::schema::friends::dsl::*;
     use crate::schema::users::dsl::*;
@@ -81,7 +84,7 @@ mod search_user {
         view::{CreateUser, IdPair},
     };
     use axum::http;
-    use diesel::{result, QueryDsl, RunQueryDsl};
+    use diesel::RunQueryDsl;
 
     #[tokio::test]
     async fn basic() {
@@ -92,7 +95,7 @@ mod search_user {
         // レコード初期化
         let base_url = "http://localhost:3000";
         let client = reqwest::Client::new();
-        let _create_usr1 = client
+        let create_usr1 = client
             .post(base_url.to_string() + "/v1/users")
             .json(&CreateUser {
                 user_name: "usr1".to_string(),
@@ -101,9 +104,9 @@ mod search_user {
             .send()
             .await
             .unwrap();
-        assert_eq!(_create_usr1.status(), http::StatusCode::CREATED);
+        assert_eq!(create_usr1.status(), http::StatusCode::CREATED);
 
-        let _create_usr2 = client
+        let create_usr2 = client
             .post(base_url.to_string() + "/v1/users")
             .json(&CreateUser {
                 user_name: "usr2".to_string(),
@@ -112,9 +115,9 @@ mod search_user {
             .send()
             .await
             .unwrap();
-        assert_eq!(_create_usr2.status(), http::StatusCode::CREATED);
+        assert_eq!(create_usr2.status(), http::StatusCode::CREATED);
 
-        let _friend_request = client
+        let friend_request = client
             .post(base_url.to_string() + "/v1/friends/add")
             .json(&IdPair {
                 my_id: 1,
@@ -123,7 +126,7 @@ mod search_user {
             .send()
             .await
             .unwrap();
-        assert_eq!(_friend_request.status(), http::StatusCode::OK);
+        assert_eq!(friend_request.status(), http::StatusCode::OK);
 
         let conn = establish_connection();
         let result = users.load::<User>(&conn).unwrap();
@@ -144,5 +147,65 @@ mod search_user {
 
         println!("{:#?}", _get_friend_list);
         assert_eq!(_get_friend_list.status(), http::StatusCode::OK);
+        // DBをきれいにする
+        diesel::delete(users).execute(&conn).unwrap();
+        // assert_eq!(0, get_count());
+        diesel::delete(friends).execute(&conn).unwrap();
+        // assert_eq!(0, get_count());
+    }
+}
+
+#[cfg(test)]
+mod beacon {
+    use axum::http;
+    use diesel::RunQueryDsl;
+
+    use crate::view::{CreateUser, ScannedBeacon, UserView};
+
+    #[tokio::test]
+    async fn fn1() {
+        // ユーザー登録
+        // ビーコンをアップデート
+        // ユーザー情報を返却
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr1 = client
+            .post(base_url.to_string() + "/v1/users")
+            .json(&CreateUser {
+                user_name: "usr1".to_string(),
+                password: "".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr1.status(), http::StatusCode::CREATED);
+
+        let update_spot = client
+            .post(base_url.to_string() + "/v1/users/beacon")
+            .json(&ScannedBeacon {
+                user_id: 1,
+                uuid: "9717f39c-a676-46ff-90c7-2d27a4d2477f",
+                major: 0,
+                minor: 43303,
+                rssi: 0.,
+                distance: 1.0,
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(update_spot.status(), http::StatusCode::OK);
+
+        let user_info: UserView = client
+            .get(base_url.to_string() + "v1/users?user_id=1")
+            .send()
+            .await
+            .unwrap()
+            .json()
+            .await
+            .unwrap();
+        println!("{:#?}", user_info);
+        assert_eq!(user_info.beacon, Some("127教員室".to_string()));
+        // DBをきれいにする
+        diesel::delete(users).execute(&conn).unwrap();
     }
 }
