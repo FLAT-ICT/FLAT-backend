@@ -3,15 +3,16 @@ API
 
 起動(どちらかを選ぶ)
 ```
-docker compsoe up --build -d flat-backend
-docker compsoe up --build -d flat-backend-test
+docker compose up --build -d flat-backend
+docker compose up --build -d flat-backend-test
 ```
 
 ボリューム削除(DB消す)
 ```
-docker compse down -v
+docker compose down -v
 ```
 
+### 以下関係なし
 
 `diesel`  
 WSL Ubuntu 20.04
