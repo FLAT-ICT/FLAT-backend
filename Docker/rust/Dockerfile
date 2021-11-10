@@ -34,9 +34,9 @@ RUN cargo install --locked --path .
 FROM rust:buster as test
 COPY --from=builder /usr/local/cargo/bin/diesel /usr/local/bin/diesel
 COPY --from=builder /app/target/release/flat_backend /usr/local/bin/flat_backend
-RUN apt-get update && apt-get -y install default-mysql-client && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get -y install git default-mysql-client && rm -rf /var/lib/apt/lists/*
 
 FROM debian:buster-slim as prod
 COPY --from=builder /usr/local/cargo/bin/diesel /usr/local/bin/diesel
 COPY --from=builder /app/target/release/flat_backend /usr/local/bin/flat_backend
-RUN apt-get update && apt-get -y install default-mysql-client && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get -y install git default-mysql-client && rm -rf /var/lib/apt/lists/*
