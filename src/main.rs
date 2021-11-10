@@ -33,6 +33,7 @@ async fn main() {
         // `GET /` goes to `root`
         .route("/", get(root))
         // `POST /users` goes to `create_user`
+        .route("/v1/register", post(create_user))
         .route("/v1/users", post(create_user))
         .route("/v1/users/search", get(check_friend_status))
         .route("/v1/users/beacon", post(update_beacon))
@@ -104,7 +105,7 @@ mod search_user {
             .send()
             .await
             .unwrap();
-        assert_eq!(create_usr1.status(), http::StatusCode::CREATED);
+        assert_eq!(create_usr1.status(), http::StatusCode::OK);
 
         let create_usr2 = client
             .post(base_url.to_string() + "/v1/users")
@@ -115,7 +116,7 @@ mod search_user {
             .send()
             .await
             .unwrap();
-        assert_eq!(create_usr2.status(), http::StatusCode::CREATED);
+        assert_eq!(create_usr2.status(), http::StatusCode::OK);
 
         let friend_request = client
             .post(base_url.to_string() + "/v1/friends/add")
@@ -180,7 +181,7 @@ mod beacon {
             .await
         {
             Ok(v) => {
-                assert_eq!(v.status(), http::StatusCode::CREATED);
+                assert_eq!(v.status(), http::StatusCode::OK);
             }
             Err(e) => println!("{:?}", e),
         }
