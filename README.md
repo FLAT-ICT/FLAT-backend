@@ -1,9 +1,10 @@
 # fun-location-backend
 API
 
-起動
+起動(どちらかを選ぶ)
 ```
-docker compsoe up --build -d
+docker compsoe up --build -d flat-backend
+docker compsoe up --build -d flat-backend-test
 ```
 
 ボリューム削除(DB消す)
