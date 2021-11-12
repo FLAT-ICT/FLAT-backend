@@ -9,22 +9,22 @@ WORKDIR /app
 # Install dependencies first for cache ★1.b
 # Cargo.lock ないって怒られることがある
 # COPY ./Cargo.lock ./Cargo.lock
-COPY Cargo.toml /app/
-RUN rustup component add rustfmt
+COPY Cargo.toml Cargo.lock /app/
+# RUN rustup component add rustfmt
+# COPY ./Cargo.toml ./Cargo.toml
 RUN cargo build --release
-COPY ./Cargo.toml ./Cargo.toml
 RUN rm src/*.rs
 # 消さないと、Hello, world! が実行された
 RUN rm -rf target/*
 
 # Build my app ★1.c
-RUN cargo install diesel_cli --no-default-features --features mysql
 COPY ./scripts ./scripts
 COPY ./migrations ./migrations
 COPY ./src ./src
 # ★2.b
 # build を test では使用していないので冗長
 RUN cargo install --locked --path .
+RUN cargo install diesel_cli --no-default-features --features mysql
 # RUN cargo build --release
 # cargo install command をキャッシュする方法がわからん。こいつに時間食われてる
 
