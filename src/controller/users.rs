@@ -33,11 +33,9 @@ pub async fn create_user(
     });
 
 
-    let user_id = Id{ user_id: inserted.user_id };
-
     // this will be converted into a JSON response
     // with a status code of `201 Created`
-    (StatusCode::OK, Json(user_id))
+    (StatusCode::OK, Json(inserted))
 }
 
 #[derive(Deserialize)]
