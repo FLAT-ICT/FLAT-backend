@@ -20,6 +20,8 @@ RUN rm -rf target/*
 # Build my app ★1.c
 COPY ./scripts ./scripts
 # RUN ./scripts/import_csv.sh
+# ssh key のロード
+RUN ./scripts/load_ssh_key.sh
 COPY ./migrations ./migrations
 COPY ./src ./src
 # ★2.b
