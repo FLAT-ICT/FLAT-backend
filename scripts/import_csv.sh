@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 git submodule update -i
 cp ./sparse-checkout ./.git/modules/espresso-beacons/info/
 cd espresso-beacons

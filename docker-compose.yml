@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 
 services:
   flat-backend:
@@ -15,6 +15,11 @@ services:
       USER: "flat"
       CARGO_BUILD_TARGET_DIR: /target
       DATABASE_URL: mysql://docker:9Xu84SA1@mysql:3306/diesel_demo
+      GIT_SSH_COMMAND: 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
+    secrets:
+      - source: host_ssh_key
+        target: host_ssh_key
+        mode: 0600
     ports:
       - 3000:3000
     depends_on:
@@ -52,12 +57,7 @@ services:
     ports:
       - 3306:3306
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    # command: mysqld
-    # depends_on:
-    #   - flat_backend
-    # healthcheck:
-    #   test: mysql -udocker -p9Xu84SA1 -h127.0.0.1 diesel_demo
-    #   interval: 10s
-    #   timeout: 10s
-    #   retries: 10
-    #   start_period: 0s
+
+secrets:
+  host_ssh_key:
+    file: ${SSH_KEY_PATH}

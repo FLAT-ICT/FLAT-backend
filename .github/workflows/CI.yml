@@ -15,9 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: build
-        shell: bash
-        run: docker-compose build
       - name: compose tests
         shell: bash
-        run: docker-compose run flat-backend-test
+        env: 
+          SSH_KEY_PATH: ${{ secrets.SSH_KEY }}
+        run: | 
+          docker-compose build
+          docker-compose run flat-backend-test
