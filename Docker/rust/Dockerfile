@@ -21,7 +21,7 @@ RUN rm -rf target/*
 COPY ./scripts ./scripts
 # RUN ./scripts/import_csv.sh
 # ssh key のロード
-RUN ./scripts/load_ssh_key.sh
+ENTRYPOINT USER=root ./scripts/load_ssh_key.sh
 COPY ./migrations ./migrations
 COPY ./src ./src
 # ★2.b
