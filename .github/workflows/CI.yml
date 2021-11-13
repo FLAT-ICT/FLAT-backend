@@ -18,4 +18,4 @@ jobs:
       - name: compose tests
         shell: bash
         run: |
-          docker-compose up --build flat-backend-test
+          docker-compose up --build flat-backend-test --exit-code-from flat-backend-test
