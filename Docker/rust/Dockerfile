@@ -19,7 +19,7 @@ RUN rm -rf target/*
 
 # Build my app ★1.c
 COPY ./scripts ./scripts
-RUN ./scripts/import_csv.sh
+# RUN ./scripts/import_csv.sh
 COPY ./migrations ./migrations
 COPY ./src ./src
 # ★2.b
