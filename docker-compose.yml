@@ -17,9 +17,7 @@ services:
       DATABASE_URL: mysql://docker:9Xu84SA1@mysql:3306/diesel_demo
       GIT_SSH_COMMAND: 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
     secrets:
-      - source: host_ssh_key
-        target: host_ssh_key
-        mode: 0600
+      - host_ssh_key
     ports:
       - 3000:3000
     depends_on:
