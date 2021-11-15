@@ -58,7 +58,7 @@ pub fn insert_user(user_name: String, password: String) -> UserView {
             name.eq(user_name),
             hashed_password.eq(password),
             icon_path
-                .eq(&"https://dev.mysql.com/doc/refman/5.6/ja/data-type-defaults.html".to_string()),
+                .eq(&"https://dummyimage.com/256x256/000/fff.png&text=icon".to_string()),
         ))
         .execute(&conn)
         .unwrap();
