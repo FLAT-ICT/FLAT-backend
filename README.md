@@ -11,7 +11,7 @@ docker compose up --build -d flat-backend
 テストをしたいとき
 
 ```
-docker compose up --build -d flat-backend-test
+docker compose up --build flat-backend-test
 ```
 
 ボリューム削除(DB 消す)
