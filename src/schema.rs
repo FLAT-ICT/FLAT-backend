@@ -21,9 +21,9 @@ table! {
 }
 
 table! {
-    users (user_id) {
-        user_id -> Integer,
-        user_name -> Text,
+    users (id) {
+        id -> Integer,
+        name -> Text,
         status -> Integer,
         beacon -> Nullable<Text>,
         icon_path -> Text,

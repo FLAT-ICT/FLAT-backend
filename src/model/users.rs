@@ -4,7 +4,7 @@ use super::db_util::{insert_user, update_spot};
 
 pub fn create_user(name_and_password: NameAndPassword) -> UserView{
     // println!("{:#?}", create_usr2.json::<UserView>().await.unwrap());
-    let name = name_and_password.user_name.to_string();
+    let name = name_and_password.name.to_string();
     let raw_password = name_and_password.hashed_password.to_string();
     // TODO: hash with secret salt
     let hashed_password = raw_password;

@@ -119,8 +119,8 @@ mod search_user {
             .unwrap();
         assert_eq!(create_usr2.status(), http::StatusCode::OK);
 
-        let id_1 = create_usr1.json::<UserView>().await.unwrap().user_id;
-        let id_2 = create_usr2.json::<UserView>().await.unwrap().user_id;
+        let id_1 = create_usr1.json::<UserView>().await.unwrap().id;
+        let id_2 = create_usr2.json::<UserView>().await.unwrap().id;
         // println!("{:#?}", create_usr1.json::<UserView>().await.unwrap());
         // println!("{:#?}", create_usr2.json::<UserView>().await.unwrap());
         // println!("{}", create_usr1.text().await.unwrap());

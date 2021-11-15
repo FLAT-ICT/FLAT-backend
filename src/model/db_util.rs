@@ -35,7 +35,7 @@ pub fn is_exist_id(target_id: i32) -> bool {
     println!("is_exist_id({})", target_id);
 
     let conn = establish_connection();
-    let user = users.filter(user_id.eq(target_id)).load::<User>(&conn);
+    let user = users.filter(id.eq(target_id)).load::<User>(&conn);
 
     match user {
         Ok(v) => {
@@ -51,11 +51,11 @@ pub fn is_exist_id(target_id: i32) -> bool {
     }
 }
 
-pub fn insert_user(name: String, password: String) -> UserView {
+pub fn insert_user(user_name: String, password: String) -> UserView {
     let conn = establish_connection();
     let inserted_row = diesel::insert_into(users)
         .values((
-            user_name.eq(name),
+            name.eq(user_name),
             hashed_password.eq(password),
             icon_path
                 .eq(&"https://dev.mysql.com/doc/refman/5.6/ja/data-type-defaults.html".to_string()),
@@ -63,11 +63,11 @@ pub fn insert_user(name: String, password: String) -> UserView {
         .execute(&conn)
         .unwrap();
 
-    let last_insert_user = users.order(user_id.desc()).first::<User>(&conn).unwrap();
+    let last_insert_user = users.order(id.desc()).first::<User>(&conn).unwrap();
 
     let user_view = UserView {
-        user_id: last_insert_user.user_id,
-        user_name: last_insert_user.user_name.to_string(),
+        id: last_insert_user.id,
+        name: last_insert_user.user_name.to_string(),
         status: last_insert_user.status,
         icon_path: last_insert_user.icon_path,
         beacon: last_insert_user.beacon,
@@ -78,8 +78,8 @@ pub fn insert_user(name: String, password: String) -> UserView {
 pub fn get_user_id_name_path(target_name: String) -> Vec<IdNamePath> {
     let conn = establish_connection();
     let result = users
-        .filter(user_name.like("%".to_string() + &target_name + "%"))
-        .select((user_id, user_name, icon_path))
+        .filter(name.like("%".to_string() + &target_name + "%"))
+        .select((id, name, icon_path))
         .load::<IdNamePath>(&conn)
         .unwrap();
     // .first::<(i32, String, String)>(&conn)
@@ -123,8 +123,8 @@ pub fn get_applied_record(my_id: i32) -> Vec<UserView> {
         .inner_join(users)
         .filter(friends::acctive.eq(my_id))
         .select((
-            users::user_id,
-            users::user_name,
+            users::id,
+            users::name,
             users::status,
             users::icon_path,
             users::beacon,

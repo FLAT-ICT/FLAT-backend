@@ -57,8 +57,8 @@ pub struct CreateUser {
 
 #[derive(Serialize, Queryable, Debug, Deserialize)]
 pub struct UserView {
-    pub user_id: i32,
-    pub user_name: String,
+    pub id: i32,
+    pub name: String,
     pub status: i32,
     pub icon_path: String,
     pub beacon: Option<String>,

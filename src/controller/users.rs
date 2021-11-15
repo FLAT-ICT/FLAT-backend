@@ -18,7 +18,7 @@ pub async fn create_user(
     Json(payload): Json<CreateUser>,
 ) -> impl IntoResponse {
     let inserted = users::create_user(NameAndPassword {
-        user_name: &payload.user_name,
+        name: &payload.user_name,
         hashed_password: &payload.password,
     });
 
