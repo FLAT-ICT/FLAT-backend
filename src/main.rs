@@ -80,6 +80,7 @@ mod search_user {
     use crate::repository::{Friend, User};
     use crate::schema::friends::dsl::*;
     use crate::schema::users::dsl::*;
+    use crate::view::UserView;
     use crate::{
         model::db_util::establish_connection,
         view::{CreateUser, IdPair},
@@ -97,7 +98,7 @@ mod search_user {
         let base_url = "http://localhost:3000";
         let client = reqwest::Client::new();
         let create_usr1 = client
-            .post(base_url.to_string() + "/v1/users")
+            .post(base_url.to_string() + "/v1/register")
             .json(&CreateUser {
                 user_name: "usr1".to_string(),
                 password: "".to_string(),
@@ -108,7 +109,7 @@ mod search_user {
         assert_eq!(create_usr1.status(), http::StatusCode::OK);
 
         let create_usr2 = client
-            .post(base_url.to_string() + "/v1/users")
+            .post(base_url.to_string() + "/v1/register")
             .json(&CreateUser {
                 user_name: "usr2".to_string(),
                 password: "".to_string(),
@@ -118,11 +119,17 @@ mod search_user {
             .unwrap();
         assert_eq!(create_usr2.status(), http::StatusCode::OK);
 
+        let id_1 = create_usr1.json::<UserView>().await.unwrap().user_id;
+        let id_2 = create_usr2.json::<UserView>().await.unwrap().user_id;
+        // println!("{:#?}", create_usr1.json::<UserView>().await.unwrap());
+        // println!("{:#?}", create_usr2.json::<UserView>().await.unwrap());
+        // println!("{}", create_usr1.text().await.unwrap());
+
         let friend_request = client
             .post(base_url.to_string() + "/v1/friends/add")
             .json(&IdPair {
-                my_id: 1,
-                target_id: 2,
+                my_id: id_1,
+                target_id: id_2,
             })
             .send()
             .await
@@ -139,7 +146,7 @@ mod search_user {
             .get(
                 base_url.to_string()
                     + "/v1/users/search?user_id="
-                    + &1.to_string()
+                    + &id_1.to_string()
                     + "&target_name=usr2",
             )
             .send()
@@ -150,9 +157,10 @@ mod search_user {
         assert_eq!(_get_friend_list.status(), http::StatusCode::OK);
         // DBをきれいにする
         diesel::delete(users).execute(&conn).unwrap();
+        println!("delete from basic")
         // assert_eq!(0, get_count());
-        let count = diesel::delete(friends).execute(&conn).unwrap();
-        assert_eq!(1, count);
+        // let count = diesel::delete(friends).execute(&conn).unwrap();
+        // assert_eq!(1, count);
     }
 }
 
@@ -224,6 +232,6 @@ mod beacon {
         }
 
         // DBをきれいにする
-        // diesel::delete(users).execute(&conn).unwrap();
+        diesel::delete(users).execute(&conn).unwrap();
     }
 }
