@@ -26,7 +26,7 @@ pub struct User {
     pub id: i32,
     pub name: String,
     pub status: i32,
-    pub beacon: Option<String>,
+    pub spot: Option<String>,
     pub icon_path: String,
     pub hashed_password: String,
     pub created_at: NaiveDateTime,

@@ -70,7 +70,7 @@ pub fn insert_user(user_name: String, password: String) -> UserView {
         name: last_insert_user.name.to_string(),
         status: last_insert_user.status,
         icon_path: last_insert_user.icon_path,
-        beacon: last_insert_user.beacon,
+        beacon: last_insert_user.spot,
     };
     return user_view;
 }
@@ -125,7 +125,7 @@ pub fn get_applied_record(my_id: i32) -> Vec<UserView> {
             users::name,
             users::status,
             users::icon_path,
-            users::beacon,
+            users::spot,
         ))
         .load::<UserView>(&conn)
         .unwrap();
@@ -163,16 +163,18 @@ pub fn delete_friend(ids: AddFriend) {
     .expect("削除失敗");
 }
 
-pub fn insert_spots_from_csv(spot: InsertableSpot) -> Result<usize, diesel::result::Error> {
+pub fn insert_spots_from_csv(school_spot: InsertableSpot) -> Result<usize, diesel::result::Error> {
     let conn = establish_connection();
-    diesel::insert_into(spots).values(&spot).execute(&conn)
+    diesel::insert_into(spots)
+        .values(&school_spot)
+        .execute(&conn)
 }
 
 pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) {
     let conn = establish_connection();
 
     diesel::update(users.find(&my_id))
-        .set(beacon.eq(get_spot(&conn, major_id, minor_id)))
+        .set(spot.eq(get_spot(&conn, major_id, minor_id)))
         .execute(&conn)
         .expect("更新失敗");
 

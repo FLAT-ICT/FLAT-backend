@@ -25,7 +25,7 @@ table! {
         id -> Integer,
         name -> Text,
         status -> Integer,
-        beacon -> Nullable<Text>,
+        spot -> Nullable<Text>,
         icon_path -> Text,
         hashed_password -> Text,
         created_at -> Timestamp,
