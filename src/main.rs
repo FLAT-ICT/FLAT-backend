@@ -156,8 +156,8 @@ mod search_user {
         println!("{:#?}", _get_friend_list);
         assert_eq!(_get_friend_list.status(), http::StatusCode::OK);
         // DBをきれいにする
-        diesel::delete(users).execute(&conn).unwrap();
-        println!("delete from basic")
+        // diesel::delete(users).execute(&conn).unwrap();
+        // println!("delete from basic")
         // assert_eq!(0, get_count());
         // let count = diesel::delete(friends).execute(&conn).unwrap();
         // assert_eq!(1, count);
@@ -166,11 +166,11 @@ mod search_user {
 
 #[cfg(test)]
 mod beacon {
-    use crate::model::db_util::establish_connection;
-    use crate::schema::users::dsl::*;
+    // use crate::model::db_util::establish_connection;
+    // use crate::schema::users::dsl::*;
     use crate::view::{CreateUser, ScannedBeacon, UserView};
     use axum::http;
-    use diesel::RunQueryDsl;
+    // use diesel::RunQueryDsl;
 
     #[tokio::test]
     async fn fn1() {
@@ -215,7 +215,7 @@ mod beacon {
         };
         // .unwrap();
 
-        let conn = establish_connection();
+        // let conn = establish_connection();
         match client
             .get(base_url.to_string() + "/v1/users?user_id=1")
             .send()
@@ -232,6 +232,6 @@ mod beacon {
         }
 
         // DBをきれいにする
-        diesel::delete(users).execute(&conn).unwrap();
+        // diesel::delete(users).execute(&conn).unwrap();
     }
 }
