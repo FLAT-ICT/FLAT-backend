@@ -13,3 +13,7 @@ Cargo.lock
 # Added by cargo
 
 /target
+
+
+# 一時的にテストを止める
+.github
