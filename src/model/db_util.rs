@@ -51,15 +51,12 @@ pub fn is_exist_id(target_id: i32) -> bool {
     }
 }
 
-pub fn insert_user(name_and_pass: NameAndPassword) -> UserView {
-    let name = name_and_pass.user_name;
-    let pass = name_and_pass.hashed_password;
-
+pub fn insert_user(name: String, password: String) -> UserView {
     let conn = establish_connection();
     let inserted_row = diesel::insert_into(users)
         .values((
             user_name.eq(name),
-            hashed_password.eq(pass),
+            hashed_password.eq(password),
             icon_path
                 .eq(&"https://dev.mysql.com/doc/refman/5.6/ja/data-type-defaults.html".to_string()),
         ))
