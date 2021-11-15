@@ -1,5 +1,5 @@
 use crate::{
-    model::{self, db_util::insert_user, users},
+    model::users,
     repository::NameAndPassword,
     view::{CreateUser, ScannedBeacon},
 };

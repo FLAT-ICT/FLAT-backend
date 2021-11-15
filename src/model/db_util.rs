@@ -3,7 +3,7 @@ use crate::repository::AddFriend;
 use crate::repository::Friend;
 use crate::repository::IdNamePath;
 use crate::repository::InsertableSpot;
-use crate::repository::NameAndPassword;
+// use crate::repository::NameAndPassword;
 use crate::repository::User;
 use crate::schema;
 use crate::view::UserView;
@@ -53,7 +53,7 @@ pub fn is_exist_id(target_id: i32) -> bool {
 
 pub fn insert_user(user_name: String, password: String) -> UserView {
     let conn = establish_connection();
-    let inserted_row = diesel::insert_into(users)
+    let _inserted_row = diesel::insert_into(users)
         .values((
             name.eq(user_name),
             hashed_password.eq(password),
@@ -67,7 +67,7 @@ pub fn insert_user(user_name: String, password: String) -> UserView {
 
     let user_view = UserView {
         id: last_insert_user.id,
-        name: last_insert_user.user_name.to_string(),
+        name: last_insert_user.name.to_string(),
         status: last_insert_user.status,
         icon_path: last_insert_user.icon_path,
         beacon: last_insert_user.beacon,
@@ -112,8 +112,6 @@ pub fn get_friends_relation(my_id: i32, target_id: i32) -> (bool, bool) {
 }
 
 use schema::{friends, users};
-
-use super::types::Beacon;
 
 joinable!(friends -> users(acctive));
 

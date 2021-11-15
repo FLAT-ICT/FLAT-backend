@@ -24,7 +24,7 @@ pub struct Friend {
 #[derive(Debug, Queryable)]
 pub struct User {
     pub id: i32,
-    pub user_name: String,
+    pub name: String,
     pub status: i32,
     pub beacon: Option<String>,
     pub icon_path: String,
