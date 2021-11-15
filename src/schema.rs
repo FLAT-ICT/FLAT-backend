@@ -21,11 +21,11 @@ table! {
 }
 
 table! {
-    users (user_id) {
-        user_id -> Integer,
-        user_name -> Text,
+    users (id) {
+        id -> Integer,
+        name -> Text,
         status -> Integer,
-        beacon -> Nullable<Text>,
+        spot -> Nullable<Text>,
         icon_path -> Text,
         hashed_password -> Text,
         created_at -> Timestamp,

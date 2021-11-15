@@ -100,7 +100,7 @@ mod search_user {
         let create_usr1 = client
             .post(base_url.to_string() + "/v1/register")
             .json(&CreateUser {
-                user_name: "usr1".to_string(),
+                name: "usr1".to_string(),
                 password: "".to_string(),
             })
             .send()
@@ -111,7 +111,7 @@ mod search_user {
         let create_usr2 = client
             .post(base_url.to_string() + "/v1/register")
             .json(&CreateUser {
-                user_name: "usr2".to_string(),
+                name: "usr2".to_string(),
                 password: "".to_string(),
             })
             .send()
@@ -119,8 +119,8 @@ mod search_user {
             .unwrap();
         assert_eq!(create_usr2.status(), http::StatusCode::OK);
 
-        let id_1 = create_usr1.json::<UserView>().await.unwrap().user_id;
-        let id_2 = create_usr2.json::<UserView>().await.unwrap().user_id;
+        let id_1 = create_usr1.json::<UserView>().await.unwrap().id;
+        let id_2 = create_usr2.json::<UserView>().await.unwrap().id;
         // println!("{:#?}", create_usr1.json::<UserView>().await.unwrap());
         // println!("{:#?}", create_usr2.json::<UserView>().await.unwrap());
         // println!("{}", create_usr1.text().await.unwrap());
@@ -182,7 +182,7 @@ mod beacon {
         match client
             .post(base_url.to_string() + "/v1/users")
             .json(&CreateUser {
-                user_name: "usr1".to_string(),
+                name: "usr1".to_string(),
                 password: "".to_string(),
             })
             .send()

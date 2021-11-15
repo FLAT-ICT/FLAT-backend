@@ -1,10 +1,10 @@
 use crate::model::db_util::*;
 use crate::model::types::SomeError;
 use crate::repository::{AddFriend, IdNamePath};
-use crate::schema::friends;
+// use crate::schema::friends;
 use crate::view::{FriendList, IdAndName, IdPair, SearchUser};
 use axum::response::IntoResponse;
-use diesel::RunQueryDsl;
+// use diesel::RunQueryDsl;
 use hyper::{Body, Response, StatusCode};
 // use validator::Validate;
 
@@ -157,7 +157,7 @@ pub fn get_friend_list(my_id: i32) -> FriendList {
     let applid = get_applied_record(my_id);
     let req = get_requested_record(my_id);
     let (mutual, one_side): (Vec<_>, Vec<_>) =
-        applid.into_iter().partition(|a| req.contains(&a.user_id));
+        applid.into_iter().partition(|a| req.contains(&a.id));
 
     return FriendList { one_side, mutual };
     // todo!()

@@ -51,14 +51,14 @@ pub struct ResultMessage {
 // the input to our `create_user` handler
 #[derive(Deserialize, Serialize)]
 pub struct CreateUser {
-    pub user_name: String,
+    pub name: String,
     pub password: String,
 }
 
 #[derive(Serialize, Queryable, Debug, Deserialize)]
 pub struct UserView {
-    pub user_id: i32,
-    pub user_name: String,
+    pub id: i32,
+    pub name: String,
     pub status: i32,
     pub icon_path: String,
     pub beacon: Option<String>,
