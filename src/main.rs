@@ -32,11 +32,11 @@ async fn main() {
     let app = Router::new()
         // `GET /` goes to `root`
         .route("/", get(root))
-        // `POST /users` goes to `create_user`
+        // `POST /user` goes to `create_user`
         .route("/v1/register", post(create_user))
-        .route("/v1/users", post(create_user))
-        .route("/v1/users/search", get(check_friend_status))
-        .route("/v1/users/beacon", post(update_beacon))
+        .route("/v1/user", post(create_user))
+        .route("/v1/user/search", get(check_friend_status))
+        .route("/v1/user/beacon", post(update_beacon))
         .route("/v1/friends", get(friend_list))
         .route("/v1/friends/add", post(add_friend))
         .route("/v1/friends/reject", post(reject_friend));
@@ -108,7 +108,7 @@ mod search_user {
         let search_user = client
             .get(
                 base_url.to_string()
-                    + "/v1/users/search?user_id="
+                    + "/v1/user/search?my_id="
                     + &id_1.to_string()
                     + "&target_name=usr2",
             )
@@ -209,7 +209,7 @@ mod beacon {
         let base_url = "http://localhost:3000";
         let client = reqwest::Client::new();
         match client
-            .post(base_url.to_string() + "/v1/users")
+            .post(base_url.to_string() + "/v1/user")
             .json(&CreateUser {
                 name: "usr1".to_string(),
                 password: "".to_string(),
@@ -224,7 +224,7 @@ mod beacon {
         }
 
         match client
-            .post(base_url.to_string() + "/v1/users/beacon")
+            .post(base_url.to_string() + "/v1/user/beacon")
             .json(&ScannedBeacon {
                 user_id: 1,
                 uuid: "9717f39c-a676-46ff-90c7-2d27a4d2477f".to_string(),
@@ -246,7 +246,7 @@ mod beacon {
 
         // let conn = establish_connection();
         match client
-            .get(base_url.to_string() + "/v1/users?user_id=1")
+            .get(base_url.to_string() + "/v1/user?user_id=1")
             .send()
             .await
         {

@@ -66,7 +66,7 @@ pub struct UserView {
 
 #[derive(Serialize, Deserialize)]
 pub struct IdAndName {
-    pub user_id: i32,
+    pub my_id: i32,
     pub target_name: String,
 }
 

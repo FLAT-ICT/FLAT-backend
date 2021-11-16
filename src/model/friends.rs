@@ -96,7 +96,7 @@ pub fn search_user(id_and_name: IdAndName) -> Result<Vec<SearchUser>, SomeError>
     //     return Err(SomeError::ValidationError);
     // }
 
-    let my_id = id_and_name.user_id;
+    let my_id = id_and_name.my_id;
     let target_name = id_and_name.target_name;
 
     // レコード存在確認
