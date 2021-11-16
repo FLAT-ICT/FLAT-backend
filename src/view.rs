@@ -13,7 +13,7 @@ pub struct IdPair {
 }
 
 // `output` /v1/users/check
-#[derive(Queryable, Serialize, Clone)]
+#[derive(Queryable, Serialize, Deserialize, Clone, Debug)]
 pub struct SearchUser {
     pub user_id: i32,
     pub user_name: String,

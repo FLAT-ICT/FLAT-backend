@@ -80,7 +80,7 @@ mod search_user {
     use crate::repository::{Friend, User};
     use crate::schema::friends::dsl::*;
     use crate::schema::users::dsl::*;
-    use crate::view::{FriendList, UserView};
+    use crate::view::{SearchUser, UserView};
     use crate::{
         model::db_util::establish_connection,
         view::{CreateUser, IdPair},
@@ -89,7 +89,41 @@ mod search_user {
     use diesel::RunQueryDsl;
 
     #[tokio::test]
-    async fn basic() {
+    async fn get_search_user() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr1 = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&CreateUser {
+                name: "usr1".to_string(),
+                password: "".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr1.status(), http::StatusCode::OK);
+
+        let id_1 = create_usr1.json::<UserView>().await.unwrap().id;
+        // let name_2 = create_usr2.json::<UserView>().await.unwrap().id;
+        let search_user = client
+            .get(
+                base_url.to_string()
+                    + "/v1/users/search?user_id="
+                    + &id_1.to_string()
+                    + "&target_name=usr2",
+            )
+            .send()
+            .await
+            .unwrap();
+        println!("{:#?}", search_user);
+        assert_eq!(search_user.status(), http::StatusCode::OK);
+        let result = search_user.json::<Vec<SearchUser>>().await.unwrap();
+        println!("{:#?}", result);
+        // assert_eq!(result.iter().len(), 0);
+    }
+
+    #[tokio::test]
+    async fn get_friend_list() {
         // usr1作成
         // usr2作成
         // usr1 -> usr2 に友だち申請
@@ -143,21 +177,13 @@ mod search_user {
         println!("{:#?}", result);
 
         let _get_friend_list = client
-            .get(base_url.to_string() + "/v1/friends?user_id=" + &id_1.to_string())
+            .get(base_url.to_string() + "/v1/friends?my_id=" + &id_1.to_string())
             .send()
             .await
             .unwrap();
 
-        let result = _get_friend_list.status();
         println!("{:#?}", _get_friend_list);
-        println!(
-            "test l151\n{:#?}",
-            // _get_friend_list.json::<FriendList>().await.unwrap() 
-            _get_friend_list.text().await.unwrap()
-        );
-
-        assert_eq!(result, http::StatusCode::OK);
-        // assert_eq!()
+        assert_eq!(_get_friend_list.status(), http::StatusCode::OK);
         // DBをきれいにする
         // diesel::delete(users).execute(&conn).unwrap();
         // println!("delete from basic")
