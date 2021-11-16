@@ -13,10 +13,10 @@ pub struct IdPair {
 }
 
 // `output` /v1/users/check
-#[derive(Queryable, Serialize, Clone)]
+#[derive(Queryable, Serialize, Deserialize, Clone, Debug)]
 pub struct SearchUser {
-    pub user_id: i32,
-    pub user_name: String,
+    pub id: i32,
+    pub name: String,
     pub icon_path: String,
     pub applied: bool,
     pub requested: bool,
@@ -31,7 +31,7 @@ pub struct SearchUser {
 
 // `output` /v1/friends
 // (StatusCode, Json<FriendList>)
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct FriendList {
     pub one_side: Vec<UserView>,
     pub mutual: Vec<UserView>,
@@ -55,7 +55,7 @@ pub struct CreateUser {
     pub password: String,
 }
 
-#[derive(Serialize, Queryable, Debug, Deserialize)]
+#[derive(Serialize, Queryable, Debug, Deserialize, PartialEq)]
 pub struct UserView {
     pub id: i32,
     pub name: String,
@@ -66,7 +66,7 @@ pub struct UserView {
 
 #[derive(Serialize, Deserialize)]
 pub struct IdAndName {
-    pub user_id: i32,
+    pub my_id: i32,
     pub target_name: String,
 }
 

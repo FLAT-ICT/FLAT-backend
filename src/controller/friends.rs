@@ -42,7 +42,9 @@ pub async fn check_friend_status(
 ) -> Result<(StatusCode, axum::Json<Vec<SearchUser>>), SomeError> {
     let result = search_user(payload);
     match result {
-        Ok(v) => return Ok((StatusCode::OK, Json(v))),
+        Ok(v) => {
+            println!("{:#?}", v);
+            return Ok((StatusCode::OK, Json(v)))},
         Err(e) => {
             println!("{:#?}", e);
             return Err(e);
@@ -58,7 +60,7 @@ pub async fn check_friend_status(
 // 構造体かHashMapで受けなきゃいけなかった
 pub async fn friend_list(Query(user_id): Query<HashMap<String, i32>>) -> impl IntoResponse {
     
-    let fl = get_friend_list(*(user_id.get("user_id").unwrap()));
+    let fl = get_friend_list(*(user_id.get("my_id").unwrap()));
     println!("{:#?}", fl);
     return (StatusCode::OK, Json(fl));
 }

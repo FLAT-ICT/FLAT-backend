@@ -1,7 +1,7 @@
 use crate::{
     model::users,
     repository::NameAndPassword,
-    view::{CreateUser, ScannedBeacon},
+    view::{CreateUser, ResultMessage, ScannedBeacon},
 };
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
@@ -34,5 +34,11 @@ pub struct BeaconIdnetifier {
 }
 
 pub async fn update_beacon(Json(payload): Json<ScannedBeacon>) -> impl IntoResponse {
-    users::udpate_beacon(payload.user_id, payload.major, payload.minor)
+    users::udpate_beacon(payload.user_id, payload.major, payload.minor);
+    (
+        StatusCode::OK,
+        Json(ResultMessage {
+            message: "Ok".to_string(),
+        }),
+    )
 }

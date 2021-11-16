@@ -96,7 +96,7 @@ pub fn search_user(id_and_name: IdAndName) -> Result<Vec<SearchUser>, SomeError>
     //     return Err(SomeError::ValidationError);
     // }
 
-    let my_id = id_and_name.user_id;
+    let my_id = id_and_name.my_id;
     let target_name = id_and_name.target_name;
 
     // レコード存在確認
@@ -127,9 +127,10 @@ pub fn search_user(id_and_name: IdAndName) -> Result<Vec<SearchUser>, SomeError>
         .into_iter()
         .zip(applied_and_requested)
         .filter(|(_, &y)| !(y.0 & y.1)) // 相互の友だちを落とす
+        .filter(|(x, _)| x.id != my_id) // 自分を落とす
         .map(|(x, y)| SearchUser {
-            user_id: x.id,
-            user_name: x.name,
+            id: x.id,
+            name: x.name,
             icon_path: x.icon_path,
             applied: y.0,
             requested: y.1,
@@ -148,20 +149,74 @@ pub fn search_user(id_and_name: IdAndName) -> Result<Vec<SearchUser>, SomeError>
 }
 
 pub fn get_friend_list(my_id: i32) -> FriendList {
-    // applied: id  自分 -> 誰か という関係があるUserIdを持ってくる
-    // requested: id 誰か -> 自分 という関係があるUserIdを持ってくる
+    // requested: id  自分 -> 誰か という関係があるUserIdを持ってくる
+    // applied: id 誰か -> 自分 という関係があるUserIdを持ってくる
     // applied の各要素が、reqested に含まれるかどうかで
     // mutual と one_side に振り分ける
     // idを基にUserViewをとってくる -> JOINしたほうが良さそう
 
-    let applid = get_applied_record(my_id);
-    let req = get_requested_record(my_id);
+    let requested = get_requested_record(my_id);
+    let applied = get_applied_record(my_id);
     let (mutual, one_side): (Vec<_>, Vec<_>) =
-        applid.into_iter().partition(|a| req.contains(&a.id));
-    let result = FriendList {one_side, mutual };
-    println!("{:#?}", result);
+        requested.into_iter().partition(|a| applied.contains(&a.id));
+    let result = FriendList { one_side, mutual };
+    // println!("{:#?}", result);
     return result;
     // todo!()
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        model::{db_util::insert_friend, users::create_user},
+        repository::{AddFriend, NameAndPassword},
+        view::FriendList,
+    };
+
+    use super::get_friend_list;
+
+    // #[tokio::test]
+    #[test]
+    fn test_requested_and_applied() {
+        let uv1 = create_user(NameAndPassword {
+            name: &"test1".to_string(),
+            hashed_password: &"".to_string(),
+        });
+        let uv2 = create_user(NameAndPassword {
+            name: &"test2".to_string(),
+            hashed_password: &"".to_string(),
+        });
+        let uv3 = create_user(NameAndPassword {
+            name: &"test3".to_string(),
+            hashed_password: &"".to_string(),
+        });
+        println!("uv1.id {:#?}", uv1.id);
+        println!("uv2.id {:#?}", uv2.id);
+        println!("uv3.id {:#?}", uv3.id);
+        // uv1 -> uv2
+        insert_friend(AddFriend {
+            acctive: uv1.id,
+            pussive: uv2.id,
+        });
+        // uv2 -> uv1
+        insert_friend(AddFriend {
+            acctive: uv2.id,
+            pussive: uv1.id,
+        });
+        // uv1 -> uv3
+        insert_friend(AddFriend {
+            acctive: uv1.id,
+            pussive: uv3.id,
+        });
+        let result = get_friend_list(uv1.id);
+        assert_eq!(
+            result,
+            FriendList {
+                one_side: vec![uv3],
+                mutual: vec![uv2]
+            }
+        );
+    }
 }
 
 // #[cfg(test)]

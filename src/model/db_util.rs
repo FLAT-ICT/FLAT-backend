@@ -57,8 +57,7 @@ pub fn insert_user(user_name: String, password: String) -> UserView {
         .values((
             name.eq(user_name),
             hashed_password.eq(password),
-            icon_path
-                .eq(&"https://dummyimage.com/256x256/000/fff.png&text=icon".to_string()),
+            icon_path.eq(&"https://dummyimage.com/256x256/000/fff.png&text=icon".to_string()),
         ))
         .execute(&conn)
         .unwrap();
@@ -113,15 +112,15 @@ pub fn get_friends_relation(my_id: i32, target_id: i32) -> (bool, bool) {
 
 use schema::{friends, users};
 
-joinable!(friends -> users(acctive));
+joinable!(friends -> users(pussive));
 
-pub fn get_applied_record(my_id: i32) -> Vec<UserView> {
+pub fn get_requested_record(my_id: i32) -> Vec<UserView> {
     let conn = establish_connection();
     let applied = friends
         .inner_join(users)
         .filter(friends::acctive.eq(my_id))
         .select((
-            users::id,
+            friends::pussive,
             users::name,
             users::status,
             users::icon_path,
@@ -133,7 +132,7 @@ pub fn get_applied_record(my_id: i32) -> Vec<UserView> {
 }
 // allow_tables_to_appear_in_same_query!(friends, users);
 
-pub fn get_requested_record(my_id: i32) -> Vec<i32> {
+pub fn get_applied_record(my_id: i32) -> Vec<i32> {
     let conn = establish_connection();
     let applied = friends
         .filter(pussive.eq(my_id))
