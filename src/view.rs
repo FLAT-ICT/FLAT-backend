@@ -31,7 +31,7 @@ pub struct SearchUser {
 
 // `output` /v1/friends
 // (StatusCode, Json<FriendList>)
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct FriendList {
     pub one_side: Vec<UserView>,
     pub mutual: Vec<UserView>,
