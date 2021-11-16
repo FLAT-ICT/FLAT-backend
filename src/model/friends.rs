@@ -175,8 +175,9 @@ mod tests {
 
     use super::get_friend_list;
 
-    #[tokio::test]
-    async fn test_requested_and_applied() {
+    // #[tokio::test]
+    #[test]
+    fn test_requested_and_applied() {
         let uv1 = create_user(NameAndPassword {
             name: &"test1".to_string(),
             hashed_password: &"".to_string(),

@@ -208,26 +208,24 @@ mod beacon {
         // ユーザー情報を返却
         let base_url = "http://localhost:3000";
         let client = reqwest::Client::new();
-        match client
-            .post(base_url.to_string() + "/v1/user")
+        let create_usr1 = client
+            .post(base_url.to_string() + "/v1/register")
             .json(&CreateUser {
                 name: "usr1".to_string(),
                 password: "".to_string(),
             })
             .send()
             .await
-        {
-            Ok(v) => {
-                assert_eq!(v.status(), http::StatusCode::OK);
-            }
-            Err(e) => println!("{:?}", e),
-        }
+            .unwrap();
+        assert_eq!(create_usr1.status(), http::StatusCode::OK);
+
+        let user_id = create_usr1.json::<UserView>().await.unwrap().id;
 
         match client
             .post(base_url.to_string() + "/v1/user/beacon")
             .json(&ScannedBeacon {
-                user_id: 1,
-                uuid: "9717f39c-a676-46ff-90c7-2d27a4d2477f".to_string(),
+                user_id: user_id,
+                uuid: "this-is-uuid".to_string(),
                 major: 0,
                 minor: 43303,
                 rssi: 0.,
