@@ -1,16 +1,15 @@
 use crate::{
-    model::{db_util::insert_user, users},
+    model::users,
     repository::NameAndPassword,
-    view::{CreateUser, ScannedBeacon},
+    view::{CreateUser, ResultMessage, ScannedBeacon},
 };
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Serialize, Deserialize)]
 struct Id {
-    user_id: i32
+    user_id: i32,
 }
 
 pub async fn create_user(
@@ -18,20 +17,10 @@ pub async fn create_user(
     // as JSON into a `CreateUser` type
     Json(payload): Json<CreateUser>,
 ) -> impl IntoResponse {
-    // insert your application logic here
-    // let user = UserView {
-    //     user_id: 0,
-    //     user_name: payload.user_name,
-    //     status: 1,
-    //     icon_path: "".to_string(),
-    //     beacon: Some("595教室".to_string()),
-    // };
-
-    let inserted = insert_user(NameAndPassword {
-        user_name: &payload.user_name,
+    let inserted = users::create_user(NameAndPassword {
+        name: &payload.name,
         hashed_password: &payload.password,
     });
-
 
     // this will be converted into a JSON response
     // with a status code of `201 Created`
@@ -45,5 +34,11 @@ pub struct BeaconIdnetifier {
 }
 
 pub async fn update_beacon(Json(payload): Json<ScannedBeacon>) -> impl IntoResponse {
-    users::udpate_beacon(payload.user_id, payload.major, payload.minor)
+    users::udpate_beacon(payload.user_id, payload.major, payload.minor);
+    (
+        StatusCode::OK,
+        Json(ResultMessage {
+            message: "Ok".to_string(),
+        }),
+    )
 }

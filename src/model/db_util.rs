@@ -3,7 +3,7 @@ use crate::repository::AddFriend;
 use crate::repository::Friend;
 use crate::repository::IdNamePath;
 use crate::repository::InsertableSpot;
-use crate::repository::NameAndPassword;
+// use crate::repository::NameAndPassword;
 use crate::repository::User;
 use crate::schema;
 use crate::view::UserView;
@@ -35,7 +35,7 @@ pub fn is_exist_id(target_id: i32) -> bool {
     println!("is_exist_id({})", target_id);
 
     let conn = establish_connection();
-    let user = users.filter(user_id.eq(target_id)).load::<User>(&conn);
+    let user = users.filter(id.eq(target_id)).load::<User>(&conn);
 
     match user {
         Ok(v) => {
@@ -51,29 +51,25 @@ pub fn is_exist_id(target_id: i32) -> bool {
     }
 }
 
-pub fn insert_user(name_and_pass: NameAndPassword) -> UserView {
-    let name = name_and_pass.user_name;
-    let pass = name_and_pass.hashed_password;
-
+pub fn insert_user(user_name: String, password: String) -> UserView {
     let conn = establish_connection();
-    let inserted_row = diesel::insert_into(users)
+    let _inserted_row = diesel::insert_into(users)
         .values((
-            user_name.eq(name),
-            hashed_password.eq(pass),
-            icon_path
-                .eq(&"https://dev.mysql.com/doc/refman/5.6/ja/data-type-defaults.html".to_string()),
+            name.eq(user_name),
+            hashed_password.eq(password),
+            icon_path.eq(&"https://dummyimage.com/256x256/000/fff.png&text=icon".to_string()),
         ))
         .execute(&conn)
         .unwrap();
 
-    let last_insert_user = users.order(user_id.desc()).first::<User>(&conn).unwrap();
+    let last_insert_user = users.order(id.desc()).first::<User>(&conn).unwrap();
 
     let user_view = UserView {
-        user_id: last_insert_user.user_id,
-        user_name: last_insert_user.user_name.to_string(),
+        id: last_insert_user.id,
+        name: last_insert_user.name.to_string(),
         status: last_insert_user.status,
         icon_path: last_insert_user.icon_path,
-        beacon: last_insert_user.beacon,
+        spot: last_insert_user.spot,
     };
     return user_view;
 }
@@ -81,8 +77,8 @@ pub fn insert_user(name_and_pass: NameAndPassword) -> UserView {
 pub fn get_user_id_name_path(target_name: String) -> Vec<IdNamePath> {
     let conn = establish_connection();
     let result = users
-        .filter(user_name.like("%".to_string() + &target_name + "%"))
-        .select((user_id, user_name, icon_path))
+        .filter(name.like("%".to_string() + &target_name + "%"))
+        .select((id, name, icon_path))
         .load::<IdNamePath>(&conn)
         .unwrap();
     // .first::<(i32, String, String)>(&conn)
@@ -116,21 +112,19 @@ pub fn get_friends_relation(my_id: i32, target_id: i32) -> (bool, bool) {
 
 use schema::{friends, users};
 
-use super::types::Beacon;
+joinable!(friends -> users(pussive));
 
-joinable!(friends -> users(acctive));
-
-pub fn get_applied_record(my_id: i32) -> Vec<UserView> {
+pub fn get_requested_record(my_id: i32) -> Vec<UserView> {
     let conn = establish_connection();
     let applied = friends
         .inner_join(users)
         .filter(friends::acctive.eq(my_id))
         .select((
-            users::user_id,
-            users::user_name,
+            friends::pussive,
+            users::name,
             users::status,
             users::icon_path,
-            users::beacon,
+            users::spot,
         ))
         .load::<UserView>(&conn)
         .unwrap();
@@ -138,7 +132,7 @@ pub fn get_applied_record(my_id: i32) -> Vec<UserView> {
 }
 // allow_tables_to_appear_in_same_query!(friends, users);
 
-pub fn get_requested_record(my_id: i32) -> Vec<i32> {
+pub fn get_applied_record(my_id: i32) -> Vec<i32> {
     let conn = establish_connection();
     let applied = friends
         .filter(pussive.eq(my_id))
@@ -168,16 +162,18 @@ pub fn delete_friend(ids: AddFriend) {
     .expect("削除失敗");
 }
 
-pub fn insert_spots_from_csv(spot: InsertableSpot) -> Result<usize, diesel::result::Error> {
+pub fn insert_spots_from_csv(school_spot: InsertableSpot) -> Result<usize, diesel::result::Error> {
     let conn = establish_connection();
-    diesel::insert_into(spots).values(&spot).execute(&conn)
+    diesel::insert_into(spots)
+        .values(&school_spot)
+        .execute(&conn)
 }
 
 pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) {
     let conn = establish_connection();
 
     diesel::update(users.find(&my_id))
-        .set(beacon.eq(get_spot(&conn, major_id, minor_id)))
+        .set(spot.eq(get_spot(&conn, major_id, minor_id)))
         .execute(&conn)
         .expect("更新失敗");
 
