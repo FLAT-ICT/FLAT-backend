@@ -126,7 +126,7 @@ pub fn search_user(id_and_name: IdAndName) -> Result<Vec<SearchUser>, SomeError>
     let searched_users = id_name_path
         .into_iter()
         .zip(applied_and_requested)
-        // .filter(|(_, &y)| !(y.0 & y.1)) // 相互の友だちを落とす
+        .filter(|(_, &y)| !(y.0 & y.1)) // 相互の友だちを落とす
         .filter(|(x, _)| x.id != my_id) // 自分を落とす
         .map(|(x, y)| SearchUser {
             id: x.id,
