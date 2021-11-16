@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
 
 $('pwd')/scripts/import_csv.sh
-if [ $? -eq 1 ]; then
+if [ $? -ne 0 ]; then
     echo 'csvを取得できません'
-    exit 1
+    # exit 1
 fi
 $('pwd')/scripts/wait-for-it.sh --timeout=90 --strict mysql:3306 -- diesel setup
 diesel migration run
 flat_backend &
-cargo test -- --test-threads=1
-# cargo test
-if [ $? -eq 1 ]; then
+cargo test
+if [ $? -ne 0 ]; then
     echo 'testが落ちました'
     exit 1
 fi

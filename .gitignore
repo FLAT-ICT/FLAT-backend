@@ -16,4 +16,4 @@ Cargo.lock
 
 
 # 一時的にテストを止める
-.github
+# .github
