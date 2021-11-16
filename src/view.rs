@@ -31,7 +31,7 @@ pub struct SearchUser {
 
 // `output` /v1/friends
 // (StatusCode, Json<FriendList>)
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct FriendList {
     pub one_side: Vec<UserView>,
     pub mutual: Vec<UserView>,
@@ -55,7 +55,7 @@ pub struct CreateUser {
     pub password: String,
 }
 
-#[derive(Serialize, Queryable, Debug, Deserialize)]
+#[derive(Serialize, Queryable, Debug, Deserialize, PartialEq)]
 pub struct UserView {
     pub id: i32,
     pub name: String,
