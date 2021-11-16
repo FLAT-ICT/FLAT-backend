@@ -8,13 +8,14 @@ pub fn create_user(name_and_password: NameAndPassword) -> UserView {
     let raw_password = name_and_password.hashed_password.to_string();
     // TODO: hash with secret salt
     let hashed_password = raw_password;
-    let mut result = insert_user(name, hashed_password);
+    let result = insert_user(name, hashed_password);
 
+    // ここだけやるとバグる
     // 中の型的には nullable だけど、返却するときは、"" が返ってほしい。
-    match result.beacon {
-        Some(_) => {}
-        _ => (result.beacon = Some("".to_string())),
-    }
+    // match result.spot {
+    //     Some(_) => {}
+    //     _ => (result.spot = Some("".to_string())),
+    // }
 
     result
 }

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::model;
 use crate::model::friends::search_user;
 use crate::view::{FriendList, IdAndName, IdPair, ResultMessage, SearchUser};
@@ -40,7 +42,9 @@ pub async fn check_friend_status(
 ) -> Result<(StatusCode, axum::Json<Vec<SearchUser>>), SomeError> {
     let result = search_user(payload);
     match result {
-        Ok(v) => return Ok((StatusCode::OK, Json(v))),
+        Ok(v) => {
+            println!("{:#?}", v);
+            return Ok((StatusCode::OK, Json(v)))},
         Err(e) => {
             println!("{:#?}", e);
             return Err(e);
@@ -53,7 +57,10 @@ pub async fn check_friend_status(
     // (StatusCode::from_u16(result).unwrap(), Json(ResultMessage { message: result.1 }))
 }
 
-pub async fn friend_list(Path(my_id): Path<i32>) -> (StatusCode, Json<FriendList>) {
-    let fl = get_friend_list(my_id);
+// 構造体かHashMapで受けなきゃいけなかった
+pub async fn friend_list(Query(user_id): Query<HashMap<String, i32>>) -> impl IntoResponse {
+    
+    let fl = get_friend_list(*(user_id.get("my_id").unwrap()));
+    println!("{:#?}", fl);
     return (StatusCode::OK, Json(fl));
 }
