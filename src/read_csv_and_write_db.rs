@@ -20,7 +20,7 @@ pub(crate) fn run() -> Result<(), Box<dyn Error>> {
     for result in rdr.deserialize() {
         let record: DeserializableSpot = result?;
         if let Err(e) = insert_spots_from_csv(record.to_insertable()) {
-            println!("error: {}", e)
+            println!("{}", e)
         }
     }
     Ok(())
@@ -36,7 +36,7 @@ mod beacon_tests {
     use diesel::RunQueryDsl;
     #[tokio::test]
     async fn test_get_spot() {
-        let minor_id = 43303;
+        let minor_id = 7945;
         let major_id = 0;
         let conn = establish_connection();
         let result = spots
@@ -45,6 +45,6 @@ mod beacon_tests {
             .select(name_ja)
             .first::<String>(&conn)
             .unwrap();
-        assert_eq!(result, "127教員室".to_string());
+        assert_eq!(result, "そらの家".to_string());
     }
 }
