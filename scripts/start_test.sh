@@ -9,6 +9,7 @@ $('pwd')/scripts/wait-for-it.sh --timeout=90 --strict mysql:3306 -- diesel setup
 diesel migration run
 flat_backend &
 cargo test -- --test-threads=1
+# cargo test
 if [ $? -eq 1 ]; then
     echo 'testが落ちました'
     exit 1
