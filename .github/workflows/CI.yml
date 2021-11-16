@@ -18,7 +18,7 @@ jobs:
       - name: compose tests
         shell: bash
         env: 
-          SSH_KEY: ${{ secrets.PAT }}
+          SSH_KEY: ${{ secrets.SUBMODULE_ACCESSKEY }}
           SSH_KEY_PATH: ./secret.txt
         run: | 
           echo ${{ env.SSH_KEY }} > ./secret.txt
