@@ -80,7 +80,7 @@ mod search_user {
     use crate::repository::{Friend, User};
     use crate::schema::friends::dsl::*;
     use crate::schema::users::dsl::*;
-    use crate::view::UserView;
+    use crate::view::{FriendList, UserView};
     use crate::{
         model::db_util::establish_connection,
         view::{CreateUser, IdPair},
@@ -143,18 +143,21 @@ mod search_user {
         println!("{:#?}", result);
 
         let _get_friend_list = client
-            .get(
-                base_url.to_string()
-                    + "/v1/users/search?user_id="
-                    + &id_1.to_string()
-                    + "&target_name=usr2",
-            )
+            .get(base_url.to_string() + "/v1/friends?user_id=" + &id_1.to_string())
             .send()
             .await
             .unwrap();
 
+        let result = _get_friend_list.status();
         println!("{:#?}", _get_friend_list);
-        assert_eq!(_get_friend_list.status(), http::StatusCode::OK);
+        println!(
+            "test l151\n{:#?}",
+            // _get_friend_list.json::<FriendList>().await.unwrap() 
+            _get_friend_list.text().await.unwrap()
+        );
+
+        assert_eq!(result, http::StatusCode::OK);
+        // assert_eq!()
         // DBをきれいにする
         // diesel::delete(users).execute(&conn).unwrap();
         // println!("delete from basic")

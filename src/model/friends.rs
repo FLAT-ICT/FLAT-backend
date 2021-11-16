@@ -158,8 +158,9 @@ pub fn get_friend_list(my_id: i32) -> FriendList {
     let req = get_requested_record(my_id);
     let (mutual, one_side): (Vec<_>, Vec<_>) =
         applid.into_iter().partition(|a| req.contains(&a.id));
-
-    return FriendList { one_side, mutual };
+    let result = FriendList {one_side, mutual };
+    println!("{:#?}", result);
+    return result;
     // todo!()
 }
 
