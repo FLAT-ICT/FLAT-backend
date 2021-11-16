@@ -129,7 +129,7 @@ pub fn search_user(id_and_name: IdAndName) -> Result<Vec<SearchUser>, SomeError>
         .filter(|(_, &y)| !(y.0 & y.1)) // 相互の友だちを落とす
         .map(|(x, y)| SearchUser {
             id: x.id,
-            user_name: x.name,
+            name: x.name,
             icon_path: x.icon_path,
             applied: y.0,
             requested: y.1,

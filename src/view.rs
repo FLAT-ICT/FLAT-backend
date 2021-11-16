@@ -16,7 +16,7 @@ pub struct IdPair {
 #[derive(Queryable, Serialize, Deserialize, Clone, Debug)]
 pub struct SearchUser {
     pub id: i32,
-    pub user_name: String,
+    pub name: String,
     pub icon_path: String,
     pub applied: bool,
     pub requested: bool,
