@@ -23,10 +23,10 @@ pub struct Friend {
 
 #[derive(Debug, Queryable)]
 pub struct User {
-    pub user_id: i32,
-    pub user_name: String,
+    pub id: i32,
+    pub name: String,
     pub status: i32,
-    pub beacon: Option<String>,
+    pub spot: Option<String>,
     pub icon_path: String,
     pub hashed_password: String,
     pub created_at: NaiveDateTime,
@@ -43,7 +43,7 @@ pub struct IdNamePath {
 #[derive(Insertable)]
 #[table_name = "users"]
 pub struct NameAndPassword<'a> {
-    pub user_name: &'a String,
+    pub name: &'a String,
     pub hashed_password: &'a String,
 }
 #[derive(Debug, Insertable)]
