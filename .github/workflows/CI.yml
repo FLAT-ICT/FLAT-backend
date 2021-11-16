@@ -20,6 +20,6 @@ jobs:
           SSH_KEY: ${{ secrets.SUBMODULE_ACCESSKEY }}
           SSH_KEY_PATH: ./secret.txt
         run: | 
-          echo ${{ env.SSH_KEY }} > ./secret.txt
+          echo ${{ env.SSH_KEY }} > ${{ env.SSH_KEY_PATH }}
           docker-compose build
           docker-compose run flat-backend-test
