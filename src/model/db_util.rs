@@ -70,7 +70,7 @@ pub fn insert_user(user_name: String, password: String) -> UserView {
         name: last_insert_user.name.to_string(),
         status: last_insert_user.status,
         icon_path: last_insert_user.icon_path,
-        beacon: last_insert_user.spot,
+        spot: last_insert_user.spot,
     };
     return user_view;
 }

@@ -61,7 +61,7 @@ pub struct UserView {
     pub name: String,
     pub status: i32,
     pub icon_path: String,
-    pub beacon: Option<String>,
+    pub spot: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]

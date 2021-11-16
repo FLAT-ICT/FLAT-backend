@@ -224,7 +224,7 @@ mod beacon {
             Ok(v) => match v.json::<UserView>().await {
                 Ok(user_info) => {
                     println!("{:#?}", &user_info);
-                    assert_eq!((&user_info).beacon, Some("127教員室".to_string()));
+                    assert_eq!((&user_info).spot, Some("127教員室".to_string()));
                 }
                 Err(e) => println!("{:?}", e),
             },

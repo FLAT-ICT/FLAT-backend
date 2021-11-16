@@ -11,9 +11,9 @@ pub fn create_user(name_and_password: NameAndPassword) -> UserView {
     let mut result = insert_user(name, hashed_password);
 
     // 中の型的には nullable だけど、返却するときは、"" が返ってほしい。
-    match result.beacon {
+    match result.spot {
         Some(_) => {}
-        _ => (result.beacon = Some("".to_string())),
+        _ => (result.spot = Some("".to_string())),
     }
 
     result
