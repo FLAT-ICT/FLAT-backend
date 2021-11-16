@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::model;
 use crate::model::friends::search_user;
 use crate::view::{FriendList, IdAndName, IdPair, ResultMessage, SearchUser};
@@ -53,7 +55,10 @@ pub async fn check_friend_status(
     // (StatusCode::from_u16(result).unwrap(), Json(ResultMessage { message: result.1 }))
 }
 
-pub async fn friend_list(Path(my_id): Path<i32>) -> (StatusCode, Json<FriendList>) {
-    let fl = get_friend_list(my_id);
+// 構造体かHashMapで受けなきゃいけなかった
+pub async fn friend_list(Query(user_id): Query<HashMap<String, i32>>) -> impl IntoResponse {
+    
+    let fl = get_friend_list(*(user_id.get("user_id").unwrap()));
+    println!("{:#?}", fl);
     return (StatusCode::OK, Json(fl));
 }
