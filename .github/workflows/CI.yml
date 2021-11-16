@@ -18,7 +18,9 @@ jobs:
       - name: compose tests
         shell: bash
         env: 
-          SSH_KEY_PATH: ${{ secrets.PAT }}
+          SSH_KEY: ${{ secrets.PAT }}
+          SSH_KEY_PATH: ./secret.txt
         run: | 
+          echo ${{ env.SSH_KEY }} > ./secret.txt
           docker-compose build
           docker-compose run flat-backend-test
