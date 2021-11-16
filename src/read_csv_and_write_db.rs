@@ -5,6 +5,17 @@ pub(crate) fn run() -> Result<(), Box<dyn Error>> {
     let file_path = "espresso-beacons/src/spots.csv";
     let file = File::open(file_path)?;
     println!("{:?}", file);
+
+    let mut rdr = csv::Reader::from_reader(file);
+    for result in rdr.deserialize() {
+        let record: DeserializableSpot = result?;
+        if let Err(e) = insert_spots_from_csv(record.to_insertable()) {
+            println!("{}", e)
+        }
+    }
+
+    let test_file_path = "test-beacons/src/spots.csv";
+    let file = File::open(test_file_path)?;
     let mut rdr = csv::Reader::from_reader(file);
     for result in rdr.deserialize() {
         let record: DeserializableSpot = result?;
