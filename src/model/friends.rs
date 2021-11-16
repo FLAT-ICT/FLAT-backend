@@ -128,7 +128,7 @@ pub fn search_user(id_and_name: IdAndName) -> Result<Vec<SearchUser>, SomeError>
         .zip(applied_and_requested)
         .filter(|(_, &y)| !(y.0 & y.1)) // 相互の友だちを落とす
         .map(|(x, y)| SearchUser {
-            user_id: x.id,
+            id: x.id,
             user_name: x.name,
             icon_path: x.icon_path,
             applied: y.0,

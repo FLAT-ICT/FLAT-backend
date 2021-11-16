@@ -246,7 +246,7 @@ mod beacon {
 
         // let conn = establish_connection();
         match client
-            .get(base_url.to_string() + "/v1/user?user_id=1")
+            .get(base_url.to_string() + "/v1/user?id=1")
             .send()
             .await
         {
