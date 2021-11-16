@@ -20,7 +20,7 @@ pub(crate) fn run() -> Result<(), Box<dyn Error>> {
     for result in rdr.deserialize() {
         let record: DeserializableSpot = result?;
         if let Err(e) = insert_spots_from_csv(record.to_insertable()) {
-            println!("{}", e)
+            println!("error: {}", e)
         }
     }
     Ok(())
