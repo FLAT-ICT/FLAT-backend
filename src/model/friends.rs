@@ -50,9 +50,10 @@ pub fn reject_friend(id_pair: IdPair) -> bool {
         return false;
     };
 
+    // 相手 -> 自分 の申請を拒否
     if let Ok(_) = delete_friend(AddFriend {
-        active: my_id,
-        passive: friend_id,
+        active: friend_id,
+        passive: my_id,
     }) {
         return true;
     }
