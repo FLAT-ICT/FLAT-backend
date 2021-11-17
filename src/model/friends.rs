@@ -51,8 +51,8 @@ pub fn reject_friend(id_pair: IdPair) -> bool {
     };
 
     if let Ok(_) = delete_friend(AddFriend {
-        active: my_id,
-        passive: friend_id,
+        active: friend_id,
+        passive: my_id,
     }) {
         return true;
     }
@@ -176,10 +176,10 @@ mod tests {
     use crate::{
         model::{db_util::insert_friend, users::create_user},
         repository::{AddFriend, NameAndPassword},
-        view::FriendList,
+        view::{FriendList, IdPair},
     };
 
-    use super::get_friend_list;
+    use super::{get_friend_list, reject_friend};
 
     // #[tokio::test]
     #[test]
@@ -226,61 +226,45 @@ mod tests {
             }
         );
     }
+    #[test]
+    fn test_reject() {
+        let uv1 = create_user(NameAndPassword {
+            name: &"test1".to_string(),
+            hashed_password: &"".to_string(),
+        });
+        let uv2 = create_user(NameAndPassword {
+            name: &"test2".to_string(),
+            hashed_password: &"".to_string(),
+        });
+        let uv3 = create_user(NameAndPassword {
+            name: &"test3".to_string(),
+            hashed_password: &"".to_string(),
+        });
+        // uv2 -> uv1
+        // uv1 は uv2 に片思われされている。= can reject
+        let _ = insert_friend(AddFriend {
+            active: uv2.id,
+            passive: uv1.id,
+        });
+        // uv1 -> uv2
+        // uv1 は uv2 の申請を拒否する = reject
+        let _ = reject_friend(IdPair {
+            my_id: uv1.id,
+            target_id: uv2.id,
+        });
+        // uv3 -> uv1
+        // uv1 は uv3 に片思われされている。= one_side
+        let _ = insert_friend(AddFriend {
+            active: uv3.id,
+            passive: uv1.id,
+        });
+        let result = get_friend_list(uv1.id);
+        assert_eq!(
+            result,
+            FriendList {
+                one_side: vec![uv3],
+                mutual: vec![]
+            }
+        );
+    }
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use crate::{model::friends::add_friend, view::IdPair};
-
-//     #[test]
-//     fn t_add_friend() {
-//         // insert 000000
-//         // insert 000001
-
-//         // 上の状態までDBを復帰させる必要あり
-
-//         // 正常
-//         assert_eq!(
-//             add_friend(IdPair {
-//                 my_id: "000000".to_string(),
-//                 target_id: "000001".to_string()
-//             }),
-//             true
-//         );
-//         // 同じIDが挿入されるのはおかしい
-//         assert_eq!(
-//             add_friend(IdPair {
-//                 my_id: "000000".to_string(),
-//                 target_id: "000000".to_string()
-//             }),
-//             false
-//         );
-
-//         // 存在しないIDに友だち申請するのはおかしい
-//         assert_eq!(
-//             add_friend(IdPair {
-//                 my_id: "000000".to_string(),
-//                 target_id: "000002".to_string()
-//             }),
-//             false
-//         );
-
-//         // 不正なID
-//         assert_eq!(
-//             add_friend(IdPair {
-//                 my_id: "abcdef".to_string(),
-//                 target_id: "000000".to_string()
-//             }),
-//             false
-//         );
-
-//         // 不正なID
-//         assert_eq!(
-//             add_friend(IdPair {
-//                 my_id: "12345".to_string(),
-//                 target_id: "000000".to_string()
-//             }),
-//             false
-//         );
-//     }
-// }
