@@ -74,9 +74,9 @@ pub struct IdAndName {
 pub struct ScannedBeacon {
     pub user_id: i32,
     // Beacon & {rssi, distance}
-    pub uuid: String,
+    // pub uuid: String,
     pub major: i32,
     pub minor: i32,
-    pub rssi: f32,
-    pub distance: f32,
+    pub rssi: i32,
+    // pub distance: f32,
 }
