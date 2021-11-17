@@ -9,8 +9,8 @@ use serde::Deserialize;
 #[derive(Insertable)]
 #[table_name = "friends"]
 pub struct AddFriend {
-    pub acctive: i32,
-    pub pussive: i32,
+    pub active: i32,
+    pub passive: i32,
 }
 
 #[derive(Debug, Queryable)]

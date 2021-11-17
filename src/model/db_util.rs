@@ -98,8 +98,8 @@ pub fn get_friends_relation(my_id: i32, target_id: i32) -> (bool, bool) {
     // レコードをとってくる
     fn get_friend_relation(conn: &MysqlConnection, id1: i32, id2: i32) -> Vec<Friend> {
         friends
-            .filter(acctive.eq(id1))
-            .filter(pussive.eq(id2))
+            .filter(active.eq(id1))
+            .filter(passive.eq(id2))
             .load::<Friend>(conn)
             .unwrap()
     }
@@ -112,15 +112,15 @@ pub fn get_friends_relation(my_id: i32, target_id: i32) -> (bool, bool) {
 
 use schema::{friends, users};
 
-joinable!(friends -> users(pussive));
+joinable!(friends -> users(active));
 
 pub fn get_requested_record(my_id: i32) -> Vec<UserView> {
     let conn = establish_connection();
-    let applied = friends
+    let reqested = friends
         .inner_join(users)
-        .filter(friends::acctive.eq(my_id))
+        .filter(friends::passive.eq(my_id))
         .select((
-            friends::pussive,
+            friends::active,
             users::name,
             users::status,
             users::icon_path,
@@ -128,15 +128,15 @@ pub fn get_requested_record(my_id: i32) -> Vec<UserView> {
         ))
         .load::<UserView>(&conn)
         .unwrap();
-    return applied;
+    return reqested;
 }
 // allow_tables_to_appear_in_same_query!(friends, users);
 
 pub fn get_applied_record(my_id: i32) -> Vec<i32> {
     let conn = establish_connection();
     let applied = friends
-        .filter(pussive.eq(my_id))
-        .select(acctive)
+        .filter(active.eq(my_id))
+        .select(passive)
         .load::<i32>(&conn)
         .unwrap();
     return applied;
@@ -153,8 +153,8 @@ pub fn delete_friend(ids: AddFriend) -> Result<usize, diesel::result::Error> {
     let conn = establish_connection();
     diesel::delete(
         friends
-            .filter(acctive.eq(&ids.acctive))
-            .filter(pussive.eq(&ids.pussive)),
+            .filter(active.eq(&ids.active))
+            .filter(passive.eq(&ids.passive)),
     )
     .execute(&conn)
 }
@@ -169,7 +169,7 @@ pub fn insert_spots_from_csv(school_spot: InsertableSpot) -> Result<usize, diese
 pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) -> bool {
     let conn = establish_connection();
 
-    if let Some(s)  = get_spot(&conn, major_id, minor_id) {
+    if let Some(s) = get_spot(&conn, major_id, minor_id) {
         match diesel::update(users.find(&my_id))
             .set(spot.eq(s))
             .execute(&conn)
@@ -193,8 +193,7 @@ pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) -> bool {
             Err(_) => return false,
         }
     }
-        return false;
-    
+    return false;
 
     pub fn get_spot(conn: &MysqlConnection, major_id: i32, minor_id: i32) -> Option<String> {
         // let conn = establish_connection();
