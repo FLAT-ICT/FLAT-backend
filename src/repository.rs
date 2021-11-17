@@ -15,7 +15,7 @@ pub struct AddFriend {
 
 #[derive(Debug, Queryable)]
 pub struct Friend {
-    pub acctive: i32,
+    pub active: i32,
     pub passive: i32,
     pub created_at: NaiveDateTime,
     pub blocked_at: Option<NaiveDateTime>,
