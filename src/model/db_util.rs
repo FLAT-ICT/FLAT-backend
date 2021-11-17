@@ -142,16 +142,14 @@ pub fn get_applied_record(my_id: i32) -> Vec<i32> {
     return applied;
 }
 
-pub fn insert_friend(ids: AddFriend) {
+pub fn insert_friend(ids: AddFriend) -> Result<usize, diesel::result::Error> {
     let conn = establish_connection();
     diesel::insert_into(friends::table)
         .values(&ids)
         .execute(&conn)
-        .expect("挿入失敗");
-    println!("insert_friend")
 }
 
-pub fn delete_friend(ids: AddFriend) {
+pub fn delete_friend(ids: AddFriend) -> Result<usize, diesel::result::Error> {
     let conn = establish_connection();
     diesel::delete(
         friends
@@ -159,7 +157,6 @@ pub fn delete_friend(ids: AddFriend) {
             .filter(pussive.eq(&ids.pussive)),
     )
     .execute(&conn)
-    .expect("削除失敗");
 }
 
 pub fn insert_spots_from_csv(school_spot: InsertableSpot) -> Result<usize, diesel::result::Error> {

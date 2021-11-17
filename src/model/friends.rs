@@ -25,12 +25,14 @@ pub fn add_friend(id_pair: IdPair) -> bool {
         return false;
     }
 
-    insert_friend(AddFriend {
+    if let Ok(_) = insert_friend(AddFriend {
         acctive: my_id,
         pussive: friend_id,
-    });
+    }) {
+        return true;
+    };
+    return false;
 
-    return true;
     // DBにインサート
     // bool か Result を返す
 }
@@ -48,11 +50,13 @@ pub fn reject_friend(id_pair: IdPair) -> bool {
         return false;
     };
 
-    delete_friend(AddFriend {
+    if let Ok(_) = delete_friend(AddFriend {
         acctive: my_id,
         pussive: friend_id,
-    });
-    return true;
+    }) {
+        return true;
+    }
+    return false;
 }
 
 impl IntoResponse for SomeError {
@@ -194,17 +198,17 @@ mod tests {
         println!("uv2.id {:#?}", uv2.id);
         println!("uv3.id {:#?}", uv3.id);
         // uv1 -> uv2
-        insert_friend(AddFriend {
+        let _ = insert_friend(AddFriend {
             acctive: uv1.id,
             pussive: uv2.id,
         });
         // uv2 -> uv1
-        insert_friend(AddFriend {
+        let _ = insert_friend(AddFriend {
             acctive: uv2.id,
             pussive: uv1.id,
         });
         // uv1 -> uv3
-        insert_friend(AddFriend {
+        let _ = insert_friend(AddFriend {
             acctive: uv1.id,
             pussive: uv3.id,
         });
