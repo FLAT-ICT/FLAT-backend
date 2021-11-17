@@ -26,8 +26,8 @@ pub fn add_friend(id_pair: IdPair) -> bool {
     }
 
     if let Ok(_) = insert_friend(AddFriend {
-        acctive: my_id,
-        pussive: friend_id,
+        active: my_id,
+        passive: friend_id,
     }) {
         return true;
     };
@@ -51,8 +51,8 @@ pub fn reject_friend(id_pair: IdPair) -> bool {
     };
 
     if let Ok(_) = delete_friend(AddFriend {
-        acctive: my_id,
-        pussive: friend_id,
+        active: my_id,
+        passive: friend_id,
     }) {
         return true;
     }
@@ -159,10 +159,12 @@ pub fn get_friend_list(my_id: i32) -> FriendList {
     // mutual と one_side に振り分ける
     // idを基にUserViewをとってくる -> JOINしたほうが良さそう
 
+    // 片思われ | 両思い
     let requested = get_requested_record(my_id);
+    // 片思い | 両思い
     let applied = get_applied_record(my_id);
     let (mutual, one_side): (Vec<_>, Vec<_>) =
-        requested.into_iter().partition(|a| applied.contains(&a.id));
+        requested.into_iter().partition(|r| applied.contains(&r.id));
     let result = FriendList { one_side, mutual };
     // println!("{:#?}", result);
     return result;
@@ -198,19 +200,22 @@ mod tests {
         println!("uv2.id {:#?}", uv2.id);
         println!("uv3.id {:#?}", uv3.id);
         // uv1 -> uv2
+        // uv1 は uv2 に片思いしている
         let _ = insert_friend(AddFriend {
-            acctive: uv1.id,
-            pussive: uv2.id,
+            active: uv1.id,
+            passive: uv2.id,
         });
         // uv2 -> uv1
+        // uv1 は uv2 に片思われされている。= mutual
         let _ = insert_friend(AddFriend {
-            acctive: uv2.id,
-            pussive: uv1.id,
+            active: uv2.id,
+            passive: uv1.id,
         });
-        // uv1 -> uv3
+        // uv3 -> uv1
+        // uv1 は uv3 に片思われされている。= one_side
         let _ = insert_friend(AddFriend {
-            acctive: uv1.id,
-            pussive: uv3.id,
+            active: uv3.id,
+            passive: uv1.id,
         });
         let result = get_friend_list(uv1.id);
         assert_eq!(

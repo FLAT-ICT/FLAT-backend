@@ -1,7 +1,7 @@
 table! {
-    friends (acctive, pussive) {
-        acctive -> Integer,
-        pussive -> Integer,
+    friends (active, passive) {
+        active -> Integer,
+        passive -> Integer,
         created_at -> Timestamp,
         blocked_at -> Nullable<Timestamp>,
     }
