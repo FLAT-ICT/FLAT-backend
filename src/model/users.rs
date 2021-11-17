@@ -40,11 +40,19 @@ mod tests {
         assert!(update_beacon(uv.id, 0, 7945));
     }
     #[test]
-    fn not_exist_spot() {
+    fn did_exit_region() {
         let uv = create_user(NameAndPassword {
             name: &"spot_test2".to_string(),
             hashed_password: &"".to_string(),
         });
-        assert_ne!(true, update_beacon(uv.id, 0, 0));
+        assert!(update_beacon(uv.id, 0, -1));
+    }
+    #[test]
+    fn not_exist_spot() {
+        let uv = create_user(NameAndPassword {
+            name: &"spot_test3".to_string(),
+            hashed_password: &"".to_string(),
+        });
+        assert_eq!(false, update_beacon(uv.id, 0, 0));
     }
 }
