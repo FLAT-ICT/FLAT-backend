@@ -27,11 +27,11 @@ pub async fn create_user(
     (StatusCode::OK, Json(inserted))
 }
 
-#[derive(Deserialize)]
-pub struct BeaconIdnetifier {
-    major: i32,
-    minor: i32,
-}
+// #[derive(Deserialize)]
+// pub struct BeaconIdnetifier {
+//     major: i32,
+//     minor: i32,
+// }
 
 pub async fn update_beacon(Json(payload): Json<ScannedBeacon>) -> impl IntoResponse {
     users::udpate_beacon(payload.user_id, payload.major, payload.minor);

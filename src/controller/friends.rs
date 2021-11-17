@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use crate::model;
 use crate::model::friends::search_user;
-use crate::view::{FriendList, IdAndName, IdPair, ResultMessage, SearchUser};
-use axum::extract::{Path, Query};
+use crate::view::{IdAndName, IdPair, ResultMessage, SearchUser};
+use axum::extract::Query;
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 use model::friends::{self, get_friend_list};
@@ -44,7 +44,8 @@ pub async fn check_friend_status(
     match result {
         Ok(v) => {
             println!("{:#?}", v);
-            return Ok((StatusCode::OK, Json(v)))},
+            return Ok((StatusCode::OK, Json(v)));
+        }
         Err(e) => {
             println!("{:#?}", e);
             return Err(e);
@@ -59,7 +60,6 @@ pub async fn check_friend_status(
 
 // 構造体かHashMapで受けなきゃいけなかった
 pub async fn friend_list(Query(user_id): Query<HashMap<String, i32>>) -> impl IntoResponse {
-    
     let fl = get_friend_list(*(user_id.get("my_id").unwrap()));
     println!("{:#?}", fl);
     return (StatusCode::OK, Json(fl));

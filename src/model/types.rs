@@ -10,7 +10,6 @@ pub struct UserId {
     pub id: i32,
 }
 
-
 #[derive(Debug)]
 pub enum SomeError {
     ValidationError,
@@ -39,24 +38,23 @@ pub enum SomeError {
 //     pub beacon: Option<String>,
 // }
 
-pub struct Beacon {
-    pub uuid: String,
-    pub major: u32,
-    pub minor: u32,
-}
+// pub struct Beacon {
+//     pub uuid: String,
+//     pub major: u32,
+//     pub minor: u32,
+// }
 
+// pub struct Scan {
+//     pub rssi: f32,
+//     pub distance: f32,
+// }
 
-pub struct Scan {
-    pub rssi: f32,
-    pub distance: f32,
-}
+// pub enum _ScannedBeacon {
+//     Beacon(Beacon),
+//     Scan(Scan),
+// }
 
-pub enum _ScannedBeacon {
-    Beacon(Beacon),
-    Scan(Scan),
-}
-
-pub struct Region {
-    identifier: String,
-    uuid: String,
-}
+// pub struct Region {
+//     identifier: String,
+//     uuid: String,
+// }
