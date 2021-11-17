@@ -225,11 +225,9 @@ mod beacon {
             .post(base_url.to_string() + "/v1/user/beacon")
             .json(&ScannedBeacon {
                 user_id: user_id,
-                uuid: "this-is-uuid".to_string(),
                 major: 0,
-                minor: 43303,
-                rssi: 0.,
-                distance: 1.0,
+                minor: 7945,
+                rssi: 0,
             })
             .send()
             .await
@@ -251,7 +249,7 @@ mod beacon {
             Ok(v) => match v.json::<UserView>().await {
                 Ok(user_info) => {
                     println!("{:#?}", &user_info);
-                    assert_eq!((&user_info).spot, Some("127教員室".to_string()));
+                    assert_eq!((&user_info).spot, Some("そらの家".to_string()));
                 }
                 Err(e) => println!("{:?}", e),
             },
