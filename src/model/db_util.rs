@@ -169,22 +169,34 @@ pub fn insert_spots_from_csv(school_spot: InsertableSpot) -> Result<usize, diese
         .execute(&conn)
 }
 
-pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) {
+pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) -> bool {
     let conn = establish_connection();
 
-    diesel::update(users.find(&my_id))
-        .set(spot.eq(get_spot(&conn, major_id, minor_id)))
-        .execute(&conn)
-        .expect("更新失敗");
+    if let Some(s) = get_spot(&conn, major_id, minor_id) {
+        match diesel::update(users.find(&my_id))
+            .set(spot.eq(s))
+            .execute(&conn)
+        {
+            Ok(v) => {
+                println!("{}", v);
+                return true;
+            }
+            Err(_) => return false,
+        }
+    } else {
+        return false;
+    }
 
-    pub fn get_spot(conn: &MysqlConnection, major_id: i32, minor_id: i32) -> String {
+    pub fn get_spot(conn: &MysqlConnection, major_id: i32, minor_id: i32) -> Option<String> {
         // let conn = establish_connection();
         let result = spots
             .filter(major.eq(&major_id))
             .filter(minor.eq(&minor_id))
             .select(name_ja)
-            .first::<String>(conn)
-            .unwrap();
-        return result;
+            .first::<String>(conn);
+        if let Ok(v) = result {
+            return Some(v);
+        }
+        return None;
     }
 }

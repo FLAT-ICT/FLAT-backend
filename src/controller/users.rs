@@ -34,11 +34,19 @@ pub struct BeaconIdnetifier {
 }
 
 pub async fn update_beacon(Json(payload): Json<ScannedBeacon>) -> impl IntoResponse {
-    users::udpate_beacon(payload.user_id, payload.major, payload.minor);
-    (
-        StatusCode::OK,
-        Json(ResultMessage {
-            message: "Ok".to_string(),
-        }),
-    )
+    if let true = users::update_beacon(payload.user_id, payload.major, payload.minor) {
+        (
+            StatusCode::OK,
+            Json(ResultMessage {
+                message: "Ok".to_string(),
+            }),
+        )
+    } else {
+        (
+            StatusCode::NOT_FOUND,
+            Json(ResultMessage {
+                message: "Ng".to_string(),
+            }),
+        )
+    }
 }
