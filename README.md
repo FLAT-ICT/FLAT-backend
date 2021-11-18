@@ -1,5 +1,11 @@
 # fun-location-backend
 
+初回ダウンロード時やってほしいこと
+```
+rm -rf espresso-beacons
+./scripts/import_csv.sh
+```
+
 API
 
 サーバー起動
