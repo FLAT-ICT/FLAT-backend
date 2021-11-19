@@ -10,7 +10,9 @@ API
 
 サーバー起動
 
+`-d` をつけるとバックグラウンドで動く
 ```
+docker compose up --build flat-backend
 docker compose up --build -d flat-backend
 ```
 
