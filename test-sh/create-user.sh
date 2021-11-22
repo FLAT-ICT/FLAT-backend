@@ -5,11 +5,11 @@ if [ $# -ne 2 ]; then
     exit 1
 fi
 
-curl -X 'POST' \                                                    
-  'http://127.0.0.1:3000/v1/register' \   
+curl -X 'POST' \
+  'http://127.0.0.1:3000/v1/register' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d "{
-  \"name\": $1,
-  \"password\": $2
+  \"name\": \"$1\",
+  \"password\": \"$2\"
 }"
