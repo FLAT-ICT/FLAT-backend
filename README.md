@@ -33,14 +33,6 @@ docker compose down -v
 こちらを参照してください
 [FastAPI - Swagger UI](http://34.68.157.198:8080/docs#/)
 
-
-### API のテスト
-1. `test-sh` の中に移動してください
-2. コマンドを実行します
-    ```
-    ./test0101.sh
-    ```
-
 ### 以下関係なし
 
 `diesel`  
