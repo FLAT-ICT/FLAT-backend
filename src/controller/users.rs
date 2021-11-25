@@ -22,6 +22,16 @@ pub async fn create_user(
         hashed_password: &payload.password,
     });
 
+
+    // 実装するものたち 
+    // TODO: パスワードのバリデーションをする
+    // TODO: パスワードのハッシュ化を行う
+    // TODO: 名前の重複チェックを行う
+    // TODO: 排他的ログイン
+    // TODO: ForceLogin
+    // TODO: あるアカウントがログインされているかのチェックフラグ
+    // TODO: 別のクライアントでログインしたとき、旧クライアントはログアウトされるようにするが、それをどう実現するか決める
+
     // this will be converted into a JSON response
     // with a status code of `201 Created`
     (StatusCode::OK, Json(inserted))
