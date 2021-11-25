@@ -2,7 +2,7 @@
 extern crate diesel;
 
 use axum::{
-    handler::{get, post},
+    routing::{get, post},
     Router,
 };
 use std::net::SocketAddr;
@@ -22,7 +22,6 @@ mod schema;
 async fn main() {
     if let Err(err) = read_csv_and_write_db::run() {
         println!("{}", err);
-        // process::exit(1);
     }
 
     // トレーサーを初期化
