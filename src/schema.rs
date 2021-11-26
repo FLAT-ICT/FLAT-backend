@@ -27,9 +27,11 @@ table! {
         status -> Integer,
         spot -> Nullable<Text>,
         icon_path -> Text,
-        hashed_password -> Text,
+        salt -> Text,
+        hash -> Text,
         created_at -> Timestamp,
         updated_at -> Timestamp,
+        logedin_at -> Nullable<Timestamp>,
     }
 }
 
