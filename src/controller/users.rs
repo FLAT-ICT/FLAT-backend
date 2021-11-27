@@ -39,6 +39,9 @@ pub async fn create_user(
 }
 
 pub async fn login(Json(credential): Json<UserCredential>) -> impl IntoResponse {
+    // let result = users::login(credential);
+    // 400 invalid password
+    // 404 user notfound
     ()
 }
 

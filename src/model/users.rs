@@ -1,5 +1,13 @@
-use crate::{repository::UserHashedCredential, view::{IsLogedIn, UserTimestamp, UserView}};
-use super::db_util::{get_logedin_at, insert_user, update_spot};
+// use diesel::serialize::Result;
+
+use super::{
+    db_util::{get_logedin_at, insert_user, update_spot},
+    types::SomeError,
+};
+use crate::{
+    repository::UserHashedCredential,
+    view::{IsLogedIn, UserCredential, UserTimestamp, UserView},
+};
 
 pub fn create_user(credential: UserHashedCredential) -> UserView {
     // println!("{:#?}", create_usr2.json::<UserView>().await.unwrap());
@@ -12,8 +20,6 @@ pub fn create_user(credential: UserHashedCredential) -> UserView {
 
     result
 }
-
-
 
 pub fn is_loged_in(user_timestamp: UserTimestamp) -> IsLogedIn {
     if let Some(last_login_timestamp) = get_logedin_at(&user_timestamp) {
@@ -32,6 +38,24 @@ pub fn is_loged_in(user_timestamp: UserTimestamp) -> IsLogedIn {
         own: false,
         others: false,
     };
+}
+
+pub fn login(credential: UserCredential) -> Result<UserView, SomeError> {
+    // validation
+    let c = &credential.to_hash();
+    // パスワードチェック
+    // let result = db_util::login(c);
+    // return result;
+    todo!();
+    // Ok(())
+}
+
+fn password_validator(password: String) -> String {
+    todo!("8文字以上256文字以下, 英数字のみ")
+}
+
+fn match_password(password: String) -> bool {
+    false
 }
 
 pub fn update_beacon(user_id: i32, major_id: i32, minor_id: i32) -> bool {
