@@ -82,3 +82,9 @@ pub struct ScannedBeacon {
     pub rssi: i32,
     // pub distance: f32,
 }
+
+#[derive(Deserialize)]
+pub struct UserTimestamp {
+    pub id: i32,
+    pub logedin_at: String,
+}

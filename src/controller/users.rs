@@ -1,7 +1,4 @@
-use crate::{
-    model::users,
-    view::{ResultMessage, ScannedBeacon, UserCredential},
-};
+use crate::{model::users, view::{ResultMessage, ScannedBeacon, UserCredential, UserTimestamp}};
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 use serde::{Deserialize, Serialize};
@@ -39,6 +36,10 @@ pub async fn create_user(
 }
 
 pub async fn login(Json(credential): Json<UserCredential>) -> impl IntoResponse {
+    ()
+}
+
+pub async fn is_logedin(Json(user_timestamp): Json<UserTimestamp>) -> impl IntoResponse {
     ()
 }
 
