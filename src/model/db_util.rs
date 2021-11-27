@@ -5,7 +5,11 @@ use crate::repository::InsertableSpot;
 use crate::repository::User;
 use crate::repository::UserHashedCredential;
 use crate::schema;
+use crate::view::UserTimestamp;
 use crate::view::UserView;
+use chrono::DateTime;
+use chrono::NaiveDateTime;
+use chrono::Utc;
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
 use diesel::ExpressionMethods;
@@ -127,7 +131,7 @@ pub fn get_requested_record(my_id: i32) -> Vec<UserView> {
             users::status,
             users::icon_path,
             users::spot,
-            users::logedin_at
+            users::logedin_at,
         ))
         .load::<UserView>(&conn)
         .unwrap();
@@ -210,4 +214,14 @@ pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) -> bool {
         }
         return None;
     }
+}
+
+pub fn get_logedin_at(user_timestamp: &UserTimestamp) -> Option<NaiveDateTime> {
+    let conn = establish_connection();
+    let last_login_timestamp = users
+        .filter(id.eq(&user_timestamp.id))
+        .select(users::logedin_at)
+        .first::<Option<NaiveDateTime>>(&conn)
+        .unwrap();
+    last_login_timestamp
 }

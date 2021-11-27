@@ -86,5 +86,11 @@ pub struct ScannedBeacon {
 #[derive(Deserialize)]
 pub struct UserTimestamp {
     pub id: i32,
-    pub logedin_at: String,
+    pub logedin_at: NaiveDateTime,
+}
+
+#[derive(Serialize)]
+pub struct IsLogedIn {
+    pub own: bool,
+    pub others: bool,
 }

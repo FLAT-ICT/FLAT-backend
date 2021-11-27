@@ -1,11 +1,7 @@
-use crate::{
-    repository::UserHashedCredential,
-    view::UserView,
-};
+use crate::{repository::UserHashedCredential, view::{IsLogedIn, UserTimestamp, UserView}};
+use super::db_util::{get_logedin_at, insert_user, update_spot};
 
-use super::db_util::{insert_user, update_spot};
-
-pub fn create_user(credential:  UserHashedCredential) -> UserView {
+pub fn create_user(credential: UserHashedCredential) -> UserView {
     // println!("{:#?}", create_usr2.json::<UserView>().await.unwrap());
     // let name = name_and_password.name.to_string();
     // let raw_password = name_and_password.password.to_string();
@@ -17,6 +13,27 @@ pub fn create_user(credential:  UserHashedCredential) -> UserView {
     result
 }
 
+
+
+pub fn is_loged_in(user_timestamp: UserTimestamp) -> IsLogedIn {
+    if let Some(last_login_timestamp) = get_logedin_at(&user_timestamp) {
+        if last_login_timestamp == user_timestamp.logedin_at {
+            return IsLogedIn {
+                own: true,
+                others: false,
+            };
+        }
+        return IsLogedIn {
+            own: true,
+            others: false,
+        };
+    };
+    return IsLogedIn {
+        own: false,
+        others: false,
+    };
+}
+
 pub fn update_beacon(user_id: i32, major_id: i32, minor_id: i32) -> bool {
     // is_exist_beacon(major_id, minor_id)
     update_spot(user_id, major_id, minor_id)
@@ -24,9 +41,7 @@ pub fn update_beacon(user_id: i32, major_id: i32, minor_id: i32) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        model::users::update_beacon, view::UserCredential,
-    };
+    use crate::{model::users::update_beacon, view::UserCredential};
 
     use super::create_user;
 
