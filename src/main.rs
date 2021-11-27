@@ -79,10 +79,10 @@ mod search_user {
     use crate::repository::{Friend, User};
     use crate::schema::friends::dsl::*;
     use crate::schema::users::dsl::*;
-    use crate::view::{SearchUser, UserView};
+    use crate::view::{SearchUser, UserCredential, UserView};
     use crate::{
         model::db_util::establish_connection,
-        view::{CreateUser, IdPair},
+        view::IdPair,
     };
     use axum::http;
     use diesel::RunQueryDsl;
@@ -93,7 +93,7 @@ mod search_user {
         let client = reqwest::Client::new();
         let create_usr1 = client
             .post(base_url.to_string() + "/v1/register")
-            .json(&CreateUser {
+            .json(&UserCredential {
                 name: "usr1".to_string(),
                 password: "".to_string(),
             })
@@ -132,7 +132,7 @@ mod search_user {
         let client = reqwest::Client::new();
         let create_usr1 = client
             .post(base_url.to_string() + "/v1/register")
-            .json(&CreateUser {
+            .json(&UserCredential {
                 name: "usr1".to_string(),
                 password: "".to_string(),
             })
@@ -143,7 +143,7 @@ mod search_user {
 
         let create_usr2 = client
             .post(base_url.to_string() + "/v1/register")
-            .json(&CreateUser {
+            .json(&UserCredential {
                 name: "usr2".to_string(),
                 password: "".to_string(),
             })
@@ -196,7 +196,7 @@ mod search_user {
 mod beacon {
     // use crate::model::db_util::establish_connection;
     // use crate::schema::users::dsl::*;
-    use crate::view::{CreateUser, ScannedBeacon, UserView};
+    use crate::view::{ScannedBeacon, UserCredential, UserView};
     use axum::http;
     // use diesel::RunQueryDsl;
 
@@ -209,7 +209,7 @@ mod beacon {
         let client = reqwest::Client::new();
         let create_usr1 = client
             .post(base_url.to_string() + "/v1/register")
-            .json(&CreateUser {
+            .json(&UserCredential {
                 name: "usr1".to_string(),
                 password: "".to_string(),
             })

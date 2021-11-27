@@ -1,7 +1,6 @@
 use crate::{
     model::users,
-    repository::NameAndPassword,
-    view::{CreateUser, ResultMessage, ScannedBeacon},
+    view::{ResultMessage, ScannedBeacon, UserCredential},
 };
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
@@ -15,15 +14,17 @@ struct Id {
 pub async fn create_user(
     // this argument tells axum to parse the request body
     // as JSON into a `CreateUser` type
-    Json(payload): Json<CreateUser>,
-) -> impl IntoResponse {
-    let inserted = users::create_user(NameAndPassword {
-        name: &payload.name,
-        hashed_password: &payload.password,
-    });
+    Json(payload): Json<UserCredential>,
+) -> impl IntoResponse{
+    let inserted = users::create_user(
+        UserCredential {
+            name: payload.name,
+            password: payload.password,
+        }
+        .to_hash(),
+    );
 
-
-    // 実装するものたち 
+    // 実装するものたち
     // TODO: パスワードのバリデーションをする
     // TODO: パスワードのハッシュ化を行う
     // TODO: 名前の重複チェックを行う

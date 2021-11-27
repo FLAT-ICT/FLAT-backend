@@ -5,6 +5,7 @@ use crate::repository::IdNamePath;
 use crate::repository::InsertableSpot;
 // use crate::repository::NameAndPassword;
 use crate::repository::User;
+use crate::repository::UserHashedCredential;
 use crate::schema;
 use crate::view::UserView;
 use diesel::mysql::MysqlConnection;
@@ -51,12 +52,13 @@ pub fn is_exist_id(target_id: i32) -> bool {
     }
 }
 
-pub fn insert_user(user_name: String, password: String) -> UserView {
+pub fn insert_user(hashed_credential: UserHashedCredential) -> UserView {
     let conn = establish_connection();
     let _inserted_row = diesel::insert_into(users)
         .values((
-            name.eq(user_name),
-            hashed_password.eq(password),
+            name.eq(hashed_credential.name),
+            salt.eq(hashed_credential.salt),
+            hash.eq(hashed_credential.hash),
             icon_path.eq(&"https://dummyimage.com/256x256/000/fff.png&text=icon".to_string()),
         ))
         .execute(&conn)

@@ -3,6 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
+
 // `input` /v1/users/check
 // `input` /v1/friends/add
 // `input` /v1/friends/reject
@@ -50,10 +51,20 @@ pub struct ResultMessage {
 
 // the input to our `create_user` handler
 #[derive(Deserialize, Serialize)]
-pub struct CreateUser {
+pub struct UserCredential {
     pub name: String,
     pub password: String,
 }
+
+// impl UserCredential{
+//     fn to_hash(self: UserCredential) -> UserHashedCredential<'static> {
+//         return UserHashedCredential{
+//             name: todo!(),
+//             salt: todo!(),
+//             hash: todo!(),
+//         }
+//     }
+// }
 
 #[derive(Serialize, Queryable, Debug, Deserialize, PartialEq)]
 pub struct UserView {
