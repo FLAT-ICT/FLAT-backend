@@ -15,7 +15,7 @@ pub async fn create_user(
     // this argument tells axum to parse the request body
     // as JSON into a `CreateUser` type
     Json(payload): Json<UserCredential>,
-) -> impl IntoResponse{
+) -> impl IntoResponse {
     let inserted = users::create_user(
         UserCredential {
             name: payload.name,
@@ -36,6 +36,10 @@ pub async fn create_user(
     // this will be converted into a JSON response
     // with a status code of `201 Created`
     (StatusCode::OK, Json(inserted))
+}
+
+pub async fn login(Json(credential): Json<UserCredential>) -> impl IntoResponse {
+    ()
 }
 
 // #[derive(Deserialize)]

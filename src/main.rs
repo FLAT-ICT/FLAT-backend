@@ -14,6 +14,8 @@ mod view;
 use controller::friends::{add_friend, check_friend_status, friend_list, reject_friend};
 use controller::users::create_user;
 use controller::users::update_beacon;
+
+use crate::controller::users::login;
 mod read_csv_and_write_db;
 mod repository;
 mod schema;
@@ -33,6 +35,7 @@ async fn main() {
         .route("/", get(root))
         // `POST /user` goes to `create_user`
         .route("/v1/register", post(create_user))
+        .route("/v1/user/login", post(login))
         .route("/v1/user", post(create_user))
         .route("/v1/user/search", get(check_friend_status))
         .route("/v1/user/beacon", post(update_beacon))
@@ -80,10 +83,7 @@ mod search_user {
     use crate::schema::friends::dsl::*;
     use crate::schema::users::dsl::*;
     use crate::view::{SearchUser, UserCredential, UserView};
-    use crate::{
-        model::db_util::establish_connection,
-        view::IdPair,
-    };
+    use crate::{model::db_util::establish_connection, view::IdPair};
     use axum::http;
     use diesel::RunQueryDsl;
 
