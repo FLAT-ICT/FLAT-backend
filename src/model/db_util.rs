@@ -1,16 +1,13 @@
-// use crate::model::types::User;
 use crate::repository::AddFriend;
 use crate::repository::Friend;
 use crate::repository::IdNamePath;
 use crate::repository::InsertableSpot;
-// use crate::repository::NameAndPassword;
 use crate::repository::User;
 use crate::repository::UserHashedCredential;
 use crate::schema;
 use crate::view::UserView;
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
-// use diesel::serialize::Result;
 use diesel::ExpressionMethods;
 use diesel::QueryDsl;
 use dotenv::dotenv;
@@ -53,6 +50,7 @@ pub fn is_exist_id(target_id: i32) -> bool {
 }
 
 pub fn insert_user(hashed_credential: UserHashedCredential) -> UserView {
+    let now = chrono::offset::Utc::now().naive_utc();
     let conn = establish_connection();
     let _inserted_row = diesel::insert_into(users)
         .values((
@@ -60,6 +58,7 @@ pub fn insert_user(hashed_credential: UserHashedCredential) -> UserView {
             salt.eq(hashed_credential.salt),
             hash.eq(hashed_credential.hash),
             icon_path.eq(&"https://dummyimage.com/256x256/000/fff.png&text=icon".to_string()),
+            logedin_at.eq(now),
         ))
         .execute(&conn)
         .unwrap();
@@ -72,6 +71,7 @@ pub fn insert_user(hashed_credential: UserHashedCredential) -> UserView {
         status: last_insert_user.status,
         icon_path: last_insert_user.icon_path,
         spot: last_insert_user.spot,
+        logined_at: last_insert_user.logedin_at,
     };
     return user_view;
 }
@@ -127,6 +127,7 @@ pub fn get_requested_record(my_id: i32) -> Vec<UserView> {
             users::status,
             users::icon_path,
             users::spot,
+            users::logedin_at
         ))
         .load::<UserView>(&conn)
         .unwrap();

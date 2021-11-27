@@ -1,8 +1,8 @@
+use chrono::NaiveDateTime;
 // use once_cell::sync::Lazy;
 // use regex::Regex;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
-
 
 // `input` /v1/users/check
 // `input` /v1/friends/add
@@ -56,16 +56,6 @@ pub struct UserCredential {
     pub password: String,
 }
 
-// impl UserCredential{
-//     fn to_hash(self: UserCredential) -> UserHashedCredential<'static> {
-//         return UserHashedCredential{
-//             name: todo!(),
-//             salt: todo!(),
-//             hash: todo!(),
-//         }
-//     }
-// }
-
 #[derive(Serialize, Queryable, Debug, Deserialize, PartialEq)]
 pub struct UserView {
     pub id: i32,
@@ -73,6 +63,7 @@ pub struct UserView {
     pub status: i32,
     pub icon_path: String,
     pub spot: Option<String>,
+    pub logined_at: Option<NaiveDateTime>,
 }
 
 #[derive(Serialize, Deserialize)]
