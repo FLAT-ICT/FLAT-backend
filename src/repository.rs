@@ -38,7 +38,7 @@ pub struct User {
     pub hash: Vec<u8>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
-    pub logedin_at: Option<NaiveDateTime>,
+    pub loggedin_at: Option<NaiveDateTime>,
 }
 
 #[derive(Queryable)]

@@ -62,7 +62,7 @@ pub fn insert_user(hashed_credential: UserHashedCredential) -> UserView {
             salt.eq(hashed_credential.salt),
             hash.eq(hashed_credential.hash),
             icon_path.eq(&"https://dummyimage.com/256x256/000/fff.png&text=icon".to_string()),
-            logedin_at.eq(now),
+            loggedin_at.eq(now),
         ))
         .execute(&conn)
         .unwrap();
@@ -75,7 +75,7 @@ pub fn insert_user(hashed_credential: UserHashedCredential) -> UserView {
         status: last_insert_user.status,
         icon_path: last_insert_user.icon_path,
         spot: last_insert_user.spot,
-        logedin_at: last_insert_user.logedin_at,
+        loggedin_at: last_insert_user.loggedin_at,
     };
     return user_view;
 }
@@ -131,7 +131,7 @@ pub fn get_requested_record(my_id: i32) -> Vec<UserView> {
             users::status,
             users::icon_path,
             users::spot,
-            users::logedin_at,
+            users::loggedin_at,
         ))
         .load::<UserView>(&conn)
         .unwrap();
@@ -216,11 +216,11 @@ pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) -> bool {
     }
 }
 
-pub fn get_logedin_at(user_timestamp: &UserTimestamp) -> Option<NaiveDateTime> {
+pub fn get_loggedin_at(user_timestamp: &UserTimestamp) -> Option<NaiveDateTime> {
     let conn = establish_connection();
     let last_login_timestamp = users
         .filter(id.eq(&user_timestamp.id))
-        .select(users::logedin_at)
+        .select(users::loggedin_at)
         .first::<Option<NaiveDateTime>>(&conn)
         .unwrap();
     last_login_timestamp
@@ -241,7 +241,7 @@ pub fn login(user_name: &String) -> UserView {
 
     let now = chrono::offset::Utc::now().naive_utc();
     diesel::update(users.filter(name.eq(user_name)))
-        .set(logedin_at.eq(Some(now)))
+        .set(loggedin_at.eq(Some(now)))
         .execute(&conn)
         .unwrap();
 
@@ -253,7 +253,7 @@ pub fn login(user_name: &String) -> UserView {
             users::status,
             users::icon_path,
             users::spot,
-            users::logedin_at,
+            users::loggedin_at,
         ))
         .first::<UserView>(&conn)
         .unwrap();

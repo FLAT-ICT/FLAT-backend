@@ -63,7 +63,7 @@ pub struct UserView {
     pub status: i32,
     pub icon_path: String,
     pub spot: Option<String>,
-    pub logedin_at: Option<NaiveDateTime>,
+    pub loggedin_at: Option<NaiveDateTime>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -86,7 +86,7 @@ pub struct ScannedBeacon {
 #[derive(Deserialize)]
 pub struct UserTimestamp {
     pub id: i32,
-    pub logedin_at: NaiveDateTime,
+    pub loggedin_at: NaiveDateTime,
 }
 
 #[derive(Serialize)]

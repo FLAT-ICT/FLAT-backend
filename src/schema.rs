@@ -31,7 +31,7 @@ table! {
         hash -> Binary,
         created_at -> Timestamp,
         updated_at -> Timestamp,
-        logedin_at -> Nullable<Timestamp>,
+        loggedin_at -> Nullable<Timestamp>,
     }
 }
 

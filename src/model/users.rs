@@ -12,7 +12,7 @@ use crate::{
     repository::UserHashedCredential,
     view::{IsLogedIn, UserCredential, UserTimestamp, UserView},
 };
-use db_util::{get_logedin_at, get_secret, insert_user, update_spot};
+use db_util::{get_loggedin_at, get_secret, insert_user, update_spot};
 
 pub fn create_user(credential: UserHashedCredential) -> UserView {
     // println!("{:#?}", create_usr2.json::<UserView>().await.unwrap());
@@ -27,8 +27,8 @@ pub fn create_user(credential: UserHashedCredential) -> UserView {
 }
 
 pub fn is_loged_in(user_timestamp: UserTimestamp) -> IsLogedIn {
-    if let Some(last_login_timestamp) = get_logedin_at(&user_timestamp) {
-        if last_login_timestamp == user_timestamp.logedin_at {
+    if let Some(last_login_timestamp) = get_loggedin_at(&user_timestamp) {
+        if last_login_timestamp == user_timestamp.loggedin_at {
             return IsLogedIn {
                 own: true,
                 others: false,
