@@ -10,7 +10,7 @@ use super::types::SomeError;
 use crate::{
     model::db_util,
     repository::UserHashedCredential,
-    view::{IsLogedIn, UserCredential, UserTimestamp, UserView},
+    view::{IsLoggedIn, UserCredential, UserTimestamp, UserView},
 };
 use db_util::{get_loggedin_at, get_secret, insert_user, update_spot};
 
@@ -26,20 +26,20 @@ pub fn create_user(credential: UserHashedCredential) -> UserView {
     result
 }
 
-pub fn is_loged_in(user_timestamp: UserTimestamp) -> IsLogedIn {
+pub fn is_loged_in(user_timestamp: UserTimestamp) -> IsLoggedIn {
     if let Some(last_login_timestamp) = get_loggedin_at(&user_timestamp) {
         if last_login_timestamp == user_timestamp.loggedin_at {
-            return IsLogedIn {
+            return IsLoggedIn {
                 own: true,
                 others: false,
             };
         }
-        return IsLogedIn {
-            own: true,
-            others: false,
+        return IsLoggedIn {
+            own: false,
+            others: true,
         };
     };
-    return IsLogedIn {
+    return IsLoggedIn {
         own: false,
         others: false,
     };

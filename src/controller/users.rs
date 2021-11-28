@@ -49,7 +49,7 @@ pub async fn login(Json(credential): Json<UserCredential>) -> impl IntoResponse 
     // ()
 }
 
-pub async fn is_logedin(Json(user_timestamp): Json<UserTimestamp>) -> impl IntoResponse {
+pub async fn is_loggedin(Json(user_timestamp): Json<UserTimestamp>) -> impl IntoResponse {
     let result = users::is_loged_in(user_timestamp);
     (StatusCode::OK, Json(result))
 }

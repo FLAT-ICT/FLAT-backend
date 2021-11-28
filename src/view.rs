@@ -90,7 +90,7 @@ pub struct UserTimestamp {
 }
 
 #[derive(Serialize)]
-pub struct IsLogedIn {
+pub struct IsLoggedIn {
     pub own: bool,
     pub others: bool,
 }
