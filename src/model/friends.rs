@@ -68,6 +68,7 @@ impl IntoResponse for SomeError {
             SomeError::ValidationError => Body::from("something went wrong"),
             SomeError::NotExistError => Body::from("something else went wrong"),
             SomeError::SameIdError => Body::from("something else went wrong"),
+            SomeError::InvalidPasswordError => Body::from("password is not match"),
         };
 
         Response::builder()
@@ -174,25 +175,38 @@ pub fn get_friend_list(my_id: i32) -> FriendList {
 
 #[cfg(test)]
 mod tests {
-    use crate::{model::{db_util::insert_friend, users::create_user}, repository::AddFriend, view::{FriendList, IdPair, UserCredential}};
+    use crate::{
+        model::{db_util::insert_friend, users::create_user},
+        repository::AddFriend,
+        view::{FriendList, IdPair, UserCredential},
+    };
 
     use super::{get_friend_list, reject_friend};
 
     // #[tokio::test]
     #[test]
     fn test_requested_and_applied() {
-        let uv1 = create_user(UserCredential {
-            name: "test1".to_string(),
-            password: "".to_string(),
-        }.to_hash());
-        let uv2 = create_user(UserCredential {
-            name: "test2".to_string(),
-            password: "".to_string(),
-        }.to_hash());
-        let uv3 = create_user(UserCredential {
-            name: "test3".to_string(),
-            password: "".to_string(),
-        }.to_hash());
+        let uv1 = create_user(
+            UserCredential {
+                name: "test1".to_string(),
+                password: "".to_string(),
+            }
+            .to_hash(),
+        );
+        let uv2 = create_user(
+            UserCredential {
+                name: "test2".to_string(),
+                password: "".to_string(),
+            }
+            .to_hash(),
+        );
+        let uv3 = create_user(
+            UserCredential {
+                name: "test3".to_string(),
+                password: "".to_string(),
+            }
+            .to_hash(),
+        );
         println!("uv1.id {:#?}", uv1.id);
         println!("uv2.id {:#?}", uv2.id);
         println!("uv3.id {:#?}", uv3.id);
@@ -225,18 +239,27 @@ mod tests {
     }
     #[test]
     fn test_reject() {
-        let uv1 = create_user(UserCredential {
-            name: "test1".to_string(),
-            password: "".to_string(),
-        }.to_hash());
-        let uv2 = create_user(UserCredential {
-            name: "test2".to_string(),
-            password: "".to_string(),
-        }.to_hash());
-        let uv3 = create_user(UserCredential {
-            name: "test3".to_string(),
-            password: "".to_string(),
-        }.to_hash());
+        let uv1 = create_user(
+            UserCredential {
+                name: "test1".to_string(),
+                password: "".to_string(),
+            }
+            .to_hash(),
+        );
+        let uv2 = create_user(
+            UserCredential {
+                name: "test2".to_string(),
+                password: "".to_string(),
+            }
+            .to_hash(),
+        );
+        let uv3 = create_user(
+            UserCredential {
+                name: "test3".to_string(),
+                password: "".to_string(),
+            }
+            .to_hash(),
+        );
         // uv2 -> uv1
         // uv1 は uv2 に片思われされている。= can reject
         let _ = insert_friend(AddFriend {

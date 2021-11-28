@@ -39,10 +39,14 @@ pub async fn create_user(
 }
 
 pub async fn login(Json(credential): Json<UserCredential>) -> impl IntoResponse {
-    // let result = users::login(credential);
+    match users::login(credential) {
+        Ok(result) => Ok((StatusCode::OK, Json(result))),
+        Err(e) => Err(e),
+    }
+
     // 400 invalid password
     // 404 user notfound
-    ()
+    // ()
 }
 
 pub async fn is_logedin(Json(user_timestamp): Json<UserTimestamp>) -> impl IntoResponse {

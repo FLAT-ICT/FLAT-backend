@@ -55,14 +55,13 @@ pub struct UserHashedCredential {
     pub salt: String,
     pub hash: String,
 }
- 
+
 impl UserCredential {
     pub fn to_hash(&self) -> UserHashedCredential {
-
         fn convert(bytes: &[u8]) -> String {
             return bytes.iter().map(|&s| s as char).collect::<String>();
         }
-        
+
         const CREDENTIAL_LEN: usize = digest::SHA512_OUTPUT_LEN;
         // let n_iter = NonZeroU32::new(15_000).unwrap();
         let n_iter = NonZeroU32::new(1).unwrap();
@@ -127,4 +126,10 @@ impl DeserializableSpot {
             note: self.note,
         }
     }
+}
+
+#[derive(Debug, Deserialize, Queryable)]
+pub struct UserSecret {
+    pub hash: String,
+    pub salt: String,
 }

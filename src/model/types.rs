@@ -11,4 +11,5 @@ pub enum SomeError {
     ValidationError,
     NotExistError,
     SameIdError,
+    InvalidPasswordError,
 }

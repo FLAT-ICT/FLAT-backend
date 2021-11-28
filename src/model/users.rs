@@ -1,13 +1,17 @@
 // use diesel::serialize::Result;
 
-use super::{
-    db_util::{get_logedin_at, insert_user, update_spot},
-    types::SomeError,
-};
+use std::num::NonZeroU32;
+
+use hyper::StatusCode;
+use ring::pbkdf2;
+
+use super::types::SomeError;
 use crate::{
+    model::db_util,
     repository::UserHashedCredential,
     view::{IsLogedIn, UserCredential, UserTimestamp, UserView},
 };
+use db_util::{get_logedin_at, get_secret, insert_user, update_spot};
 
 pub fn create_user(credential: UserHashedCredential) -> UserView {
     // println!("{:#?}", create_usr2.json::<UserView>().await.unwrap());
@@ -42,19 +46,32 @@ pub fn is_loged_in(user_timestamp: UserTimestamp) -> IsLogedIn {
 
 pub fn login(credential: UserCredential) -> Result<UserView, SomeError> {
     // validation
-    let c = &credential.to_hash();
+    // let c = &credential.to_hash();
     // パスワードチェック
-    // let result = db_util::login(c);
-    // return result;
-    todo!();
-    // Ok(())
+    if let false = match_password(&credential) {
+        return Err(SomeError::InvalidPasswordError);
+    }
+    let result = db_util::login(&credential.name);
+    return Ok(result);
 }
 
-fn password_validator(password: String) -> String {
+fn validate_password(password: String) -> bool {
     todo!("8文字以上256文字以下, 英数字のみ")
 }
 
-fn match_password(password: String) -> bool {
+fn match_password(credential: &UserCredential) -> bool {
+    // let salt, hash = get_credential(id)
+    //
+    let s = get_secret(&credential.name);
+    if let Ok(_) = pbkdf2::verify(
+        pbkdf2::PBKDF2_HMAC_SHA512,
+        NonZeroU32::new(1).unwrap(),
+        &s.salt.as_bytes(),
+        credential.password.as_bytes(),
+        &s.hash.as_bytes(),
+    ) {
+        return true;
+    };
     false
 }
 

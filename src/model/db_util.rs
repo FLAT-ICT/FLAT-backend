@@ -4,12 +4,12 @@ use crate::repository::IdNamePath;
 use crate::repository::InsertableSpot;
 use crate::repository::User;
 use crate::repository::UserHashedCredential;
+use crate::repository::UserSecret;
 use crate::schema;
+use crate::view::UserCredential;
 use crate::view::UserTimestamp;
 use crate::view::UserView;
-use chrono::DateTime;
 use chrono::NaiveDateTime;
-use chrono::Utc;
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
 use diesel::ExpressionMethods;
@@ -224,4 +224,38 @@ pub fn get_logedin_at(user_timestamp: &UserTimestamp) -> Option<NaiveDateTime> {
         .first::<Option<NaiveDateTime>>(&conn)
         .unwrap();
     last_login_timestamp
+}
+
+pub fn get_secret(user_name: &String) -> UserSecret {
+    let conn = establish_connection();
+    let credential = users
+        .filter(name.eq(user_name))
+        .select((users::salt, users::hash))
+        .first::<UserSecret>(&conn)
+        .unwrap();
+    credential
+}
+
+pub fn login(user_name: &String) -> UserView {
+    let conn = establish_connection();
+
+    let now = chrono::offset::Utc::now().naive_utc();
+    diesel::update(users.filter(name.eq(user_name)))
+        .set(logedin_at.eq(Some(now)))
+        .execute(&conn)
+        .unwrap();
+
+    let result = users
+        .filter(name.eq(user_name))
+        .select((
+            users::id,
+            users::name,
+            users::status,
+            users::icon_path,
+            users::spot,
+            users::logedin_at,
+        ))
+        .first::<UserView>(&conn)
+        .unwrap();
+    return result;
 }
