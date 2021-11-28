@@ -2,6 +2,7 @@
 
 use std::num::NonZeroU32;
 
+use data_encoding::HEXUPPER;
 use hyper::StatusCode;
 use ring::pbkdf2;
 
@@ -66,9 +67,9 @@ fn match_password(credential: &UserCredential) -> bool {
     if let Ok(_) = pbkdf2::verify(
         pbkdf2::PBKDF2_HMAC_SHA512,
         NonZeroU32::new(1).unwrap(),
-        &s.salt.as_bytes(),
-        credential.password.as_bytes(),
-        &s.hash.as_bytes(),
+        &s.salt,
+        &credential.password.as_bytes(),
+        &s.hash,
     ) {
         return true;
     };

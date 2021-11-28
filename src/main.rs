@@ -35,7 +35,7 @@ async fn main() {
         .route("/", get(root))
         // `POST /user` goes to `create_user`
         .route("/v1/register", post(create_user))
-        .route("/v1/user/login", post(login))
+        .route("/v1/login", post(login))
         .route("/v1/user", post(create_user))
         .route("/v1/user/search", get(check_friend_status))
         .route("/v1/user/beacon", post(update_beacon))

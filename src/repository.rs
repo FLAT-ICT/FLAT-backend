@@ -34,8 +34,8 @@ pub struct User {
     pub status: i32,
     pub spot: Option<String>,
     pub icon_path: String,
-    pub salt: String,
-    pub hash: String,
+    pub salt: Vec<u8>,
+    pub hash: Vec<u8>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub logedin_at: Option<NaiveDateTime>,
@@ -48,12 +48,12 @@ pub struct IdNamePath {
     pub icon_path: String,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Queryable)]
 #[table_name = "users"]
 pub struct UserHashedCredential {
     pub name: String,
-    pub salt: String,
-    pub hash: String,
+    pub salt: Vec<u8>,
+    pub hash: Vec<u8>,
 }
 
 impl UserCredential {
@@ -78,11 +78,10 @@ impl UserCredential {
             &self.password.as_bytes(),
             &mut pbkdf2_hash,
         );
-
         let result = UserHashedCredential {
             name: self.name.to_owned(),
-            salt: convert(&salt),
-            hash: convert(&pbkdf2_hash),
+            salt: salt.to_vec(),
+            hash: pbkdf2_hash.to_vec(),
         };
         result
     }
@@ -130,6 +129,6 @@ impl DeserializableSpot {
 
 #[derive(Debug, Deserialize, Queryable)]
 pub struct UserSecret {
-    pub hash: String,
-    pub salt: String,
+    pub salt: Vec<u8>,
+    pub hash: Vec<u8>,
 }

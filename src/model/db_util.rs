@@ -75,7 +75,7 @@ pub fn insert_user(hashed_credential: UserHashedCredential) -> UserView {
         status: last_insert_user.status,
         icon_path: last_insert_user.icon_path,
         spot: last_insert_user.spot,
-        logined_at: last_insert_user.logedin_at,
+        logedin_at: last_insert_user.logedin_at,
     };
     return user_view;
 }
