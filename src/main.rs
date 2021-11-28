@@ -39,7 +39,7 @@ async fn main() {
         .route("/v1/user", post(create_user))
         .route("/v1/user/search", get(check_friend_status))
         .route("/v1/user/beacon", post(update_beacon))
-        .route("/v1/user/is_logedin", post(is_loggedin))
+        .route("/v1/user/is_loggedin", post(is_loggedin))
         .route("/v1/friends", get(friend_list))
         .route("/v1/friends/add", post(add_friend))
         .route("/v1/friends/reject", post(reject_friend));
