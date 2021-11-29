@@ -96,7 +96,7 @@ mod search_user {
             .post(base_url.to_string() + "/v1/register")
             .json(&UserCredential {
                 name: "usr1".to_string(),
-                password: "".to_string(),
+                password: "password".to_string(),
             })
             .send()
             .await
@@ -134,8 +134,8 @@ mod search_user {
         let create_usr1 = client
             .post(base_url.to_string() + "/v1/register")
             .json(&UserCredential {
-                name: "usr1".to_string(),
-                password: "".to_string(),
+                name: "usr2_1".to_string(),
+                password: "password".to_string(),
             })
             .send()
             .await
@@ -145,8 +145,8 @@ mod search_user {
         let create_usr2 = client
             .post(base_url.to_string() + "/v1/register")
             .json(&UserCredential {
-                name: "usr2".to_string(),
-                password: "".to_string(),
+                name: "usr2_2".to_string(),
+                password: "password".to_string(),
             })
             .send()
             .await
@@ -211,8 +211,8 @@ mod beacon {
         let create_usr1 = client
             .post(base_url.to_string() + "/v1/register")
             .json(&UserCredential {
-                name: "usr1".to_string(),
-                password: "".to_string(),
+                name: "usr3_1".to_string(),
+                password: "password".to_string(),
             })
             .send()
             .await

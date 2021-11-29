@@ -71,10 +71,10 @@ pub fn is_exist_name(target_name: &str) -> bool {
     }
 }
 
-pub fn insert_user(hashed_credential: UserHashedCredential) -> UserView {
+pub fn insert_user(hashed_credential: UserHashedCredential) -> Option<UserView> {
     let now = chrono::offset::Utc::now().naive_utc();
     let conn = establish_connection();
-    let _inserted_row = diesel::insert_into(users)
+    match diesel::insert_into(users)
         .values((
             name.eq(hashed_credential.name),
             salt.eq(hashed_credential.salt),
@@ -83,19 +83,22 @@ pub fn insert_user(hashed_credential: UserHashedCredential) -> UserView {
             loggedin_at.eq(now),
         ))
         .execute(&conn)
-        .unwrap();
+    {
+        Ok(_inserted_row) => {
+            let last_insert_user = users.order(id.desc()).first::<User>(&conn).unwrap();
 
-    let last_insert_user = users.order(id.desc()).first::<User>(&conn).unwrap();
-
-    let user_view = UserView {
-        id: last_insert_user.id,
-        name: last_insert_user.name.to_string(),
-        status: last_insert_user.status,
-        icon_path: last_insert_user.icon_path,
-        spot: last_insert_user.spot,
-        loggedin_at: last_insert_user.loggedin_at,
-    };
-    return user_view;
+            let user_view = UserView {
+                id: last_insert_user.id,
+                name: last_insert_user.name.to_string(),
+                status: last_insert_user.status,
+                icon_path: last_insert_user.icon_path,
+                spot: last_insert_user.spot,
+                loggedin_at: last_insert_user.loggedin_at,
+            };
+            return Some(user_view);
+        }
+        Err(_) => (return None),
+    }
 }
 
 pub fn get_user_id_name_path(target_name: String) -> Vec<IdNamePath> {

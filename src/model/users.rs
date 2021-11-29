@@ -1,11 +1,3 @@
-// use diesel::serialize::Result;
-
-use std::num::NonZeroU32;
-
-use data_encoding::HEXUPPER;
-use hyper::StatusCode;
-use ring::pbkdf2;
-
 use super::{db_util::is_exist_name, types::SomeError};
 use crate::{
     model::db_util,
@@ -13,17 +5,17 @@ use crate::{
     view::{IsLoggedIn, UserCredential, UserTimestamp, UserView},
 };
 use db_util::{get_loggedin_at, get_secret, insert_user, update_spot};
+use ring::pbkdf2;
+use std::num::NonZeroU32;
 
-pub fn create_user(credential: UserHashedCredential) -> UserView {
-    // println!("{:#?}", create_usr2.json::<UserView>().await.unwrap());
-    // let name = name_and_password.name.to_string();
-    // let raw_password = name_and_password.password.to_string();
-    // TODO: hash with secret salt
-    // let hashed_password = raw_password;
-    // let result = insert_user(name, hashed_password);
+pub fn create_user(credential: UserHashedCredential) -> Result<UserView, SomeError> {
     let result = insert_user(credential);
 
-    result
+    if let Some(v) = result {
+        return Ok(v);
+    } else {
+        return Err(SomeError::SameNameError);
+    };
 }
 
 pub fn is_loged_in(user_timestamp: UserTimestamp) -> IsLoggedIn {
@@ -50,7 +42,7 @@ pub fn login(credential: UserCredential) -> Result<UserView, SomeError> {
     // let c = &credential.to_hash();
     // パスワードチェック
 
-    if let false = is_exist_name(&credential.name){
+    if let false = is_exist_name(&credential.name) {
         return Err(SomeError::NotExistError);
     }
 
@@ -60,7 +52,6 @@ pub fn login(credential: UserCredential) -> Result<UserView, SomeError> {
     let result = db_util::login(&credential.name);
     return Ok(result);
 }
-
 
 fn match_password(credential: &UserCredential) -> bool {
     // let salt, hash = get_credential(id)
@@ -97,7 +88,8 @@ mod tests {
                 password: "pass".to_string(),
             }
             .to_hash(),
-        );
+        )
+        .unwrap();
         assert!(update_beacon(uv.id, 0, 7945));
     }
     #[test]
@@ -108,7 +100,8 @@ mod tests {
                 password: "pass".to_string(),
             }
             .to_hash(),
-        );
+        )
+        .unwrap();
         assert!(update_beacon(uv.id, 0, -1));
     }
     #[test]
@@ -119,7 +112,8 @@ mod tests {
                 password: "pass".to_string(),
             }
             .to_hash(),
-        );
+        )
+        .unwrap();
         assert_eq!(false, update_beacon(uv.id, 0, 0));
     }
 }

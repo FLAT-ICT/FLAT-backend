@@ -1,7 +1,7 @@
 -- Your SQL goes here
 CREATE TABLE users (
     id INT NOT NULL AUTO_INCREMENT,
-    name TEXT NOT NULL,
+    name TEXT NOT NULL UNIQUE,
     status INT NOT NULL DEFAULT 0,
     spot TEXT,
     icon_path TEXT NOT NULL,

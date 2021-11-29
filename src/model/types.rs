@@ -10,6 +10,6 @@ pub struct UserId {
 pub enum SomeError {
     ValidationError,
     NotExistError,
-    SameIdError,
     InvalidPasswordError,
+    SameNameError,
 }

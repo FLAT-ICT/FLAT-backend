@@ -21,13 +21,17 @@ pub async fn create_user(
         return Err(SomeError::ValidationError);
     }
 
-    let inserted = users::create_user(
+    if let Ok(inserted) = users::create_user(
         UserCredential {
             name: payload.name,
             password: payload.password,
         }
         .to_hash(),
-    );
+    ) {
+        Ok((StatusCode::OK, Json(inserted)))
+    } else {
+        Err(SomeError::SameNameError)
+    }
 
     // 実装するものたち
     // TODO: パスワードのバリデーションをする
@@ -40,7 +44,6 @@ pub async fn create_user(
 
     // this will be converted into a JSON response
     // with a status code of `201 Created`
-    Ok((StatusCode::OK, Json(inserted)))
 }
 
 pub async fn login(Json(credential): Json<UserCredential>) -> impl IntoResponse {
