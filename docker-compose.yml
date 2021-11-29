@@ -51,7 +51,7 @@ services:
       TZ: "Asia/Tokyo"
     ports:
       - 3306:3306
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql_mode=''
     # command: mysqld
     # depends_on:
     #   - flat_backend

@@ -23,13 +23,15 @@ table! {
 table! {
     users (id) {
         id -> Integer,
-        name -> Text,
+        name -> Varchar,
         status -> Integer,
         spot -> Nullable<Text>,
         icon_path -> Text,
-        hashed_password -> Text,
+        salt -> Binary,
+        hash -> Binary,
         created_at -> Timestamp,
         updated_at -> Timestamp,
+        loggedin_at -> Nullable<Timestamp>,
     }
 }
 

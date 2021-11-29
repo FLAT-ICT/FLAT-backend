@@ -1,15 +1,17 @@
-// use crate::model::types::User;
 use crate::repository::AddFriend;
 use crate::repository::Friend;
 use crate::repository::IdNamePath;
 use crate::repository::InsertableSpot;
-// use crate::repository::NameAndPassword;
 use crate::repository::User;
+use crate::repository::UserHashedCredential;
+use crate::repository::UserSecret;
 use crate::schema;
+use crate::view::UserCredential;
+use crate::view::UserTimestamp;
 use crate::view::UserView;
+use chrono::NaiveDateTime;
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
-// use diesel::serialize::Result;
 use diesel::ExpressionMethods;
 use diesel::QueryDsl;
 use dotenv::dotenv;
@@ -51,27 +53,52 @@ pub fn is_exist_id(target_id: i32) -> bool {
     }
 }
 
-pub fn insert_user(user_name: String, password: String) -> UserView {
+pub fn is_exist_name(target_name: &str) -> bool {
     let conn = establish_connection();
-    let _inserted_row = diesel::insert_into(users)
+    let user = users.filter(name.eq(target_name)).load::<User>(&conn);
+
+    match user {
+        Ok(v) => {
+            if v.len() == 0 {
+                return false;
+            }
+            return true;
+        }
+        Err(e) => {
+            println!("{}", e);
+            return false;
+        }
+    }
+}
+
+pub fn insert_user(hashed_credential: UserHashedCredential) -> Option<UserView> {
+    let now = chrono::offset::Utc::now().naive_utc();
+    let conn = establish_connection();
+    match diesel::insert_into(users)
         .values((
-            name.eq(user_name),
-            hashed_password.eq(password),
+            name.eq(hashed_credential.name),
+            salt.eq(hashed_credential.salt),
+            hash.eq(hashed_credential.hash),
             icon_path.eq(&"https://dummyimage.com/256x256/000/fff.png&text=icon".to_string()),
+            loggedin_at.eq(now),
         ))
         .execute(&conn)
-        .unwrap();
+    {
+        Ok(_inserted_row) => {
+            let last_insert_user = users.order(id.desc()).first::<User>(&conn).unwrap();
 
-    let last_insert_user = users.order(id.desc()).first::<User>(&conn).unwrap();
-
-    let user_view = UserView {
-        id: last_insert_user.id,
-        name: last_insert_user.name.to_string(),
-        status: last_insert_user.status,
-        icon_path: last_insert_user.icon_path,
-        spot: last_insert_user.spot,
-    };
-    return user_view;
+            let user_view = UserView {
+                id: last_insert_user.id,
+                name: last_insert_user.name.to_string(),
+                status: last_insert_user.status,
+                icon_path: last_insert_user.icon_path,
+                spot: last_insert_user.spot,
+                loggedin_at: last_insert_user.loggedin_at,
+            };
+            return Some(user_view);
+        }
+        Err(_) => (return None),
+    }
 }
 
 pub fn get_user_id_name_path(target_name: String) -> Vec<IdNamePath> {
@@ -125,6 +152,7 @@ pub fn get_requested_record(my_id: i32) -> Vec<UserView> {
             users::status,
             users::icon_path,
             users::spot,
+            users::loggedin_at,
         ))
         .load::<UserView>(&conn)
         .unwrap();
@@ -207,4 +235,48 @@ pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) -> bool {
         }
         return None;
     }
+}
+
+pub fn get_loggedin_at(user_timestamp: &UserTimestamp) -> Option<NaiveDateTime> {
+    let conn = establish_connection();
+    let last_login_timestamp = users
+        .filter(id.eq(&user_timestamp.id))
+        .select(users::loggedin_at)
+        .first::<Option<NaiveDateTime>>(&conn)
+        .unwrap();
+    last_login_timestamp
+}
+
+pub fn get_secret(user_name: &String) -> UserSecret {
+    let conn = establish_connection();
+    let credential = users
+        .filter(name.eq(user_name))
+        .select((users::salt, users::hash))
+        .first::<UserSecret>(&conn)
+        .unwrap();
+    credential
+}
+
+pub fn login(user_name: &String) -> UserView {
+    let conn = establish_connection();
+
+    let now = chrono::offset::Utc::now().naive_utc();
+    diesel::update(users.filter(name.eq(user_name)))
+        .set(loggedin_at.eq(Some(now)))
+        .execute(&conn)
+        .unwrap();
+
+    let result = users
+        .filter(name.eq(user_name))
+        .select((
+            users::id,
+            users::name,
+            users::status,
+            users::icon_path,
+            users::spot,
+            users::loggedin_at,
+        ))
+        .first::<UserView>(&conn)
+        .unwrap();
+    return result;
 }

@@ -1,11 +1,11 @@
 use crate::{
-    model::users,
-    repository::NameAndPassword,
-    view::{CreateUser, ResultMessage, ScannedBeacon},
+    model::{types::SomeError, users},
+    view::{ResultMessage, ScannedBeacon, UserCredential, UserTimestamp, UserView},
 };
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 #[derive(Serialize, Deserialize)]
 struct Id {
@@ -15,16 +15,54 @@ struct Id {
 pub async fn create_user(
     // this argument tells axum to parse the request body
     // as JSON into a `CreateUser` type
-    Json(payload): Json<CreateUser>,
-) -> impl IntoResponse {
-    let inserted = users::create_user(NameAndPassword {
-        name: &payload.name,
-        hashed_password: &payload.password,
-    });
+    Json(payload): Json<UserCredential>,
+) -> Result<(StatusCode, axum::Json<UserView>), SomeError> {
+    if let Err(_) = payload.validate() {
+        return Err(SomeError::ValidationError);
+    }
+
+    if let Ok(inserted) = users::create_user(
+        UserCredential {
+            name: payload.name,
+            password: payload.password,
+        }
+        .to_hash(),
+    ) {
+        Ok((StatusCode::OK, Json(inserted)))
+    } else {
+        Err(SomeError::SameNameError)
+    }
+
+    // 実装するものたち
+    // TODO: パスワードのバリデーションをする
+    // TODO: パスワードのハッシュ化を行う
+    // TODO: 名前の重複チェックを行う
+    // TODO: 排他的ログイン
+    // TODO: ForceLogin
+    // TODO: あるアカウントがログインされているかのチェックフラグ
+    // TODO: 別のクライアントでログインしたとき、旧クライアントはログアウトされるようにするが、それをどう実現するか決める
 
     // this will be converted into a JSON response
     // with a status code of `201 Created`
-    (StatusCode::OK, Json(inserted))
+}
+
+pub async fn login(Json(credential): Json<UserCredential>) -> impl IntoResponse {
+    if let Err(_) = credential.validate() {
+        return Err(SomeError::ValidationError);
+    }
+    match users::login(credential) {
+        Ok(result) => Ok((StatusCode::OK, Json(result))),
+        Err(e) => Err(e),
+    }
+
+    // 400 invalid password
+    // 404 user notfound
+    // ()
+}
+
+pub async fn is_loggedin(Json(user_timestamp): Json<UserTimestamp>) -> impl IntoResponse {
+    let result = users::is_loged_in(user_timestamp);
+    (StatusCode::OK, Json(result))
 }
 
 // #[derive(Deserialize)]

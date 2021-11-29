@@ -14,6 +14,8 @@ mod view;
 use controller::friends::{add_friend, check_friend_status, friend_list, reject_friend};
 use controller::users::create_user;
 use controller::users::update_beacon;
+
+use crate::controller::users::{is_loggedin, login};
 mod read_csv_and_write_db;
 mod repository;
 mod schema;
@@ -33,9 +35,11 @@ async fn main() {
         .route("/", get(root))
         // `POST /user` goes to `create_user`
         .route("/v1/register", post(create_user))
+        .route("/v1/login", post(login))
         .route("/v1/user", post(create_user))
         .route("/v1/user/search", get(check_friend_status))
         .route("/v1/user/beacon", post(update_beacon))
+        .route("/v1/user/is_loggedin", post(is_loggedin))
         .route("/v1/friends", get(friend_list))
         .route("/v1/friends/add", post(add_friend))
         .route("/v1/friends/reject", post(reject_friend));
@@ -79,11 +83,8 @@ mod search_user {
     use crate::repository::{Friend, User};
     use crate::schema::friends::dsl::*;
     use crate::schema::users::dsl::*;
-    use crate::view::{SearchUser, UserView};
-    use crate::{
-        model::db_util::establish_connection,
-        view::{CreateUser, IdPair},
-    };
+    use crate::view::{SearchUser, UserCredential, UserView};
+    use crate::{model::db_util::establish_connection, view::IdPair};
     use axum::http;
     use diesel::RunQueryDsl;
 
@@ -93,9 +94,9 @@ mod search_user {
         let client = reqwest::Client::new();
         let create_usr1 = client
             .post(base_url.to_string() + "/v1/register")
-            .json(&CreateUser {
+            .json(&UserCredential {
                 name: "usr1".to_string(),
-                password: "".to_string(),
+                password: "password".to_string(),
             })
             .send()
             .await
@@ -132,9 +133,9 @@ mod search_user {
         let client = reqwest::Client::new();
         let create_usr1 = client
             .post(base_url.to_string() + "/v1/register")
-            .json(&CreateUser {
-                name: "usr1".to_string(),
-                password: "".to_string(),
+            .json(&UserCredential {
+                name: "usr2_1".to_string(),
+                password: "password".to_string(),
             })
             .send()
             .await
@@ -143,9 +144,9 @@ mod search_user {
 
         let create_usr2 = client
             .post(base_url.to_string() + "/v1/register")
-            .json(&CreateUser {
-                name: "usr2".to_string(),
-                password: "".to_string(),
+            .json(&UserCredential {
+                name: "usr2_2".to_string(),
+                password: "password".to_string(),
             })
             .send()
             .await
@@ -196,7 +197,7 @@ mod search_user {
 mod beacon {
     // use crate::model::db_util::establish_connection;
     // use crate::schema::users::dsl::*;
-    use crate::view::{CreateUser, ScannedBeacon, UserView};
+    use crate::view::{ScannedBeacon, UserCredential, UserView};
     use axum::http;
     // use diesel::RunQueryDsl;
 
@@ -209,9 +210,9 @@ mod beacon {
         let client = reqwest::Client::new();
         let create_usr1 = client
             .post(base_url.to_string() + "/v1/register")
-            .json(&CreateUser {
-                name: "usr1".to_string(),
-                password: "".to_string(),
+            .json(&UserCredential {
+                name: "usr3_1".to_string(),
+                password: "password".to_string(),
             })
             .send()
             .await
@@ -257,5 +258,186 @@ mod beacon {
 
         // DBをきれいにする
         // diesel::delete(users).execute(&conn).unwrap();
+    }
+}
+
+#[cfg(test)]
+mod create_user {
+    use crate::view::UserCredential;
+    use axum::http;
+
+    #[tokio::test]
+    async fn collect() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr5_1".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn failure_to_short_name() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn failure_to_long_name() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr5_2xxxxxxxxxxx".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn failure_to_short_password() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "5_3".to_string(),
+                password: "pass".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn failure_to_duplicate_name() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr1 = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "5_4_d".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr1.status(), http::StatusCode::OK);
+
+        let create_usr2 = client
+        .post(base_url.to_string() + "/v1/register")
+        .json(&UserCredential {
+            name: "5_4_d".to_string(),
+            password: "password".to_string(),
+        })
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(create_usr2.status(), http::StatusCode::INTERNAL_SERVER_ERROR);
+    }
+}
+
+#[cfg(test)]
+mod login {
+    use axum::http;
+
+    use crate::view::UserCredential;
+
+    #[tokio::test]
+    async fn collect() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr1 = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr4_1".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr1.status(), http::StatusCode::OK);
+        let login_test = client
+            .post(base_url.to_string() + "/v1/login")
+            .json(&UserCredential {
+                name: "usr4_1".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(login_test.status(), http::StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn failure_invalid_password() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr1 = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr4_2".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr1.status(), http::StatusCode::OK);
+        let login_test = client
+            .post(base_url.to_string() + "/v1/login")
+            .json(&UserCredential {
+                name: "usr4_2".to_string(),
+                password: "invalid_password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(login_test.status(), http::StatusCode::NOT_FOUND);
+    }
+    #[tokio::test]
+    async fn failure_not_exist_name() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr4_3".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::OK);
+        let login_test = client
+            .post(base_url.to_string() + "/v1/login")
+            .json(&UserCredential {
+                name: "usr4_3_".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(login_test.status(), http::StatusCode::NOT_FOUND);
     }
 }

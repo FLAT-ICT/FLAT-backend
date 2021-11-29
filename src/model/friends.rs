@@ -65,15 +65,20 @@ impl IntoResponse for SomeError {
     type BodyError = <Self::Body as axum::body::HttpBody>::Error;
     fn into_response(self) -> Response<Self::Body> {
         let body = match self {
-            SomeError::ValidationError => Body::from("something went wrong"),
-            SomeError::NotExistError => Body::from("something else went wrong"),
-            SomeError::SameIdError => Body::from("something else went wrong"),
+            SomeError::ValidationError => Body::from("invalid validation"),
+            SomeError::NotExistError => Body::from("user not found"),
+            SomeError::SameNameError => Body::from("the name is alreasy used"),
+            SomeError::InvalidPasswordError => Body::from("user not found"),
         };
 
-        Response::builder()
-            .status(StatusCode::INTERNAL_SERVER_ERROR)
-            .body(body)
-            .unwrap()
+        let status = match self {
+            SomeError::ValidationError => StatusCode::UNPROCESSABLE_ENTITY,
+            SomeError::NotExistError => StatusCode::NOT_FOUND,
+            SomeError::SameNameError => StatusCode::INTERNAL_SERVER_ERROR,
+            SomeError::InvalidPasswordError => StatusCode::NOT_FOUND,
+        };
+
+        Response::builder().status(status).body(body).unwrap()
     }
 }
 
@@ -176,8 +181,8 @@ pub fn get_friend_list(my_id: i32) -> FriendList {
 mod tests {
     use crate::{
         model::{db_util::insert_friend, users::create_user},
-        repository::{AddFriend, NameAndPassword},
-        view::{FriendList, IdPair},
+        repository::AddFriend,
+        view::{FriendList, IdPair, UserCredential},
     };
 
     use super::{get_friend_list, reject_friend};
@@ -185,18 +190,30 @@ mod tests {
     // #[tokio::test]
     #[test]
     fn test_requested_and_applied() {
-        let uv1 = create_user(NameAndPassword {
-            name: &"test1".to_string(),
-            hashed_password: &"".to_string(),
-        });
-        let uv2 = create_user(NameAndPassword {
-            name: &"test2".to_string(),
-            hashed_password: &"".to_string(),
-        });
-        let uv3 = create_user(NameAndPassword {
-            name: &"test3".to_string(),
-            hashed_password: &"".to_string(),
-        });
+        let uv1 = create_user(
+            UserCredential {
+                name: "test1".to_string(),
+                password: "password".to_string(),
+            }
+            .to_hash(),
+        )
+        .unwrap();
+        let uv2 = create_user(
+            UserCredential {
+                name: "test2".to_string(),
+                password: "password".to_string(),
+            }
+            .to_hash(),
+        )
+        .unwrap();
+        let uv3 = create_user(
+            UserCredential {
+                name: "test3".to_string(),
+                password: "password".to_string(),
+            }
+            .to_hash(),
+        )
+        .unwrap();
         println!("uv1.id {:#?}", uv1.id);
         println!("uv2.id {:#?}", uv2.id);
         println!("uv3.id {:#?}", uv3.id);
@@ -229,18 +246,30 @@ mod tests {
     }
     #[test]
     fn test_reject() {
-        let uv1 = create_user(NameAndPassword {
-            name: &"test1".to_string(),
-            hashed_password: &"".to_string(),
-        });
-        let uv2 = create_user(NameAndPassword {
-            name: &"test2".to_string(),
-            hashed_password: &"".to_string(),
-        });
-        let uv3 = create_user(NameAndPassword {
-            name: &"test3".to_string(),
-            hashed_password: &"".to_string(),
-        });
+        let uv1 = create_user(
+            UserCredential {
+                name: "reject1".to_string(),
+                password: "password".to_string(),
+            }
+            .to_hash(),
+        )
+        .unwrap();
+        let uv2 = create_user(
+            UserCredential {
+                name: "reject2".to_string(),
+                password: "password".to_string(),
+            }
+            .to_hash(),
+        )
+        .unwrap();
+        let uv3 = create_user(
+            UserCredential {
+                name: "reject3".to_string(),
+                password: "password".to_string(),
+            }
+            .to_hash(),
+        )
+        .unwrap();
         // uv2 -> uv1
         // uv1 は uv2 に片思われされている。= can reject
         let _ = insert_friend(AddFriend {

@@ -1,23 +1,72 @@
-use crate::{repository::NameAndPassword, view::UserView};
+use super::{db_util::is_exist_name, types::SomeError};
+use crate::{
+    model::db_util,
+    repository::UserHashedCredential,
+    view::{IsLoggedIn, UserCredential, UserTimestamp, UserView},
+};
+use db_util::{get_loggedin_at, get_secret, insert_user, update_spot};
+use ring::pbkdf2;
+use std::num::NonZeroU32;
 
-use super::db_util::{insert_user, update_spot};
+pub fn create_user(credential: UserHashedCredential) -> Result<UserView, SomeError> {
+    let result = insert_user(credential);
 
-pub fn create_user(name_and_password: NameAndPassword) -> UserView {
-    // println!("{:#?}", create_usr2.json::<UserView>().await.unwrap());
-    let name = name_and_password.name.to_string();
-    let raw_password = name_and_password.hashed_password.to_string();
-    // TODO: hash with secret salt
-    let hashed_password = raw_password;
-    let result = insert_user(name, hashed_password);
+    if let Some(v) = result {
+        return Ok(v);
+    } else {
+        return Err(SomeError::SameNameError);
+    };
+}
 
-    // ここだけやるとバグる
-    // 中の型的には nullable だけど、返却するときは、"" が返ってほしい。
-    // match result.spot {
-    //     Some(_) => {}
-    //     _ => (result.spot = Some("".to_string())),
-    // }
+pub fn is_loged_in(user_timestamp: UserTimestamp) -> IsLoggedIn {
+    if let Some(last_login_timestamp) = get_loggedin_at(&user_timestamp) {
+        if last_login_timestamp == user_timestamp.loggedin_at {
+            return IsLoggedIn {
+                own: true,
+                others: false,
+            };
+        }
+        return IsLoggedIn {
+            own: false,
+            others: true,
+        };
+    };
+    return IsLoggedIn {
+        own: false,
+        others: false,
+    };
+}
 
-    result
+pub fn login(credential: UserCredential) -> Result<UserView, SomeError> {
+    // validation
+    // let c = &credential.to_hash();
+    // パスワードチェック
+
+    if let false = is_exist_name(&credential.name) {
+        return Err(SomeError::NotExistError);
+    }
+
+    if let false = match_password(&credential) {
+        return Err(SomeError::InvalidPasswordError);
+    }
+    let result = db_util::login(&credential.name);
+    return Ok(result);
+}
+
+fn match_password(credential: &UserCredential) -> bool {
+    // let salt, hash = get_credential(id)
+    //
+    let s = get_secret(&credential.name);
+    if let Ok(_) = pbkdf2::verify(
+        pbkdf2::PBKDF2_HMAC_SHA512,
+        NonZeroU32::new(1).unwrap(),
+        &s.salt,
+        &credential.password.as_bytes(),
+        &s.hash,
+    ) {
+        return true;
+    };
+    false
 }
 
 pub fn update_beacon(user_id: i32, major_id: i32, minor_id: i32) -> bool {
@@ -27,32 +76,44 @@ pub fn update_beacon(user_id: i32, major_id: i32, minor_id: i32) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use crate::{model::users::update_beacon, repository::NameAndPassword};
+    use crate::{model::users::update_beacon, view::UserCredential};
 
     use super::create_user;
 
     #[test]
     fn exist_spot() {
-        let uv = create_user(NameAndPassword {
-            name: &"spot_test1".to_string(),
-            hashed_password: &"".to_string(),
-        });
+        let uv = create_user(
+            UserCredential {
+                name: "spot_test1".to_string(),
+                password: "pass".to_string(),
+            }
+            .to_hash(),
+        )
+        .unwrap();
         assert!(update_beacon(uv.id, 0, 7945));
     }
     #[test]
     fn did_exit_region() {
-        let uv = create_user(NameAndPassword {
-            name: &"spot_test2".to_string(),
-            hashed_password: &"".to_string(),
-        });
+        let uv = create_user(
+            UserCredential {
+                name: "spot_test2".to_string(),
+                password: "pass".to_string(),
+            }
+            .to_hash(),
+        )
+        .unwrap();
         assert!(update_beacon(uv.id, 0, -1));
     }
     #[test]
     fn not_exist_spot() {
-        let uv = create_user(NameAndPassword {
-            name: &"spot_test3".to_string(),
-            hashed_password: &"".to_string(),
-        });
+        let uv = create_user(
+            UserCredential {
+                name: "spot_test3".to_string(),
+                password: "pass".to_string(),
+            }
+            .to_hash(),
+        )
+        .unwrap();
         assert_eq!(false, update_beacon(uv.id, 0, 0));
     }
 }

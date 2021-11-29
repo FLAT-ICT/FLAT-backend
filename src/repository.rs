@@ -1,10 +1,14 @@
 use crate::schema::friends;
 use crate::schema::spots;
 use crate::schema::users;
+use crate::view::UserCredential;
 use chrono::DateTime;
 use chrono::NaiveDateTime;
 use chrono::Utc;
+use ring::rand::SecureRandom;
+use ring::{digest, pbkdf2, rand};
 use serde::Deserialize;
+use std::num::NonZeroU32;
 
 #[derive(Insertable)]
 #[table_name = "friends"]
@@ -28,9 +32,11 @@ pub struct User {
     pub status: i32,
     pub spot: Option<String>,
     pub icon_path: String,
-    pub hashed_password: String,
+    pub salt: Vec<u8>,
+    pub hash: Vec<u8>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
+    pub loggedin_at: Option<NaiveDateTime>,
 }
 
 #[derive(Queryable)]
@@ -40,12 +46,41 @@ pub struct IdNamePath {
     pub icon_path: String,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Queryable)]
 #[table_name = "users"]
-pub struct NameAndPassword<'a> {
-    pub name: &'a String,
-    pub hashed_password: &'a String,
+pub struct UserHashedCredential {
+    pub name: String,
+    pub salt: Vec<u8>,
+    pub hash: Vec<u8>,
 }
+
+impl UserCredential {
+    pub fn to_hash(&self) -> UserHashedCredential {
+
+        const CREDENTIAL_LEN: usize = digest::SHA512_OUTPUT_LEN;
+        let n_iter = NonZeroU32::new(1).unwrap();
+        let rng = rand::SystemRandom::new();
+
+        let mut salt = [0u8; CREDENTIAL_LEN];
+        rng.fill(&mut salt).unwrap();
+
+        let mut pbkdf2_hash = [0u8; CREDENTIAL_LEN];
+        pbkdf2::derive(
+            pbkdf2::PBKDF2_HMAC_SHA512,
+            n_iter,
+            &salt,
+            &self.password.as_bytes(),
+            &mut pbkdf2_hash,
+        );
+        let result = UserHashedCredential {
+            name: self.name.to_owned(),
+            salt: salt.to_vec(),
+            hash: pbkdf2_hash.to_vec(),
+        };
+        result
+    }
+}
+
 #[derive(Debug, Insertable)]
 #[table_name = "spots"]
 pub struct InsertableSpot {
@@ -84,4 +119,10 @@ impl DeserializableSpot {
             note: self.note,
         }
     }
+}
+
+#[derive(Debug, Deserialize, Queryable)]
+pub struct UserSecret {
+    pub salt: Vec<u8>,
+    pub hash: Vec<u8>,
 }
