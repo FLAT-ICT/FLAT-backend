@@ -262,13 +262,110 @@ mod beacon {
 }
 
 #[cfg(test)]
+mod create_user {
+    use crate::view::UserCredential;
+    use axum::http;
+
+    #[tokio::test]
+    async fn collect() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr5_1".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn failure_to_short_name() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn failure_to_long_name() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr5_2xxxxxxxxxxx".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn failure_to_short_password() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "5_3".to_string(),
+                password: "pass".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::UNPROCESSABLE_ENTITY);
+    }
+
+    #[tokio::test]
+    async fn failure_to_duplicate_name() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr1 = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "5_4_d".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr1.status(), http::StatusCode::OK);
+
+        let create_usr2 = client
+        .post(base_url.to_string() + "/v1/register")
+        .json(&UserCredential {
+            name: "5_4_d".to_string(),
+            password: "password".to_string(),
+        })
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(create_usr2.status(), http::StatusCode::INTERNAL_SERVER_ERROR);
+    }
+}
+
+#[cfg(test)]
 mod login {
     use axum::http;
 
     use crate::view::UserCredential;
 
     #[tokio::test]
-    async fn correct() {
+    async fn collect() {
         let base_url = "http://localhost:3000";
         let client = reqwest::Client::new();
         let create_usr1 = client
