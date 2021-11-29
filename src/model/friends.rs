@@ -68,14 +68,14 @@ impl IntoResponse for SomeError {
             SomeError::ValidationError => Body::from("invalid validation"),
             SomeError::NotExistError => Body::from("user not found"),
             SomeError::SameNameError => Body::from("the name is alreasy used"),
-            SomeError::InvalidPasswordError => Body::from("password is not match"),
+            SomeError::InvalidPasswordError => Body::from("user not found"),
         };
 
         let status = match self {
             SomeError::ValidationError => StatusCode::UNPROCESSABLE_ENTITY,
             SomeError::NotExistError => StatusCode::NOT_FOUND,
             SomeError::SameNameError => StatusCode::INTERNAL_SERVER_ERROR,
-            SomeError::InvalidPasswordError => StatusCode::INTERNAL_SERVER_ERROR,
+            SomeError::InvalidPasswordError => StatusCode::NOT_FOUND,
         };
 
         Response::builder().status(status).body(body).unwrap()
@@ -196,21 +196,24 @@ mod tests {
                 password: "password".to_string(),
             }
             .to_hash(),
-        ).unwrap();
+        )
+        .unwrap();
         let uv2 = create_user(
             UserCredential {
                 name: "test2".to_string(),
                 password: "password".to_string(),
             }
             .to_hash(),
-        ).unwrap();
+        )
+        .unwrap();
         let uv3 = create_user(
             UserCredential {
                 name: "test3".to_string(),
                 password: "password".to_string(),
             }
             .to_hash(),
-        ).unwrap();
+        )
+        .unwrap();
         println!("uv1.id {:#?}", uv1.id);
         println!("uv2.id {:#?}", uv2.id);
         println!("uv3.id {:#?}", uv3.id);
@@ -249,21 +252,24 @@ mod tests {
                 password: "password".to_string(),
             }
             .to_hash(),
-        ).unwrap();
+        )
+        .unwrap();
         let uv2 = create_user(
             UserCredential {
                 name: "test2".to_string(),
                 password: "password".to_string(),
             }
             .to_hash(),
-        ).unwrap();
+        )
+        .unwrap();
         let uv3 = create_user(
             UserCredential {
                 name: "test3".to_string(),
                 password: "password".to_string(),
             }
             .to_hash(),
-        ).unwrap();
+        )
+        .unwrap();
         // uv2 -> uv1
         // uv1 は uv2 に片思われされている。= can reject
         let _ = insert_friend(AddFriend {
