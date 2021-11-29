@@ -53,6 +53,24 @@ pub fn is_exist_id(target_id: i32) -> bool {
     }
 }
 
+pub fn is_exist_name(target_name: &str) -> bool {
+    let conn = establish_connection();
+    let user = users.filter(name.eq(target_name)).load::<User>(&conn);
+
+    match user {
+        Ok(v) => {
+            if v.len() == 0 {
+                return false;
+            }
+            return true;
+        }
+        Err(e) => {
+            println!("{}", e);
+            return false;
+        }
+    }
+}
+
 pub fn insert_user(hashed_credential: UserHashedCredential) -> UserView {
     let now = chrono::offset::Utc::now().naive_utc();
     let conn = establish_connection();

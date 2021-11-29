@@ -6,7 +6,7 @@ use data_encoding::HEXUPPER;
 use hyper::StatusCode;
 use ring::pbkdf2;
 
-use super::types::SomeError;
+use super::{db_util::is_exist_name, types::SomeError};
 use crate::{
     model::db_util,
     repository::UserHashedCredential,
@@ -49,6 +49,11 @@ pub fn login(credential: UserCredential) -> Result<UserView, SomeError> {
     // validation
     // let c = &credential.to_hash();
     // パスワードチェック
+
+    if let false = is_exist_name(&credential.name){
+        return Err(SomeError::NotExistError);
+    }
+
     if let false = match_password(&credential) {
         return Err(SomeError::InvalidPasswordError);
     }

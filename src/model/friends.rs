@@ -66,15 +66,19 @@ impl IntoResponse for SomeError {
     fn into_response(self) -> Response<Self::Body> {
         let body = match self {
             SomeError::ValidationError => Body::from("something went wrong"),
-            SomeError::NotExistError => Body::from("something else went wrong"),
+            SomeError::NotExistError => Body::from("user not found"),
             SomeError::SameIdError => Body::from("something else went wrong"),
             SomeError::InvalidPasswordError => Body::from("password is not match"),
         };
 
-        Response::builder()
-            .status(StatusCode::INTERNAL_SERVER_ERROR)
-            .body(body)
-            .unwrap()
+        let status = match self {
+            SomeError::ValidationError => StatusCode::INTERNAL_SERVER_ERROR,
+            SomeError::NotExistError => StatusCode::NOT_FOUND,
+            SomeError::SameIdError => StatusCode::INTERNAL_SERVER_ERROR,
+            SomeError::InvalidPasswordError => StatusCode::INTERNAL_SERVER_ERROR,
+        };
+
+        Response::builder().status(status).body(body).unwrap()
     }
 }
 
