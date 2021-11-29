@@ -52,22 +52,23 @@ pub struct ResultMessage {
 // the input to our `create_user` handler
 #[derive(Deserialize, Serialize, Validate)]
 pub struct UserCredential {
-    #[validate(custom = "validate_name")]
+    #[validate(length(min = 1, max = 10))]
     pub name: String,
     #[validate(custom = "validate_password")]
     pub password: String,
 }
 
-fn validate_name(name: &str) -> Result<(), ValidationError> {
-    let re = Regex::new(r"[[:alpha:]\d]{1, 10}").unwrap();
-    if let false = re.is_match(name) {
-        return Err(ValidationError::new("invalid validation of name"));
-    }
-    Ok(())
-}
+// fn validate_name(name: &str) -> Result<(), ValidationError> {
+//     TODO: 不正な文字の検知とかあったらここでする
+//     let re = Regex::new(r".{1, 10}").unwrap();
+//     if let false = re.is_match(name) {
+//         return Err(ValidationError::new("invalid validation of name"));
+//     }
+//     Ok(())
+// }
 
 fn validate_password(password: &str) -> Result<(), ValidationError> {
-    let re = Regex::new(r"[[:alpha:]\d]{8,256}").unwrap();
+    let re = Regex::new(r"[[:alnum:]]{8,256}").unwrap();
     if let false = re.is_match(password) {
         return Err(ValidationError::new("invalid validation of password"));
     }

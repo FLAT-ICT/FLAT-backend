@@ -61,9 +61,6 @@ pub fn login(credential: UserCredential) -> Result<UserView, SomeError> {
     return Ok(result);
 }
 
-fn validate_password(password: String) -> bool {
-    todo!("8文字以上256文字以下, 英数字のみ")
-}
 
 fn match_password(credential: &UserCredential) -> bool {
     // let salt, hash = get_credential(id)
