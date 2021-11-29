@@ -9,6 +9,10 @@ use ring::pbkdf2;
 use std::num::NonZeroU32;
 
 pub fn create_user(credential: UserHashedCredential) -> Result<UserView, SomeError> {
+    
+    if let false = is_exist_name(&credential.name) {
+        return Err(SomeError::NotExistError);
+    }
     let result = insert_user(credential);
 
     if let Some(v) = result {
