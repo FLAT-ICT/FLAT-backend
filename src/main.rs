@@ -260,3 +260,87 @@ mod beacon {
         // diesel::delete(users).execute(&conn).unwrap();
     }
 }
+
+#[cfg(test)]
+mod login {
+    use axum::http;
+
+    use crate::view::UserCredential;
+
+    #[tokio::test]
+    async fn correct() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr1 = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr4_1".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr1.status(), http::StatusCode::OK);
+        let login_test = client
+            .post(base_url.to_string() + "/v1/login")
+            .json(&UserCredential {
+                name: "usr4_1".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(login_test.status(), http::StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn failure_invalid_password() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr1 = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr4_2".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr1.status(), http::StatusCode::OK);
+        let login_test = client
+            .post(base_url.to_string() + "/v1/login")
+            .json(&UserCredential {
+                name: "usr4_2".to_string(),
+                password: "invalid_password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(login_test.status(), http::StatusCode::NOT_FOUND);
+    }
+    #[tokio::test]
+    async fn failure_not_exist_name() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr4_3".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::OK);
+        let login_test = client
+            .post(base_url.to_string() + "/v1/login")
+            .json(&UserCredential {
+                name: "usr4_3_".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(login_test.status(), http::StatusCode::NOT_FOUND);
+    }
+}

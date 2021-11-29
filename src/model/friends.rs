@@ -248,7 +248,7 @@ mod tests {
     fn test_reject() {
         let uv1 = create_user(
             UserCredential {
-                name: "test1".to_string(),
+                name: "reject1".to_string(),
                 password: "password".to_string(),
             }
             .to_hash(),
@@ -256,7 +256,7 @@ mod tests {
         .unwrap();
         let uv2 = create_user(
             UserCredential {
-                name: "test2".to_string(),
+                name: "reject2".to_string(),
                 password: "password".to_string(),
             }
             .to_hash(),
@@ -264,7 +264,7 @@ mod tests {
         .unwrap();
         let uv3 = create_user(
             UserCredential {
-                name: "test3".to_string(),
+                name: "reject3".to_string(),
                 password: "password".to_string(),
             }
             .to_hash(),
