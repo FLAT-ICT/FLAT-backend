@@ -9,7 +9,7 @@ WORKDIR /app
 # Install dependencies first for cache ★1.b
 # Cargo.lock ないって怒られることがある
 # COPY ./Cargo.lock ./Cargo.lock
-COPY Cargo.toml Cargo.lock /app/
+COPY ./Cargo.toml ./Cargo.toml
 # RUN rustup component add rustfmt
 RUN cargo build --release
 RUN rm src/*.rs
