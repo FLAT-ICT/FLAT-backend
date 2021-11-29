@@ -1,10 +1,11 @@
 use crate::{
-    model::users,
-    view::{ResultMessage, ScannedBeacon, UserCredential, UserTimestamp},
+    model::{types::SomeError, users},
+    view::{ResultMessage, ScannedBeacon, UserCredential, UserTimestamp, UserView},
 };
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 #[derive(Serialize, Deserialize)]
 struct Id {
@@ -15,7 +16,11 @@ pub async fn create_user(
     // this argument tells axum to parse the request body
     // as JSON into a `CreateUser` type
     Json(payload): Json<UserCredential>,
-) -> impl IntoResponse {
+) -> Result<(StatusCode, axum::Json<UserView>), SomeError> {
+    if let Err(_) = payload.validate() {
+        return Err(SomeError::ValidationError);
+    }
+
     let inserted = users::create_user(
         UserCredential {
             name: payload.name,
@@ -35,10 +40,13 @@ pub async fn create_user(
 
     // this will be converted into a JSON response
     // with a status code of `201 Created`
-    (StatusCode::OK, Json(inserted))
+    Ok((StatusCode::OK, Json(inserted)))
 }
 
 pub async fn login(Json(credential): Json<UserCredential>) -> impl IntoResponse {
+    if let Err(_) = credential.validate() {
+        return Err(SomeError::ValidationError);
+    }
     match users::login(credential) {
         Ok(result) => Ok((StatusCode::OK, Json(result))),
         Err(e) => Err(e),

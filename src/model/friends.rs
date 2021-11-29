@@ -65,14 +65,14 @@ impl IntoResponse for SomeError {
     type BodyError = <Self::Body as axum::body::HttpBody>::Error;
     fn into_response(self) -> Response<Self::Body> {
         let body = match self {
-            SomeError::ValidationError => Body::from("something went wrong"),
+            SomeError::ValidationError => Body::from("invalid validation"),
             SomeError::NotExistError => Body::from("user not found"),
             SomeError::SameIdError => Body::from("something else went wrong"),
             SomeError::InvalidPasswordError => Body::from("password is not match"),
         };
 
         let status = match self {
-            SomeError::ValidationError => StatusCode::INTERNAL_SERVER_ERROR,
+            SomeError::ValidationError => StatusCode::UNPROCESSABLE_ENTITY,
             SomeError::NotExistError => StatusCode::NOT_FOUND,
             SomeError::SameIdError => StatusCode::INTERNAL_SERVER_ERROR,
             SomeError::InvalidPasswordError => StatusCode::INTERNAL_SERVER_ERROR,
