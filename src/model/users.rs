@@ -10,8 +10,8 @@ use std::num::NonZeroU32;
 
 pub fn create_user(credential: UserHashedCredential) -> Result<UserView, SomeError> {
     
-    if let false = is_exist_name(&credential.name) {
-        return Err(SomeError::NotExistError);
+    if let true = is_exist_name(&credential.name) {
+        return Err(SomeError::SameNameError);
     }
     let result = insert_user(credential);
 
