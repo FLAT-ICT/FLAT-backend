@@ -75,6 +75,17 @@ fn validate_password(password: &str) -> Result<(), ValidationError> {
     Ok(())
 }
 
+#[derive(Deserialize, Serialize)]
+pub struct PreLoginView {
+    pub name: String,
+    pub password: Option<String>,
+    pub loggedin_at: Option<NaiveDateTime>,
+}
+#[derive(Deserialize, Serialize)]
+pub struct IsOtherUserLoggedIn {
+    pub others: bool,
+}
+
 #[derive(Serialize, Queryable, Debug, Deserialize, PartialEq)]
 pub struct UserView {
     pub id: i32,
@@ -102,9 +113,20 @@ pub struct ScannedBeacon {
     // pub distance: f32,
 }
 
+pub enum UserTimestamp {
+    I(UserIdTimestamp),
+    N(UserNameTimestamp),
+}
+
 #[derive(Deserialize)]
-pub struct UserTimestamp {
+pub struct UserIdTimestamp {
     pub id: i32,
+    pub loggedin_at: NaiveDateTime,
+}
+
+#[derive(Deserialize)]
+pub struct UserNameTimestamp {
+    pub name: String,
     pub loggedin_at: NaiveDateTime,
 }
 

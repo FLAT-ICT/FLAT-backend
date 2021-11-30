@@ -6,7 +6,6 @@ use crate::repository::User;
 use crate::repository::UserHashedCredential;
 use crate::repository::UserSecret;
 use crate::schema;
-use crate::view::UserCredential;
 use crate::view::UserTimestamp;
 use crate::view::UserView;
 use chrono::NaiveDateTime;
@@ -241,12 +240,42 @@ pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) -> bool {
 
 pub fn get_loggedin_at(user_timestamp: &UserTimestamp) -> Option<NaiveDateTime> {
     let conn = establish_connection();
+    match user_timestamp {
+        UserTimestamp::I(ut) => {
+            let last_login_timestamp = users
+                .filter(id.eq(&ut.id))
+                .select(users::loggedin_at)
+                .first::<Option<NaiveDateTime>>(&conn)
+                .unwrap();
+            return last_login_timestamp;
+        }
+        UserTimestamp::N(ut) => {
+            // let ut: UserNameTimestamp = user_timestamp;
+            let last_login_timestamp = users
+                .filter(name.eq(&ut.name))
+                .select(users::loggedin_at)
+                .first::<Option<NaiveDateTime>>(&conn)
+                .unwrap();
+            return last_login_timestamp;
+        }
+    }
+    // let last_login_timestamp = users
+    //     .filter(id.eq(&user_timestamp.id))
+    //     .select(users::loggedin_at)
+    //     .first::<Option<NaiveDateTime>>(&conn)
+    //     .unwrap();
+    // last_login_timestamp
+}
+
+pub fn get_loggedin_at_from_name(user_name: String) -> Option<NaiveDateTime> {
+    // ユーザーはある前提
+    let conn = establish_connection();
     let last_login_timestamp = users
-        .filter(id.eq(&user_timestamp.id))
+        .filter(name.eq(&user_name))
         .select(users::loggedin_at)
         .first::<Option<NaiveDateTime>>(&conn)
         .unwrap();
-    last_login_timestamp
+    return last_login_timestamp;
 }
 
 pub fn delete_loggedin_at(user_id: i32) -> Result<(), SomeError> {

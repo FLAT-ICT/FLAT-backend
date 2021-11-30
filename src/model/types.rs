@@ -12,4 +12,5 @@ pub enum SomeError {
     NotExistError,
     InvalidPasswordError,
     SameNameError,
+    InvalidStructure
 }

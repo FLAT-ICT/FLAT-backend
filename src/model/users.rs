@@ -1,11 +1,14 @@
 use super::{
-    db_util::{delete_loggedin_at, is_exist_name},
+    db_util::{delete_loggedin_at, get_loggedin_at_from_name, is_exist_name},
     types::SomeError,
 };
 use crate::{
     model::db_util,
     repository::UserHashedCredential,
-    view::{IsLoggedIn, UserCredential, UserTimestamp, UserView},
+    view::{
+        IsLoggedIn, IsOtherUserLoggedIn, PreLoginView, UserCredential, UserIdTimestamp,
+        UserNameTimestamp, UserTimestamp, UserView,
+    },
 };
 use db_util::{get_loggedin_at, get_secret, insert_user, update_spot};
 use ring::pbkdf2;
@@ -24,23 +27,47 @@ pub fn create_user(credential: UserHashedCredential) -> Result<UserView, SomeErr
     };
 }
 
-pub fn is_loged_in(user_timestamp: UserTimestamp) -> IsLoggedIn {
-    if let Some(last_login_timestamp) = get_loggedin_at(&user_timestamp) {
-        if last_login_timestamp == user_timestamp.loggedin_at {
-            return IsLoggedIn {
-                own: true,
-                others: false,
+pub fn is_logged_in(user_timestamp: UserTimestamp) -> IsOtherUserLoggedIn {
+    // あとでリファクタする
+    match &user_timestamp {
+        UserTimestamp::I(uit) => {
+            if let Some(last_login_timestamp) = get_loggedin_at(&user_timestamp) {
+                if last_login_timestamp == uit.loggedin_at {
+                    return IsOtherUserLoggedIn { others: false };
+                }
+                return IsOtherUserLoggedIn { others: true };
             };
         }
-        return IsLoggedIn {
-            own: false,
-            others: true,
-        };
-    };
-    return IsLoggedIn {
-        own: false,
-        others: false,
-    };
+        UserTimestamp::N(unt) => {
+            if let Some(last_login_timestamp) = get_loggedin_at(&user_timestamp) {
+                if last_login_timestamp == unt.loggedin_at {
+                    return IsOtherUserLoggedIn { others: false };
+                }
+                return IsOtherUserLoggedIn { others: true };
+            };
+        }
+    }
+    return IsOtherUserLoggedIn { others: false };
+}
+
+pub fn pre_login(p: &PreLoginView) -> Result<(), SomeError> {
+    if let false = is_exist_name(&p.name) {
+        return Err(SomeError::NotExistError);
+    }
+
+    if p.password.is_some() {
+        if let false = match_password(&UserCredential {
+            name: p.name.to_string(),
+            password: p.password.as_ref().unwrap().to_string(),
+        }) {
+            return Err(SomeError::InvalidPasswordError);
+        } else {
+            get_loggedin_at_from_name(p.name.to_string());
+        }
+    }
+
+    // let cr = UserCredential
+    Ok(())
 }
 
 pub fn login(credential: UserCredential) -> Result<UserView, SomeError> {
@@ -59,7 +86,7 @@ pub fn login(credential: UserCredential) -> Result<UserView, SomeError> {
     return Ok(result);
 }
 
-fn match_password(credential: &UserCredential) -> bool {
+pub fn match_password(credential: &UserCredential) -> bool {
     // let salt, hash = get_credential(id)
     //
     let s = get_secret(&credential.name);
