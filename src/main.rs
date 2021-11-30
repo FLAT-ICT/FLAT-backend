@@ -347,15 +347,15 @@ mod create_user {
         assert_eq!(create_usr1.status(), http::StatusCode::OK);
 
         let create_usr2 = client
-        .post(base_url.to_string() + "/v1/register")
-        .json(&UserCredential {
-            name: "5_4_d".to_string(),
-            password: "password".to_string(),
-        })
-        .send()
-        .await
-        .unwrap();
-    assert_eq!(create_usr2.status(), http::StatusCode::BAD_REQUEST);
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "5_4_d".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr2.status(), http::StatusCode::BAD_REQUEST);
     }
 }
 
@@ -440,5 +440,79 @@ mod login {
             .await
             .unwrap();
         assert_eq!(login_test.status(), http::StatusCode::NOT_FOUND);
+    }
+}
+
+#[cfg(test)]
+mod logout {
+    use axum::http;
+
+    use crate::{
+        model::types::UserId,
+        view::{UserCredential, UserView},
+    };
+
+    #[tokio::test]
+    async fn correct() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr6_1".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::OK);
+        let user_id = create_usr.json::<UserView>().await.unwrap().id;
+        let logout = client
+            .post(base_url.to_string() + "/v1/logout")
+            .json(&UserId { id: user_id })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(logout.status(), http::StatusCode::OK);
+    }
+    async fn correct_1() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr6_2".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::OK);
+        let user_id = create_usr.json::<UserView>().await.unwrap().id;
+        let logout = client
+            .post(base_url.to_string() + "/v1/logout")
+            .json(&UserId { id: user_id })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(logout.status(), http::StatusCode::OK);
+        let login_test = client
+            .post(base_url.to_string() + "/v1/login")
+            .json(&UserCredential {
+                name: "usr6_2".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(login_test.status(), http::StatusCode::OK);
+        let user_id = login_test.json::<UserView>().await.unwrap().id;
+        let logout = client
+            .post(base_url.to_string() + "/v1/logout")
+            .json(&UserId { id: user_id })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(logout.status(), http::StatusCode::OK);
     }
 }
