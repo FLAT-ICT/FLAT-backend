@@ -1,9 +1,8 @@
 use crate::{
     model::{
-        self,
-        db_util::{self, is_exist_name},
+        db_util::is_exist_name,
         types::{SomeError, UserId},
-        users::{self, is_logged_in, match_password},
+        users::{self, is_logged_in},
     },
     view::{
         IsOtherUserLoggedIn, PreLoginView, ResultMessage, ScannedBeacon, UserCredential,
@@ -118,7 +117,7 @@ pub async fn pre_login(
         };
     }
 
-    // 通常起動時 
+    // 通常起動時
     if let Some(l) = loggedin_at {
         let result = is_logged_in(UserTimestamp::N(UserNameTimestamp {
             name: name.to_string(),
