@@ -139,6 +139,8 @@ pub fn get_friends_relation(my_id: i32, target_id: i32) -> (bool, bool) {
 
 use schema::{friends, users};
 
+use super::types::SomeError;
+
 joinable!(friends -> users(active));
 
 pub fn get_requested_record(my_id: i32) -> Vec<UserView> {
@@ -247,11 +249,13 @@ pub fn get_loggedin_at(user_timestamp: &UserTimestamp) -> Option<NaiveDateTime> 
     last_login_timestamp
 }
 
-pub fn delete_loggedin_at(user_id: i32) {
+pub fn delete_loggedin_at(user_id: i32) -> Result<(), SomeError> {
     let conn = establish_connection();
-    diesel::delete(users.filter(id.eq(user_id)))
-        .execute(&conn)
-        .unwrap();
+    if let _ = diesel::delete(users.filter(id.eq(user_id))).execute(&conn) {
+        return Ok(());
+    } else {
+        return Err(SomeError::NotExistError);
+    }
 }
 
 pub fn get_secret(user_name: &String) -> UserSecret {

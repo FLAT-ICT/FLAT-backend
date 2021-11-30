@@ -1,4 +1,7 @@
-use super::{db_util::{delete_loggedin_at, is_exist_name}, types::SomeError};
+use super::{
+    db_util::{delete_loggedin_at, is_exist_name},
+    types::SomeError,
+};
 use crate::{
     model::db_util,
     repository::UserHashedCredential,
@@ -72,7 +75,7 @@ fn match_password(credential: &UserCredential) -> bool {
     false
 }
 
-pub fn logout(user_id: i32) {
+pub fn logout(user_id: i32) -> Result<(), SomeError> {
     delete_loggedin_at(user_id)
 }
 

@@ -73,8 +73,18 @@ pub async fn is_loggedin(Json(user_timestamp): Json<UserTimestamp>) -> impl Into
     (StatusCode::OK, Json(result))
 }
 
-pub async fn logout(Json(user_id): Json<UserId>) -> impl IntoResponse {
-    let result = users::logout(user_id.id);
+pub async fn logout(
+    Json(user_id): Json<UserId>,
+) -> Result<(StatusCode, axum::Json<ResultMessage>), SomeError> {
+    match users::logout(user_id.id) {
+        Ok(_) => Ok((
+            StatusCode::OK,
+            Json(ResultMessage {
+                message: "Ok".to_string(),
+            }),
+        )),
+        Err(e) => Err(e),
+    }
 }
 
 // #[derive(Deserialize)]
