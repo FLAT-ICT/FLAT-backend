@@ -1,7 +1,4 @@
-use crate::{
-    model::{types::SomeError, users},
-    view::{ResultMessage, ScannedBeacon, UserCredential, UserTimestamp, UserView},
-};
+use crate::{model::{db_util::is_exist_name, types::SomeError, users}, view::{ResultMessage, ScannedBeacon, UserCredential, UserTimestamp, UserView}};
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 use serde::{Deserialize, Serialize};
@@ -19,6 +16,10 @@ pub async fn create_user(
 ) -> Result<(StatusCode, axum::Json<UserView>), SomeError> {
     if let Err(_) = payload.validate() {
         return Err(SomeError::ValidationError);
+    }
+
+    if let true = is_exist_name(&payload.name){
+        return Err(SomeError::SameNameError);
     }
 
     if let Ok(inserted) = users::create_user(

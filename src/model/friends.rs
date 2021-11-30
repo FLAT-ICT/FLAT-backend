@@ -68,8 +68,7 @@ impl IntoResponse for SomeError {
             SomeError::ValidationError => Body::from("invalid validation"),
             SomeError::NotExistError => Body::from("user not found"),
             SomeError::SameNameError => Body::from("the name is alreasy used"),
-            SomeError::InvalidPasswordError => Body::from("user not found"),
-            SomeError::DuplivateNameError => Body::from(ResultMessage { message: "" }),
+            SomeError::InvalidPasswordError => Body::from("user not found")
         };
 
         let status = match self {
@@ -77,7 +76,6 @@ impl IntoResponse for SomeError {
             SomeError::NotExistError => StatusCode::NOT_FOUND,
             SomeError::SameNameError => StatusCode::INTERNAL_SERVER_ERROR,
             SomeError::InvalidPasswordError => StatusCode::NOT_FOUND,
-            SomeError::DuplivateNameError => todo!(),
         };
 
         Response::builder().status(status).body(body).unwrap()
