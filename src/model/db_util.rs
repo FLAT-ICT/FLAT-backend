@@ -280,7 +280,7 @@ pub fn get_loggedin_at_from_name(user_name: String) -> Option<NaiveDateTime> {
 
 pub fn delete_loggedin_at(user_id: i32) -> Result<(), SomeError> {
     let conn = establish_connection();
-    if let _ = diesel::delete(users.filter(id.eq(user_id))).execute(&conn) {
+    if let Ok(_) = diesel::delete(users.filter(id.eq(user_id))).execute(&conn) {
         return Ok(());
     } else {
         return Err(SomeError::NotExistError);
