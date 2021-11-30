@@ -30,7 +30,7 @@ pub fn is_logged_in(user_timestamp: UserTimestamp) -> IsOtherUserLoggedIn {
     match &user_timestamp {
         UserTimestamp::I(uit) => {
             if let Some(last_login_timestamp) = get_loggedin_at(&user_timestamp) {
-                if last_login_timestamp == uit.loggedin_at {
+                if last_login_timestamp == uit.logged_in_at {
                     return IsOtherUserLoggedIn { others: false };
                 }
                 return IsOtherUserLoggedIn { others: true };
@@ -38,7 +38,7 @@ pub fn is_logged_in(user_timestamp: UserTimestamp) -> IsOtherUserLoggedIn {
         }
         UserTimestamp::N(unt) => {
             if let Some(last_login_timestamp) = get_loggedin_at(&user_timestamp) {
-                if last_login_timestamp == unt.loggedin_at {
+                if last_login_timestamp == unt.logged_in_at {
                     return IsOtherUserLoggedIn { others: false };
                 }
                 return IsOtherUserLoggedIn { others: true };

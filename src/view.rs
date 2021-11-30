@@ -93,7 +93,7 @@ pub struct UserView {
     pub status: i32,
     pub icon_path: String,
     pub spot: Option<String>,
-    pub loggedin_at: Option<NaiveDateTime>,
+    pub logged_in_at: Option<NaiveDateTime>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -121,13 +121,13 @@ pub enum UserTimestamp {
 #[derive(Deserialize)]
 pub struct UserIdTimestamp {
     pub id: i32,
-    pub loggedin_at: NaiveDateTime,
+    pub logged_in_at: NaiveDateTime,
 }
 
 #[derive(Deserialize)]
 pub struct UserNameTimestamp {
     pub name: String,
-    pub loggedin_at: NaiveDateTime,
+    pub logged_in_at: NaiveDateTime,
 }
 
 #[derive(Serialize)]

@@ -121,7 +121,7 @@ pub async fn pre_login(
     if let Some(l) = loggedin_at {
         let result = is_logged_in(UserTimestamp::N(UserNameTimestamp {
             name: name.to_string(),
-            loggedin_at: l.to_owned(),
+            logged_in_at: l.to_owned(),
         }));
         return Ok((
             StatusCode::OK,
