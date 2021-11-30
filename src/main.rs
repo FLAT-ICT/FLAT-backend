@@ -476,6 +476,7 @@ mod logout {
             .unwrap();
         assert_eq!(logout.status(), http::StatusCode::OK);
     }
+    #[tokio::test]
     async fn correct_1() {
         let base_url = "http://localhost:3000";
         let client = reqwest::Client::new();

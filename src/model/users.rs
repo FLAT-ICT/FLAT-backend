@@ -5,11 +5,9 @@ use super::{
 use crate::{
     model::db_util,
     repository::UserHashedCredential,
-    view::{
-        IsLoggedIn, IsOtherUserLoggedIn, PreLoginView, UserCredential, UserIdTimestamp,
-        UserNameTimestamp, UserTimestamp, UserView,
-    },
+    view::{IsOtherUserLoggedIn, PreLoginView, UserCredential, UserTimestamp, UserView},
 };
+use chrono::NaiveDateTime;
 use db_util::{get_loggedin_at, get_secret, insert_user, update_spot};
 use ring::pbkdf2;
 use std::num::NonZeroU32;
@@ -50,24 +48,23 @@ pub fn is_logged_in(user_timestamp: UserTimestamp) -> IsOtherUserLoggedIn {
     return IsOtherUserLoggedIn { others: false };
 }
 
-pub fn pre_login(p: &PreLoginView) -> Result<(), SomeError> {
+pub fn pre_login(p: &PreLoginView) -> Result<Option<NaiveDateTime>, SomeError> {
     if let false = is_exist_name(&p.name) {
         return Err(SomeError::NotExistError);
     }
 
-    if p.password.is_some() {
-        if let false = match_password(&UserCredential {
-            name: p.name.to_string(),
-            password: p.password.as_ref().unwrap().to_string(),
-        }) {
-            return Err(SomeError::InvalidPasswordError);
-        } else {
-            get_loggedin_at_from_name(p.name.to_string());
-        }
+    if p.password.is_none() {
+        return Err(SomeError::NotExistError);
     }
-
-    // let cr = UserCredential
-    Ok(())
+    if let false = match_password(&UserCredential {
+        name: p.name.to_string(),
+        password: p.password.as_ref().unwrap().to_string(),
+    }) {
+        return Err(SomeError::InvalidPasswordError);
+    } else {
+        return Ok(get_loggedin_at_from_name(p.name.to_string()));
+    }
+    // Ok(())
 }
 
 pub fn login(credential: UserCredential) -> Result<UserView, SomeError> {

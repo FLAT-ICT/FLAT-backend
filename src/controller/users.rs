@@ -103,19 +103,22 @@ pub async fn pre_login(
         return Err(SomeError::InvalidStructure);
     }
 
-    if let Some(p) = password {
+    // ログイン時 ログインされてたらTrueを返す
+    if let Some(_) = password {
         match users::pre_login(pv) {
             Err(e) => return Err(e),
-            Ok(v) => (),
+            Ok(v) => {
+                return Ok((
+                    StatusCode::OK,
+                    Json(IsOtherUserLoggedIn {
+                        others: v.is_some(),
+                    }),
+                ));
+            }
         };
-        // UserCredential -> Option<NaiveDateTime>
-        //   {
-        // } else {
-        //     return Err(SomeError::NotExistError);
-        // };
-        // return Ok((StatusCode::OK, Json(IsOtherUserLoggedIn { others: result })));
     }
 
+    // 通常起動時 
     if let Some(l) = loggedin_at {
         let result = is_logged_in(UserTimestamp::N(UserNameTimestamp {
             name: name.to_string(),
