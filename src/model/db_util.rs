@@ -247,6 +247,13 @@ pub fn get_loggedin_at(user_timestamp: &UserTimestamp) -> Option<NaiveDateTime> 
     last_login_timestamp
 }
 
+pub fn delete_loggedin_at(user_id: i32) {
+    let conn = establish_connection();
+    diesel::delete(users.filter(id.eq(user_id)))
+        .execute(&conn)
+        .unwrap();
+}
+
 pub fn get_secret(user_name: &String) -> UserSecret {
     let conn = establish_connection();
     let credential = users

@@ -1,4 +1,11 @@
-use crate::{model::{db_util::is_exist_name, types::SomeError, users}, view::{ResultMessage, ScannedBeacon, UserCredential, UserTimestamp, UserView}};
+use crate::{
+    model::{
+        db_util::is_exist_name,
+        types::{SomeError, UserId},
+        users,
+    },
+    view::{ResultMessage, ScannedBeacon, UserCredential, UserTimestamp, UserView},
+};
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
 use serde::{Deserialize, Serialize};
@@ -18,7 +25,7 @@ pub async fn create_user(
         return Err(SomeError::ValidationError);
     }
 
-    if let true = is_exist_name(&payload.name){
+    if let true = is_exist_name(&payload.name) {
         return Err(SomeError::SameNameError);
     }
 
@@ -64,6 +71,10 @@ pub async fn login(Json(credential): Json<UserCredential>) -> impl IntoResponse 
 pub async fn is_loggedin(Json(user_timestamp): Json<UserTimestamp>) -> impl IntoResponse {
     let result = users::is_loged_in(user_timestamp);
     (StatusCode::OK, Json(result))
+}
+
+pub async fn logout(Json(user_id): Json<UserId>) -> impl IntoResponse {
+    let result = users::logout(user_id.id);
 }
 
 // #[derive(Deserialize)]

@@ -1,4 +1,4 @@
-use super::{db_util::is_exist_name, types::SomeError};
+use super::{db_util::{delete_loggedin_at, is_exist_name}, types::SomeError};
 use crate::{
     model::db_util,
     repository::UserHashedCredential,
@@ -9,7 +9,6 @@ use ring::pbkdf2;
 use std::num::NonZeroU32;
 
 pub fn create_user(credential: UserHashedCredential) -> Result<UserView, SomeError> {
-    
     if let true = is_exist_name(&credential.name) {
         return Err(SomeError::SameNameError);
     }
@@ -71,6 +70,10 @@ fn match_password(credential: &UserCredential) -> bool {
         return true;
     };
     false
+}
+
+pub fn logout(user_id: i32) {
+    delete_loggedin_at(user_id)
 }
 
 pub fn update_beacon(user_id: i32, major_id: i32, minor_id: i32) -> bool {

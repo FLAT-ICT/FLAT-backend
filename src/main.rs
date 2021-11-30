@@ -15,7 +15,7 @@ use controller::friends::{add_friend, check_friend_status, friend_list, reject_f
 use controller::users::create_user;
 use controller::users::update_beacon;
 
-use crate::controller::users::{is_loggedin, login};
+use crate::controller::users::{is_loggedin, login, logout};
 mod read_csv_and_write_db;
 mod repository;
 mod schema;
@@ -36,6 +36,7 @@ async fn main() {
         // `POST /user` goes to `create_user`
         .route("/v1/register", post(create_user))
         .route("/v1/login", post(login))
+        .route("/v1/logout", post(logout))
         .route("/v1/user", post(create_user))
         .route("/v1/user/search", get(check_friend_status))
         .route("/v1/user/beacon", post(update_beacon))
