@@ -74,7 +74,7 @@ impl IntoResponse for SomeError {
         let status = match self {
             SomeError::ValidationError => StatusCode::UNPROCESSABLE_ENTITY,
             SomeError::NotExistError => StatusCode::NOT_FOUND,
-            SomeError::SameNameError => StatusCode::INTERNAL_SERVER_ERROR,
+            SomeError::SameNameError => StatusCode::BAD_REQUEST,
             SomeError::InvalidPasswordError => StatusCode::NOT_FOUND,
         };
 

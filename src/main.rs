@@ -354,7 +354,7 @@ mod create_user {
         .send()
         .await
         .unwrap();
-    assert_eq!(create_usr2.status(), http::StatusCode::INTERNAL_SERVER_ERROR);
+    assert_eq!(create_usr2.status(), http::StatusCode::BAD_REQUEST);
     }
 }
 
