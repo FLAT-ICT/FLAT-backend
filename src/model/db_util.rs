@@ -6,7 +6,6 @@ use crate::repository::User;
 use crate::repository::UserHashedCredential;
 use crate::repository::UserSecret;
 use crate::schema;
-use crate::view::UserCredential;
 use crate::view::UserTimestamp;
 use crate::view::UserView;
 use chrono::NaiveDateTime;
@@ -80,7 +79,7 @@ pub fn insert_user(hashed_credential: UserHashedCredential) -> Option<UserView> 
             salt.eq(hashed_credential.salt),
             hash.eq(hashed_credential.hash),
             icon_path.eq(&"https://dummyimage.com/256x256/000/fff.png&text=icon".to_string()),
-            loggedin_at.eq(now),
+            logged_in_at.eq(now),
         ))
         .execute(&conn)
     {
@@ -93,7 +92,7 @@ pub fn insert_user(hashed_credential: UserHashedCredential) -> Option<UserView> 
                 status: last_insert_user.status,
                 icon_path: last_insert_user.icon_path,
                 spot: last_insert_user.spot,
-                loggedin_at: last_insert_user.loggedin_at,
+                logged_in_at: last_insert_user.loggedin_at,
             };
             return Some(user_view);
         }
@@ -154,7 +153,7 @@ pub fn get_requested_record(my_id: i32) -> Vec<UserView> {
             users::status,
             users::icon_path,
             users::spot,
-            users::loggedin_at,
+            users::logged_in_at,
         ))
         .load::<UserView>(&conn)
         .unwrap();
@@ -241,17 +240,50 @@ pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) -> bool {
 
 pub fn get_loggedin_at(user_timestamp: &UserTimestamp) -> Option<NaiveDateTime> {
     let conn = establish_connection();
+    match user_timestamp {
+        UserTimestamp::I(ut) => {
+            let last_login_timestamp = users
+                .filter(id.eq(&ut.id))
+                .select(users::logged_in_at)
+                .first::<Option<NaiveDateTime>>(&conn)
+                .unwrap();
+            return last_login_timestamp;
+        }
+        UserTimestamp::N(ut) => {
+            // let ut: UserNameTimestamp = user_timestamp;
+            let last_login_timestamp = users
+                .filter(name.eq(&ut.name))
+                .select(users::logged_in_at)
+                .first::<Option<NaiveDateTime>>(&conn)
+                .unwrap();
+            return last_login_timestamp;
+        }
+    }
+    // let last_login_timestamp = users
+    //     .filter(id.eq(&user_timestamp.id))
+    //     .select(users::loggedin_at)
+    //     .first::<Option<NaiveDateTime>>(&conn)
+    //     .unwrap();
+    // last_login_timestamp
+}
+
+pub fn get_loggedin_at_from_name(user_name: String) -> Option<NaiveDateTime> {
+    // ユーザーはある前提
+    let conn = establish_connection();
     let last_login_timestamp = users
-        .filter(id.eq(&user_timestamp.id))
-        .select(users::loggedin_at)
+        .filter(name.eq(&user_name))
+        .select(users::logged_in_at)
         .first::<Option<NaiveDateTime>>(&conn)
         .unwrap();
-    last_login_timestamp
+    return last_login_timestamp;
 }
 
 pub fn delete_loggedin_at(user_id: i32) -> Result<(), SomeError> {
     let conn = establish_connection();
-    if let _ = diesel::delete(users.filter(id.eq(user_id))).execute(&conn) {
+    if let Ok(_) = diesel::update(users.filter(id.eq(user_id)))
+        .set(logged_in_at.eq::<Option<NaiveDateTime>>(None))
+        .execute(&conn)
+    {
         return Ok(());
     } else {
         return Err(SomeError::NotExistError);
@@ -273,7 +305,7 @@ pub fn login(user_name: &String) -> UserView {
 
     let now = chrono::offset::Utc::now().naive_utc();
     diesel::update(users.filter(name.eq(user_name)))
-        .set(loggedin_at.eq(Some(now)))
+        .set(logged_in_at.eq(Some(now)))
         .execute(&conn)
         .unwrap();
 
@@ -285,7 +317,7 @@ pub fn login(user_name: &String) -> UserView {
             users::status,
             users::icon_path,
             users::spot,
-            users::loggedin_at,
+            users::logged_in_at,
         ))
         .first::<UserView>(&conn)
         .unwrap();

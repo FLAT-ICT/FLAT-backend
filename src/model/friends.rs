@@ -2,7 +2,7 @@ use crate::model::db_util::*;
 use crate::model::types::SomeError;
 use crate::repository::{AddFriend, IdNamePath};
 // use crate::schema::friends;
-use crate::view::{FriendList, IdAndName, IdPair, ResultMessage, SearchUser};
+use crate::view::{FriendList, IdAndName, IdPair, SearchUser};
 use axum::response::IntoResponse;
 // use diesel::RunQueryDsl;
 use hyper::{Body, Response, StatusCode};
@@ -68,7 +68,8 @@ impl IntoResponse for SomeError {
             SomeError::ValidationError => Body::from("invalid validation"),
             SomeError::NotExistError => Body::from("user not found"),
             SomeError::SameNameError => Body::from("the name is alreasy used"),
-            SomeError::InvalidPasswordError => Body::from("user not found")
+            SomeError::InvalidPasswordError => Body::from("user not found"),
+            SomeError::InvalidStructure => Body::from("invalid structure"),
         };
 
         let status = match self {
@@ -76,6 +77,7 @@ impl IntoResponse for SomeError {
             SomeError::NotExistError => StatusCode::NOT_FOUND,
             SomeError::SameNameError => StatusCode::BAD_REQUEST,
             SomeError::InvalidPasswordError => StatusCode::NOT_FOUND,
+            SomeError::InvalidStructure => StatusCode::BAD_REQUEST,
         };
 
         Response::builder().status(status).body(body).unwrap()

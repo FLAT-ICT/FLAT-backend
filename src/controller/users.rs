@@ -2,9 +2,12 @@ use crate::{
     model::{
         db_util::is_exist_name,
         types::{SomeError, UserId},
-        users,
+        users::{self, is_logged_in},
     },
-    view::{ResultMessage, ScannedBeacon, UserCredential, UserTimestamp, UserView},
+    view::{
+        IsOtherUserLoggedIn, PreLoginView, ResultMessage, ScannedBeacon, UserCredential,
+        UserIdTimestamp, UserNameTimestamp, UserTimestamp, UserView,
+    },
 };
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;
@@ -68,8 +71,8 @@ pub async fn login(Json(credential): Json<UserCredential>) -> impl IntoResponse 
     // ()
 }
 
-pub async fn is_loggedin(Json(user_timestamp): Json<UserTimestamp>) -> impl IntoResponse {
-    let result = users::is_loged_in(user_timestamp);
+pub async fn is_loggedin(Json(user_timestamp): Json<UserIdTimestamp>) -> impl IntoResponse {
+    let result = users::is_logged_in(UserTimestamp::I(user_timestamp));
     (StatusCode::OK, Json(result))
 }
 
@@ -85,6 +88,50 @@ pub async fn logout(
         )),
         Err(e) => Err(e),
     }
+}
+
+pub async fn pre_login(
+    Json(payload): Json<PreLoginView>,
+) -> Result<(StatusCode, Json<IsOtherUserLoggedIn>), SomeError> {
+    let name = &payload.name;
+    let password = &payload.password;
+    let loggedin_at = &payload.loggedin_at;
+    let pv = &payload;
+
+    if (password.is_some() && loggedin_at.is_some()) || (password.is_none() && password.is_none()) {
+        return Err(SomeError::InvalidStructure);
+    }
+
+    // ログイン時 ログインされてたらTrueを返す
+    if let Some(_) = password {
+        match users::pre_login(pv) {
+            Err(e) => return Err(e),
+            Ok(v) => {
+                return Ok((
+                    StatusCode::OK,
+                    Json(IsOtherUserLoggedIn {
+                        others: v.is_some(),
+                    }),
+                ));
+            }
+        };
+    }
+
+    // 通常起動時
+    if let Some(l) = loggedin_at {
+        let result = is_logged_in(UserTimestamp::N(UserNameTimestamp {
+            name: name.to_string(),
+            logged_in_at: l.to_owned(),
+        }));
+        return Ok((
+            StatusCode::OK,
+            Json(IsOtherUserLoggedIn {
+                others: result.others,
+            }),
+        ));
+    }
+
+    return Ok((StatusCode::OK, Json(IsOtherUserLoggedIn { others: true })));
 }
 
 // #[derive(Deserialize)]
