@@ -159,6 +159,10 @@ pub async fn update_beacon(Json(payload): Json<ScannedBeacon>) -> impl IntoRespo
 }
 
 pub async fn update_name(Json(payload): Json<IdAndName>) -> impl IntoResponse {
+    // 200
+    // 400 same name error
+    // 404 id not exist
+    // 422 validation error
     if let false = is_exist_id(payload.my_id) {
         return Err(SomeError::NotExistError);
     }

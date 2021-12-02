@@ -118,9 +118,6 @@ pub fn update_name(user_id: i32, name: String) -> Result<(), SomeError>{
     }else{
         return Err(SomeError::SameNameError);
     }
-    // 200
-    // 400 same name error
-    // 404 id not exist
 }
 
 #[cfg(test)]
