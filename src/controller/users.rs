@@ -1,11 +1,11 @@
 use crate::{
     model::{
-        db_util::is_exist_name,
+        db_util::{is_exist_id, is_exist_name},
         types::{SomeError, UserId},
         users::{self, is_logged_in},
     },
     view::{
-        IsOtherUserLoggedIn, PreLoginView, ResultMessage, ScannedBeacon, UserCredential,
+        IdAndName, IsOtherUserLoggedIn, PreLoginView, ResultMessage, ScannedBeacon, UserCredential,
         UserIdTimestamp, UserNameTimestamp, UserTimestamp, UserView,
     },
 };
@@ -156,4 +156,17 @@ pub async fn update_beacon(Json(payload): Json<ScannedBeacon>) -> impl IntoRespo
             }),
         )
     }
+}
+
+pub async fn update_name(Json(payload): Json<IdAndName>) -> impl IntoResponse {
+    if let false = is_exist_id(payload.my_id) {
+        return Err(SomeError::NotExistError);
+    }
+    if let Err(e) = payload.validate(){
+        return Err(SomeError::ValidationError);
+    }
+    match users::update_name(payload.my_id, payload.target_name ) {
+        Ok(e) => return Ok((StatusCode::OK, Json(ResultMessage{message: "Ok".to_string()}))),
+        Err(e) => return Err(e),
+    };
 }

@@ -108,6 +108,21 @@ pub fn update_beacon(user_id: i32, major_id: i32, minor_id: i32) -> bool {
     update_spot(user_id, major_id, minor_id)
 }
 
+pub fn update_name(user_id: i32, name: String) -> Result<(), SomeError>{
+    if let false = is_exist_name(name){
+        return Err(SomeError::SameNameError);
+    }
+    // if let false = validate_name(){}
+    if let Ok(result) = db_util::update_name(user_id, name){
+        return Ok(())
+    }else{
+        return Err(SomeError::SameNameError);
+    }
+    // 200
+    // 400 same name error
+    // 404 id not exist
+}
+
 #[cfg(test)]
 mod tests {
     use crate::{model::users::update_beacon, view::UserCredential};
