@@ -3,9 +3,6 @@ use crate::model::types::SomeError;
 use crate::repository::{AddFriend, IdNamePath};
 // use crate::schema::friends;
 use crate::view::{FriendList, IdAndName, IdPair, SearchUser};
-use axum::response::IntoResponse;
-// use diesel::RunQueryDsl;
-use hyper::{Body, Response, StatusCode};
 // use validator::Validate;
 
 // 友だち追加の流れ
@@ -58,30 +55,6 @@ pub fn reject_friend(id_pair: IdPair) -> bool {
         return true;
     }
     return false;
-}
-
-impl IntoResponse for SomeError {
-    type Body = Body;
-    type BodyError = <Self::Body as axum::body::HttpBody>::Error;
-    fn into_response(self) -> Response<Self::Body> {
-        let body = match self {
-            SomeError::ValidationError => Body::from("invalid validation"),
-            SomeError::NotExistError => Body::from("user not found"),
-            SomeError::SameNameError => Body::from("the name is alreasy used"),
-            SomeError::InvalidPasswordError => Body::from("user not found"),
-            SomeError::InvalidStructure => Body::from("invalid structure"),
-        };
-
-        let status = match self {
-            SomeError::ValidationError => StatusCode::UNPROCESSABLE_ENTITY,
-            SomeError::NotExistError => StatusCode::NOT_FOUND,
-            SomeError::SameNameError => StatusCode::BAD_REQUEST,
-            SomeError::InvalidPasswordError => StatusCode::NOT_FOUND,
-            SomeError::InvalidStructure => StatusCode::BAD_REQUEST,
-        };
-
-        Response::builder().status(status).body(body).unwrap()
-    }
 }
 
 pub fn search_user(id_and_name: IdAndName) -> Result<Vec<SearchUser>, SomeError> {

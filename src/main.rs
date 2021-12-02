@@ -536,19 +536,19 @@ pub mod update_name_test {
         let create_usr = client
             .post(base_url.to_string() + "/v1/register")
             .json(&UserCredential {
-                name: "usr7_1_1".to_string(),
+                name: "usr7_1".to_string(),
                 password: "password".to_string(),
             })
             .send()
             .await
             .unwrap();
-        let id_1 = create_usr.json::<UserView>().await.unwrap().id;
         assert_eq!(create_usr.status(), http::StatusCode::OK);
+        let id = create_usr.json::<UserView>().await.unwrap().id;
         let update_name = client
             .post(base_url.to_string() + "/v1/user/name")
             .json(&IdAndName {
-                my_id: todo!(),
-                target_name: todo!(),
+                my_id: id,
+                target_name: "usr_7_1_1".to_string(),
             })
             .send()
             .await

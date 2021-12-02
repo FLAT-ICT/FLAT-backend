@@ -166,11 +166,18 @@ pub async fn update_name(Json(payload): Json<IdAndName>) -> impl IntoResponse {
     if let false = is_exist_id(payload.my_id) {
         return Err(SomeError::NotExistError);
     }
-    if let Err(e) = payload.validate(){
+    if let Err(_) = payload.validate() {
         return Err(SomeError::ValidationError);
     }
-    match users::update_name(payload.my_id, payload.target_name ) {
-        Ok(e) => return Ok((StatusCode::OK, Json(ResultMessage{message: "Ok".to_string()}))),
+    match users::update_name(payload.my_id, payload.target_name) {
+        Ok(_) => {
+            return Ok((
+                StatusCode::OK,
+                Json(ResultMessage {
+                    message: "Ok".to_string(),
+                }),
+            ))
+        }
         Err(e) => return Err(e),
     };
 }

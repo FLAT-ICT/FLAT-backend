@@ -240,7 +240,7 @@ pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) -> bool {
 
 pub fn update_name(user_id: i32, user_name: String) -> Result<usize, diesel::result::Error> {
     let conn = establish_connection();
-    diesel::update(users.find(id.eq(&user_id)))
+    diesel::update(users.find(&user_id))
         .set(name.eq(&user_name))
         .execute(&conn)
 }

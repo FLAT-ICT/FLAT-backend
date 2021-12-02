@@ -108,15 +108,17 @@ pub fn update_beacon(user_id: i32, major_id: i32, minor_id: i32) -> bool {
     update_spot(user_id, major_id, minor_id)
 }
 
-pub fn update_name(user_id: i32, name: String) -> Result<(), SomeError>{
-    if let false = is_exist_name(name){
+pub fn update_name(user_id: i32, name: String) -> Result<(), SomeError> {
+    if let true = is_exist_name(&name) {
         return Err(SomeError::SameNameError);
     }
     // if let false = validate_name(){}
-    if let Ok(result) = db_util::update_name(user_id, name){
-        return Ok(())
-    }else{
-        return Err(SomeError::SameNameError);
+    match db_util::update_name(user_id, name) {
+        Ok(result) => return Ok(()),
+        Err(e) => {
+            println!("{}", e);
+            return Err(SomeError::SameNameError);
+        }
     }
 }
 
