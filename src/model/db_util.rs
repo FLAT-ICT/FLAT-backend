@@ -9,6 +9,7 @@ use crate::schema;
 use crate::view::UserTimestamp;
 use crate::view::UserView;
 use chrono::NaiveDateTime;
+use diesel::mysql::Mysql;
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
 use diesel::ExpressionMethods;
@@ -27,8 +28,10 @@ pub fn establish_connection() -> MysqlConnection {
         .expect(&format!("Error connetincg to {}", database_url))
 }
 
-pub fn get_user_view(target_id: i32) -> Result<UserView, diesel::result::Error> {
-    let conn = establish_connection();
+fn _get_user_view(
+    conn: &MysqlConnection,
+    target_id: i32,
+) -> Result<UserView, diesel::result::Error> {
     users
         .filter(id.eq(target_id))
         .select((
@@ -39,7 +42,12 @@ pub fn get_user_view(target_id: i32) -> Result<UserView, diesel::result::Error> 
             users::spot,
             users::logged_in_at,
         ))
-        .first::<UserView>(&conn)
+        .first::<UserView>(conn)
+}
+
+pub fn get_user_view(target_id: i32) -> Result<UserView, diesel::result::Error> {
+    let conn = establish_connection();
+    _get_user_view(&conn, target_id)
 }
 
 pub fn is_exist_id(target_id: i32) -> bool {
@@ -253,11 +261,26 @@ pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) -> bool {
     }
 }
 
-pub fn update_name(user_id: i32, user_name: String) -> Result<usize, diesel::result::Error> {
+pub fn update_name(user_id: i32, user_name: String) -> Result<UserView, diesel::result::Error> {
     let conn = establish_connection();
-    diesel::update(users.find(&user_id))
+    if let Err(e) = diesel::update(users.find(&user_id))
         .set(name.eq(&user_name))
         .execute(&conn)
+    {
+        return Err(e);
+    }
+    _get_user_view(&conn, user_id)
+}
+
+pub fn update_status(user_id: i32, user_status: i32) -> Result<UserView, diesel::result::Error> {
+    let conn = establish_connection();
+    if let Err(e) = diesel::update(users.find(&user_id))
+        .set(status.eq(&user_status))
+        .execute(&conn)
+    {
+        return Err(e);
+    }
+    _get_user_view(&conn, user_id)
 }
 
 pub fn get_loggedin_at(user_timestamp: &UserTimestamp) -> Option<NaiveDateTime> {

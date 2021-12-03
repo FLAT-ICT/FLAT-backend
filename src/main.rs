@@ -15,7 +15,7 @@ use controller::friends::{add_friend, check_friend_status, friend_list, reject_f
 use controller::users::create_user;
 use controller::users::update_beacon;
 
-use crate::controller::users::{is_loggedin, login, logout, pre_login, update_name};
+use crate::controller::users::{is_loggedin, login, logout, pre_login, update_name, update_status};
 mod read_csv_and_write_db;
 mod repository;
 mod schema;
@@ -41,7 +41,7 @@ async fn main() {
         .route("/v1/user", post(create_user))
         .route("/v1/user/search", get(check_friend_status))
         .route("/v1/user/beacon", post(update_beacon))
-        // .route("/v1/user/status", post({}))
+        .route("/v1/user/status", post(update_status))
         .route("/v1/user/name", post(update_name))
         // .route("/v1/user/icon", post({}))
         // .route(":id.png", get({}))
@@ -619,5 +619,97 @@ pub mod update_name_test {
             .await
             .unwrap();
         assert_eq!(update_name.status(), http::StatusCode::OK);
+    }
+}
+
+#[cfg(test)]
+pub mod update_status_test {
+    use axum::http;
+
+    use crate::view::{IdAndStatus, UserCredential, UserView};
+
+    #[tokio::test]
+    async fn success() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr8_1".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::OK);
+
+        let id = create_usr.json::<UserView>().await.unwrap().id;
+        let update_status_0 = client
+            .post(base_url.to_string() + "/v1/user/login")
+            .json(&IdAndStatus { id, status: 0 })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(update_status_0.status(), http::StatusCode::OK);
+        let update_status_1 = client
+            .post(base_url.to_string() + "/v1/user/login")
+            .json(&IdAndStatus { id, status: 1 })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(update_status_1.status(), http::StatusCode::OK);
+        let update_status_2 = client
+            .post(base_url.to_string() + "/v1/user/login")
+            .json(&IdAndStatus { id, status: 2 })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(update_status_2.status(), http::StatusCode::OK);
+        let update_status_3 = client
+            .post(base_url.to_string() + "/v1/user/login")
+            .json(&IdAndStatus { id, status: 3 })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(update_status_3.status(), http::StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn failure() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr8_1".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::OK);
+
+        let id = create_usr.json::<UserView>().await.unwrap().id;
+        let update_status_4 = client
+            .post(base_url.to_string() + "/v1/user/login")
+            .json(&IdAndStatus { id, status: 4 })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(
+            update_status_4.status(),
+            http::StatusCode::UNPROCESSABLE_ENTITY
+        );
+
+        let update_status__1 = client
+            .post(base_url.to_string() + "/v1/user/login")
+            .json(&IdAndStatus { id, status: -1 })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(
+            update_status__1.status(),
+            http::StatusCode::UNPROCESSABLE_ENTITY
+        );
     }
 }

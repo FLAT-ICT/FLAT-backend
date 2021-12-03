@@ -114,19 +114,17 @@ pub struct ScannedBeacon {
     // pub distance: f32,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct IdAndStatus {
     pub id: i32,
-    pub status: i32
+    pub status: i32,
 }
-
 
 #[derive(Deserialize)]
 pub struct IdAndIcon {
     pub id: i32,
-    pub image: String // 画像をbase64エンコーディング
+    pub image: String, // 画像をbase64エンコーディング
 }
-
 
 pub enum UserTimestamp {
     I(UserIdTimestamp),
