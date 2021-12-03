@@ -555,4 +555,69 @@ pub mod update_name_test {
             .unwrap();
         assert_eq!(update_name.status(), http::StatusCode::OK);
     }
+    #[tokio::test]
+    async fn success_update_same_name() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr7_2".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::OK);
+        let id = create_usr.json::<UserView>().await.unwrap().id;
+        let update_name = client
+            .post(base_url.to_string() + "/v1/user/name")
+            .json(&IdAndName {
+                my_id: id,
+                target_name: "usr7_2".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(update_name.status(), http::StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn failure_1_duplicate_nickname() {
+        let base_url = "http://localhost:3000";
+        let client = reqwest::Client::new();
+        let create_usr = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr7_3".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr.status(), http::StatusCode::OK);
+        let id = create_usr.json::<UserView>().await.unwrap().id;
+
+        let create_usr_1 = client
+            .post(base_url.to_string() + "/v1/register")
+            .json(&UserCredential {
+                name: "usr7_4".to_string(),
+                password: "password".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(create_usr_1.status(), http::StatusCode::OK);
+
+        let update_name = client
+            .post(base_url.to_string() + "/v1/user/name")
+            .json(&IdAndName {
+                my_id: id,
+                target_name: "usr7_3".to_string(),
+            })
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(update_name.status(), http::StatusCode::OK);
+    }
 }

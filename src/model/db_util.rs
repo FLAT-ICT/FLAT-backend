@@ -27,6 +27,21 @@ pub fn establish_connection() -> MysqlConnection {
         .expect(&format!("Error connetincg to {}", database_url))
 }
 
+pub fn get_user_view(target_id: i32) -> Result<UserView, diesel::result::Error> {
+    let conn = establish_connection();
+    users
+        .filter(id.eq(target_id))
+        .select((
+            users::id,
+            users::name,
+            users::status,
+            users::icon_path,
+            users::spot,
+            users::logged_in_at,
+        ))
+        .first::<UserView>(&conn)
+}
+
 pub fn is_exist_id(target_id: i32) -> bool {
     // let user_id = id;
     // if id.len() != 6 {
