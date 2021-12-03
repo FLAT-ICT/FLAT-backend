@@ -1,5 +1,5 @@
 use super::{
-    db_util::{delete_loggedin_at, get_loggedin_at_from_name, is_exist_name},
+    db_util::{delete_loggedin_at, get_loggedin_at_from_name, get_user_view, is_exist_name},
     types::SomeError,
 };
 use crate::{
@@ -106,6 +106,25 @@ pub fn logout(user_id: i32) -> Result<(), SomeError> {
 pub fn update_beacon(user_id: i32, major_id: i32, minor_id: i32) -> bool {
     // is_exist_beacon(major_id, minor_id)
     update_spot(user_id, major_id, minor_id)
+}
+
+pub fn update_name(user_id: i32, name: String) -> Result<(), SomeError> {
+    // 自分と同じ名前は許容
+    if let Ok(user) = get_user_view(user_id) {
+        if user.id == user_id {
+            return Ok(());
+        } else {
+            return Err(SomeError::SameNameError);
+        }
+    }
+    // if let false = validate_name(){}
+    match db_util::update_name(user_id, name) {
+        Ok(_) => return Ok(()),
+        Err(e) => {
+            println!("{}", e);
+            return Err(SomeError::SameNameError);
+        }
+    }
 }
 
 #[cfg(test)]

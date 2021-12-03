@@ -96,9 +96,10 @@ pub struct UserView {
     pub logged_in_at: Option<NaiveDateTime>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct IdAndName {
     pub my_id: i32,
+    #[validate(length(min = 1, max = 10))]
     pub target_name: String,
 }
 
@@ -112,6 +113,20 @@ pub struct ScannedBeacon {
     pub rssi: i32,
     // pub distance: f32,
 }
+
+#[derive(Deserialize)]
+pub struct IdAndStatus {
+    pub id: i32,
+    pub status: i32
+}
+
+
+#[derive(Deserialize)]
+pub struct IdAndIcon {
+    pub id: i32,
+    pub image: String // 画像をbase64エンコーディング
+}
+
 
 pub enum UserTimestamp {
     I(UserIdTimestamp),

@@ -27,6 +27,21 @@ pub fn establish_connection() -> MysqlConnection {
         .expect(&format!("Error connetincg to {}", database_url))
 }
 
+pub fn get_user_view(target_id: i32) -> Result<UserView, diesel::result::Error> {
+    let conn = establish_connection();
+    users
+        .filter(id.eq(target_id))
+        .select((
+            users::id,
+            users::name,
+            users::status,
+            users::icon_path,
+            users::spot,
+            users::logged_in_at,
+        ))
+        .first::<UserView>(&conn)
+}
+
 pub fn is_exist_id(target_id: i32) -> bool {
     // let user_id = id;
     // if id.len() != 6 {
@@ -236,6 +251,13 @@ pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) -> bool {
         }
         return None;
     }
+}
+
+pub fn update_name(user_id: i32, user_name: String) -> Result<usize, diesel::result::Error> {
+    let conn = establish_connection();
+    diesel::update(users.find(&user_id))
+        .set(name.eq(&user_name))
+        .execute(&conn)
 }
 
 pub fn get_loggedin_at(user_timestamp: &UserTimestamp) -> Option<NaiveDateTime> {
