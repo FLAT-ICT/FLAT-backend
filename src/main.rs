@@ -645,28 +645,28 @@ pub mod update_status_test {
 
         let id = create_usr.json::<UserView>().await.unwrap().id;
         let update_status_0 = client
-            .post(base_url.to_string() + "/v1/user/login")
+            .post(base_url.to_string() + "/v1/user/status")
             .json(&IdAndStatus { id, status: 0 })
             .send()
             .await
             .unwrap();
         assert_eq!(update_status_0.status(), http::StatusCode::OK);
         let update_status_1 = client
-            .post(base_url.to_string() + "/v1/user/login")
+            .post(base_url.to_string() + "/v1/user/status")
             .json(&IdAndStatus { id, status: 1 })
             .send()
             .await
             .unwrap();
         assert_eq!(update_status_1.status(), http::StatusCode::OK);
         let update_status_2 = client
-            .post(base_url.to_string() + "/v1/user/login")
+            .post(base_url.to_string() + "/v1/user/status")
             .json(&IdAndStatus { id, status: 2 })
             .send()
             .await
             .unwrap();
         assert_eq!(update_status_2.status(), http::StatusCode::OK);
         let update_status_3 = client
-            .post(base_url.to_string() + "/v1/user/login")
+            .post(base_url.to_string() + "/v1/user/status")
             .json(&IdAndStatus { id, status: 3 })
             .send()
             .await
@@ -681,7 +681,7 @@ pub mod update_status_test {
         let create_usr = client
             .post(base_url.to_string() + "/v1/register")
             .json(&UserCredential {
-                name: "usr8_1".to_string(),
+                name: "usr8_2".to_string(),
                 password: "password".to_string(),
             })
             .send()
@@ -691,7 +691,7 @@ pub mod update_status_test {
 
         let id = create_usr.json::<UserView>().await.unwrap().id;
         let update_status_4 = client
-            .post(base_url.to_string() + "/v1/user/login")
+            .post(base_url.to_string() + "/v1/user/status")
             .json(&IdAndStatus { id, status: 4 })
             .send()
             .await
@@ -702,7 +702,7 @@ pub mod update_status_test {
         );
 
         let update_status__1 = client
-            .post(base_url.to_string() + "/v1/user/login")
+            .post(base_url.to_string() + "/v1/user/status")
             .json(&IdAndStatus { id, status: -1 })
             .send()
             .await
