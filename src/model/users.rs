@@ -108,23 +108,27 @@ pub fn update_beacon(user_id: i32, major_id: i32, minor_id: i32) -> bool {
     update_spot(user_id, major_id, minor_id)
 }
 
-pub fn update_name(user_id: i32, name: String) -> Result<(), SomeError> {
+pub fn update_name(user_id: i32, name: String) -> Result<UserView, SomeError> {
     // 自分と同じ名前は許容
     if let Ok(user) = get_user_view(user_id) {
         if user.id == user_id {
-            return Ok(());
+            return Ok(user);
         } else {
             return Err(SomeError::SameNameError);
         }
     }
     // if let false = validate_name(){}
     match db_util::update_name(user_id, name) {
-        Ok(_) => return Ok(()),
+        Ok(user) => return Ok(user),
         Err(e) => {
             println!("{}", e);
             return Err(SomeError::SameNameError);
         }
     }
+}
+
+pub fn update_status(user_id: i32, status: i32) -> Result<UserView, diesel::result::Error> {
+    db_util::update_status(user_id, status)
 }
 
 #[cfg(test)]
