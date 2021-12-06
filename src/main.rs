@@ -618,7 +618,7 @@ pub mod update_name_test {
             .send()
             .await
             .unwrap();
-        assert_eq!(update_name.status(), http::StatusCode::OK);
+        assert_eq!(update_name.status(), http::StatusCode::BAD_REQUEST);
     }
 }
 
