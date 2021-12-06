@@ -543,7 +543,11 @@ pub mod update_name_test {
             .await
             .unwrap();
         assert_eq!(create_usr.status(), http::StatusCode::OK);
-        let id = create_usr.json::<UserView>().await.unwrap().id;
+
+        let user = create_usr.json::<UserView>().await.unwrap();
+        let id = user.id;
+        let name_1 = user.name;
+        
         let update_name = client
             .post(base_url.to_string() + "/v1/user/name")
             .json(&IdAndName {
@@ -554,6 +558,12 @@ pub mod update_name_test {
             .await
             .unwrap();
         assert_eq!(update_name.status(), http::StatusCode::OK);
+
+        let user_1 = update_name.json::<UserView>().await.unwrap();
+        let name_2 = user_1.name;
+
+        assert_eq!(name_1, name_2)
+
     }
     #[tokio::test]
     async fn success_update_same_name() {
