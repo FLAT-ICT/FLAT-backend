@@ -542,13 +542,14 @@ pub mod update_name_test {
             .send()
             .await
             .unwrap();
-        let id_1 = create_usr.json::<UserView>().await.unwrap().id;
         assert_eq!(create_usr.status(), http::StatusCode::OK);
+        let id_1 = create_usr.json::<UserView>().await.unwrap().id;
+    
         let update_name = client
             .post(base_url.to_string() + "/v1/user/name")
             .json(&IdAndName {
-                my_id: todo!(),
-                target_name: todo!(),
+                my_id: id_1,
+                target_name: "usr7_1_2".to_string(),
             })
             .send()
             .await
