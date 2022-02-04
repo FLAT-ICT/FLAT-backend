@@ -606,7 +606,6 @@ pub mod update_name_test {
             .await
             .unwrap();
         assert_eq!(create_usr.status(), http::StatusCode::OK);
-        let id = create_usr.json::<UserView>().await.unwrap().id;
 
         let create_usr_1 = client
             .post(base_url.to_string() + "/v1/register")
@@ -618,6 +617,7 @@ pub mod update_name_test {
             .await
             .unwrap();
         assert_eq!(create_usr_1.status(), http::StatusCode::OK);
+        let id = create_usr_1.json::<UserView>().await.unwrap().id;
 
         let update_name = client
             .post(base_url.to_string() + "/v1/user/name")
