@@ -5,8 +5,8 @@ use crate::{
         users::{self, is_logged_in},
     },
     view::{
-        IdAndName, IsOtherUserLoggedIn, PreLoginView, ResultMessage, ScannedBeacon, UserCredential,
-        UserIdTimestamp, UserNameTimestamp, UserTimestamp, UserView,
+        IdAndName, IdAndStatus, IsOtherUserLoggedIn, PreLoginView, ResultMessage, ScannedBeacon,
+        UserCredential, UserIdTimestamp, UserNameTimestamp, UserTimestamp, UserView,
     },
 };
 use axum::{response::IntoResponse, Json};
@@ -166,11 +166,25 @@ pub async fn update_name(Json(payload): Json<IdAndName>) -> impl IntoResponse {
     if let false = is_exist_id(payload.my_id) {
         return Err(SomeError::NotExistError);
     }
-    if let Err(e) = payload.validate(){
+    if let Err(_) = payload.validate() {
         return Err(SomeError::ValidationError);
     }
-    match users::update_name(payload.my_id, payload.target_name ) {
-        Ok(e) => return Ok((StatusCode::OK, Json(ResultMessage{message: "Ok".to_string()}))),
+    match users::update_name(payload.my_id, payload.target_name) {
+        Ok(v) => return Ok((StatusCode::OK, Json(v))),
         Err(e) => return Err(e),
     };
+}
+
+pub async fn update_status(
+    Json(payload): Json<IdAndStatus>,
+) -> Result<(StatusCode, axum::Json<UserView>), SomeError> {
+    if let false = is_exist_id(payload.id) {
+        return Err(SomeError::NotExistError);
+    }
+    if 0 <= payload.status && payload.status <= 3 {
+        let result = users::update_status(payload.id, payload.status).unwrap();
+        return Ok((StatusCode::OK, Json(result)));
+    } else {
+        return Err(SomeError::ValidationError);
+    }
 }
