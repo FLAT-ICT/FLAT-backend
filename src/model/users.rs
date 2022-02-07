@@ -14,14 +14,14 @@ use std::num::NonZeroU32;
 
 pub fn create_user(credential: UserHashedCredential) -> Result<UserView, SomeError> {
     if let true = is_exist_name(&credential.name) {
-        return Err(SomeError::SameNameError);
+        return Err(SomeError::AlreadyExistName);
     }
     let result = insert_user(credential);
 
     if let Some(v) = result {
         return Ok(v);
     } else {
-        return Err(SomeError::SameNameError);
+        return Err(SomeError::AlreadyExistName);
     };
 }
 
@@ -50,17 +50,17 @@ pub fn is_logged_in(user_timestamp: UserTimestamp) -> IsOtherUserLoggedIn {
 
 pub fn pre_login(p: &PreLoginView) -> Result<Option<NaiveDateTime>, SomeError> {
     if let false = is_exist_name(&p.name) {
-        return Err(SomeError::NotExistError);
+        return Err(SomeError::NotExist);
     }
 
     if p.password.is_none() {
-        return Err(SomeError::NotExistError);
+        return Err(SomeError::NotExist);
     }
     if let false = match_password(&UserCredential {
         name: p.name.to_string(),
         password: p.password.as_ref().unwrap().to_string(),
     }) {
-        return Err(SomeError::InvalidPasswordError);
+        return Err(SomeError::InvalidPassword);
     } else {
         return Ok(get_loggedin_at_from_name(p.name.to_string()));
     }
@@ -73,11 +73,11 @@ pub fn login(credential: UserCredential) -> Result<UserView, SomeError> {
     // パスワードチェック
 
     if let false = is_exist_name(&credential.name) {
-        return Err(SomeError::NotExistError);
+        return Err(SomeError::NotExist);
     }
 
     if let false = match_password(&credential) {
-        return Err(SomeError::InvalidPasswordError);
+        return Err(SomeError::InvalidPassword);
     }
     let result = db_util::login(&credential.name);
     return Ok(result);
@@ -110,20 +110,22 @@ pub fn update_beacon(user_id: i32, major_id: i32, minor_id: i32) -> bool {
 
 pub fn update_name(user_id: i32, name: String) -> Result<UserView, SomeError> {
     // 自分と同じ名前は許容
-    if let Ok(user) = get_user_view(user_id) {
-        if user.id == user_id {
-            return Ok(user);
+    // 名前が一致している かつ IDが一致している 場合 Ok
+    // 名前が一致している かつ IDが一致していない 場合 Err
+    if let Ok(old_user) = get_user_view(user_id) {
+        if old_user.name == name {
+            match old_user.id == user_id {
+                true => return Ok(old_user),
+                false => return Err(SomeError::AlreadyExistName),
+            };
         } else {
-            return Err(SomeError::SameNameError);
+            match db_util::update_name(user_id, name) {
+                Ok(user) => return Ok(user),
+                Err(e) => return Err(e),
+            }
         }
-    }
-    // if let false = validate_name(){}
-    match db_util::update_name(user_id, name) {
-        Ok(user) => return Ok(user),
-        Err(e) => {
-            println!("{}", e);
-            return Err(SomeError::SameNameError);
-        }
+    } else {
+        return Err(SomeError::NotExist);
     }
 }
 

@@ -543,7 +543,11 @@ pub mod update_name_test {
             .await
             .unwrap();
         assert_eq!(create_usr.status(), http::StatusCode::OK);
-        let id = create_usr.json::<UserView>().await.unwrap().id;
+
+        let user = create_usr.json::<UserView>().await.unwrap();
+        let id = user.id;
+        let name_1 = user.name;
+        
         let update_name = client
             .post(base_url.to_string() + "/v1/user/name")
             .json(&IdAndName {
@@ -554,6 +558,12 @@ pub mod update_name_test {
             .await
             .unwrap();
         assert_eq!(update_name.status(), http::StatusCode::OK);
+
+        let user_1 = update_name.json::<UserView>().await.unwrap();
+        let name_2 = user_1.name;
+
+        assert_eq!(name_2, String::from("usr_7_1_1"))
+
     }
     #[tokio::test]
     async fn success_update_same_name() {
@@ -596,18 +606,18 @@ pub mod update_name_test {
             .await
             .unwrap();
         assert_eq!(create_usr.status(), http::StatusCode::OK);
-        let id = create_usr.json::<UserView>().await.unwrap().id;
 
         let create_usr_1 = client
             .post(base_url.to_string() + "/v1/register")
             .json(&UserCredential {
                 name: "usr7_4".to_string(),
-                password: "password".to_string(),
+                 password: "password".to_string(),
             })
             .send()
             .await
             .unwrap();
         assert_eq!(create_usr_1.status(), http::StatusCode::OK);
+        let id = create_usr_1.json::<UserView>().await.unwrap().id;
 
         let update_name = client
             .post(base_url.to_string() + "/v1/user/name")
@@ -618,7 +628,7 @@ pub mod update_name_test {
             .send()
             .await
             .unwrap();
-        assert_eq!(update_name.status(), http::StatusCode::OK);
+        assert_eq!(update_name.status(), http::StatusCode::BAD_REQUEST);
     }
 }
 

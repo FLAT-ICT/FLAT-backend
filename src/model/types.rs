@@ -9,10 +9,10 @@ pub struct UserId {
 
 #[derive(Debug)]
 pub enum SomeError {
-    ValidationError,
-    NotExistError,
-    InvalidPasswordError,
-    SameNameError,
+    InvalidValidation,
+    NotExist,
+    InvalidPassword,
+    AlreadyExistName,
     InvalidStructure,
 }
 
@@ -21,18 +21,18 @@ impl IntoResponse for SomeError {
     type BodyError = <Self::Body as axum::body::HttpBody>::Error;
     fn into_response(self) -> Response<Self::Body> {
         let body = match self {
-            SomeError::ValidationError => Body::from("invalid validation"),
-            SomeError::NotExistError => Body::from("user not found"),
-            SomeError::SameNameError => Body::from("the name is alreasy used"),
-            SomeError::InvalidPasswordError => Body::from("user not found"),
+            SomeError::InvalidValidation => Body::from("invalid validation"),
+            SomeError::NotExist => Body::from("user not found"),
+            SomeError::AlreadyExistName => Body::from("the name is alreasy used"),
+            SomeError::InvalidPassword => Body::from("user not found"),
             SomeError::InvalidStructure => Body::from("invalid structure"),
         };
 
         let status = match self {
-            SomeError::ValidationError => StatusCode::UNPROCESSABLE_ENTITY,
-            SomeError::NotExistError => StatusCode::NOT_FOUND,
-            SomeError::SameNameError => StatusCode::BAD_REQUEST,
-            SomeError::InvalidPasswordError => StatusCode::NOT_FOUND,
+            SomeError::InvalidValidation => StatusCode::UNPROCESSABLE_ENTITY,
+            SomeError::NotExist => StatusCode::NOT_FOUND,
+            SomeError::AlreadyExistName => StatusCode::BAD_REQUEST,
+            SomeError::InvalidPassword => StatusCode::NOT_FOUND,
             SomeError::InvalidStructure => StatusCode::BAD_REQUEST,
         };
 

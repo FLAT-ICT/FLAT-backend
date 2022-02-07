@@ -261,15 +261,22 @@ pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) -> bool {
     }
 }
 
-pub fn update_name(user_id: i32, user_name: String) -> Result<UserView, diesel::result::Error> {
+pub fn update_name(user_id: i32, user_name: String) -> Result<UserView, SomeError> {
     let conn = establish_connection();
+    
+    if let true = is_exist_name( &user_name) {
+        return Err(SomeError::AlreadyExistName);
+    }
+
     if let Err(e) = diesel::update(users.find(&user_id))
         .set(name.eq(&user_name))
         .execute(&conn)
     {
-        return Err(e);
+        println!("{}", e);
+        return Err(SomeError::AlreadyExistName);
     }
-    _get_user_view(&conn, user_id)
+    println!("ok");
+    Ok(_get_user_view(&conn, user_id).unwrap())
 }
 
 pub fn update_status(user_id: i32, user_status: i32) -> Result<UserView, diesel::result::Error> {
@@ -331,7 +338,7 @@ pub fn delete_loggedin_at(user_id: i32) -> Result<(), SomeError> {
     {
         return Ok(());
     } else {
-        return Err(SomeError::NotExistError);
+        return Err(SomeError::NotExist);
     }
 }
 
