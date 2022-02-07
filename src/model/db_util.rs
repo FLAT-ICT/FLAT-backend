@@ -272,8 +272,10 @@ pub fn update_name(user_id: i32, user_name: String) -> Result<UserView, SomeErro
         .set(name.eq(&user_name))
         .execute(&conn)
     {
+        println!("{}", e);
         return Err(SomeError::AlreadyExistName);
     }
+    println!("ok");
     Ok(_get_user_view(&conn, user_id).unwrap())
 }
 

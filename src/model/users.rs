@@ -110,20 +110,22 @@ pub fn update_beacon(user_id: i32, major_id: i32, minor_id: i32) -> bool {
 
 pub fn update_name(user_id: i32, name: String) -> Result<UserView, SomeError> {
     // 自分と同じ名前は許容
-    if let Ok(user) = get_user_view(user_id) {
-        if user.id == user_id {
-            return Ok(user);
+    // 名前が一致している かつ IDが一致している 場合 Ok
+    // 名前が一致している かつ IDが一致していない 場合 Err
+    if let Ok(old_user) = get_user_view(user_id) {
+        if old_user.name == name {
+            match old_user.id == user_id {
+                true => return Ok(old_user),
+                false => return Err(SomeError::AlreadyExistName),
+            };
         } else {
-            return Err(SomeError::AlreadyExistName);
+            match db_util::update_name(user_id, name) {
+                Ok(user) => return Ok(user),
+                Err(e) => return Err(e),
+            }
         }
-    }
-    // if let false = validate_name(){}
-    match db_util::update_name(user_id, name) {
-        Ok(user) => return Ok(user),
-        Err(e) => {
-            // println!("{}", e);
-            return Err(e);
-        }
+    } else {
+        return Err(SomeError::NotExist);
     }
 }
 

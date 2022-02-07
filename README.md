@@ -31,7 +31,7 @@ docker compose down -v
 ### API
 
 こちらを参照してください
-[FastAPI - Swagger UI](http://34.68.157.198:8080/docs#/)
+[FastAPI - Swagger UI](http://35.239.225.65:8080/docs#/)
 
 
 ### API のテスト

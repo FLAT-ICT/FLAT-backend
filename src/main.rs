@@ -623,7 +623,7 @@ pub mod update_name_test {
             .post(base_url.to_string() + "/v1/user/name")
             .json(&IdAndName {
                 my_id: id,
-                target_name: "usr7_4".to_string(),
+                target_name: "usr7_3".to_string(),
             })
             .send()
             .await
