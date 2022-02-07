@@ -611,7 +611,7 @@ pub mod update_name_test {
             .post(base_url.to_string() + "/v1/register")
             .json(&UserCredential {
                 name: "usr7_4".to_string(),
-                password: "password".to_string(),
+                 password: "password".to_string(),
             })
             .send()
             .await
