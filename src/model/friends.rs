@@ -87,7 +87,7 @@ pub fn search_user(id_and_name: IdAndName) -> Result<Vec<SearchUser>, SomeError>
     // レコード存在確認
     if !is_exist_id(my_id) {
         // return (404, "Err, id not found".to_string());
-        return Err(SomeError::NotExistError);
+        return Err(SomeError::NotExist);
     }
 
     // if invalid validation {

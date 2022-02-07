@@ -25,11 +25,11 @@ pub async fn create_user(
     Json(payload): Json<UserCredential>,
 ) -> Result<(StatusCode, axum::Json<UserView>), SomeError> {
     if let Err(_) = payload.validate() {
-        return Err(SomeError::ValidationError);
+        return Err(SomeError::InvalidValidation);
     }
 
     if let true = is_exist_name(&payload.name) {
-        return Err(SomeError::SameNameError);
+        return Err(SomeError::AlreadyExistName);
     }
 
     if let Ok(inserted) = users::create_user(
@@ -41,7 +41,7 @@ pub async fn create_user(
     ) {
         Ok((StatusCode::OK, Json(inserted)))
     } else {
-        Err(SomeError::SameNameError)
+        Err(SomeError::AlreadyExistName)
     }
 
     // 実装するものたち
@@ -59,7 +59,7 @@ pub async fn create_user(
 
 pub async fn login(Json(credential): Json<UserCredential>) -> impl IntoResponse {
     if let Err(_) = credential.validate() {
-        return Err(SomeError::ValidationError);
+        return Err(SomeError::InvalidValidation);
     }
     match users::login(credential) {
         Ok(result) => Ok((StatusCode::OK, Json(result))),
@@ -164,10 +164,10 @@ pub async fn update_name(Json(payload): Json<IdAndName>) -> impl IntoResponse {
     // 404 id not exist
     // 422 validation error
     if let false = is_exist_id(payload.my_id) {
-        return Err(SomeError::NotExistError);
+        return Err(SomeError::NotExist);
     }
     if let Err(_) = payload.validate() {
-        return Err(SomeError::ValidationError);
+        return Err(SomeError::InvalidValidation);
     }
     match users::update_name(payload.my_id, payload.target_name) {
         Ok(v) => return Ok((StatusCode::OK, Json(v))),
@@ -179,12 +179,12 @@ pub async fn update_status(
     Json(payload): Json<IdAndStatus>,
 ) -> Result<(StatusCode, axum::Json<UserView>), SomeError> {
     if let false = is_exist_id(payload.id) {
-        return Err(SomeError::NotExistError);
+        return Err(SomeError::NotExist);
     }
     if 0 <= payload.status && payload.status <= 3 {
         let result = users::update_status(payload.id, payload.status).unwrap();
         return Ok((StatusCode::OK, Json(result)));
     } else {
-        return Err(SomeError::ValidationError);
+        return Err(SomeError::InvalidValidation);
     }
 }

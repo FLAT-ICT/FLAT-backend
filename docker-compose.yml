@@ -36,7 +36,7 @@ services:
       CARGO_BUILD_TARGET_DIR: /target
       DATABASE_URL: mysql://docker:9Xu84SA1@mysql:3306/diesel_demo
     ports:
-      - 3000:3000
+      - 3001:3001
     depends_on:
       - mysql
     command: ./scripts/start_test.sh
