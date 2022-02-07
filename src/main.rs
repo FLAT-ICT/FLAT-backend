@@ -562,7 +562,7 @@ pub mod update_name_test {
         let user_1 = update_name.json::<UserView>().await.unwrap();
         let name_2 = user_1.name;
 
-        assert_eq!(name_1, name_2)
+        assert_eq!(name_2, String::from("usr_7_1_1"))
 
     }
     #[tokio::test]
@@ -623,7 +623,7 @@ pub mod update_name_test {
             .post(base_url.to_string() + "/v1/user/name")
             .json(&IdAndName {
                 my_id: id,
-                target_name: "usr7_3".to_string(),
+                target_name: "usr7_4".to_string(),
             })
             .send()
             .await
