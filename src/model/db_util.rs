@@ -9,7 +9,7 @@ use crate::schema;
 use crate::view::UserTimestamp;
 use crate::view::UserView;
 use chrono::NaiveDateTime;
-use diesel::mysql::Mysql;
+
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
 use diesel::ExpressionMethods;
