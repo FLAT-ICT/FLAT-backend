@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use crate::model;
-use crate::model::friends::search_user;
-use crate::view::{IdAndName, IdPair, ResultMessage, SearchUser};
+use crate::worker::model;
+use crate::worker::model::friends::search_user;
+use crate::worker::view::{IdAndName, IdPair, ResultMessage, SearchUser};
 use axum::extract::Query;
 use axum::{response::IntoResponse, Json};
 use hyper::StatusCode;

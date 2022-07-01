@@ -1,4 +1,4 @@
-use crate::{model::db_util::insert_spots_from_csv, repository::DeserializableSpot};
+use crate::worker::{model::db_util::insert_spots_from_csv, repository::DeserializableSpot};
 use std::{error::Error, fs::File};
 
 pub(crate) fn run() -> Result<(), Box<dyn Error>> {
@@ -22,8 +22,8 @@ pub(crate) fn run() -> Result<(), Box<dyn Error>> {
 #[cfg(test)]
 mod beacon_tests {
 
-    use crate::model::db_util::establish_connection;
-    use crate::schema::spots::dsl::*;
+    use crate::worker::model::db_util::establish_connection;
+    use crate::worker::schema::spots::dsl::*;
     use diesel::ExpressionMethods;
     use diesel::QueryDsl;
     use diesel::RunQueryDsl;

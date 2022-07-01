@@ -1,5 +1,5 @@
+extern crate flat_backend;
 
-#[cfg(test)]
 mod tests {
     use axum::http;
 
@@ -16,16 +16,15 @@ mod tests {
     }
 }
 
-#[cfg(test)]
 mod search_user {
 
-    use crate::repository::{Friend, User};
-    use crate::schema::friends::dsl::*;
-    use crate::schema::users::dsl::*;
-    use crate::view::{SearchUser, UserCredential, UserView};
-    use crate::{model::db_util::establish_connection, view::IdPair};
     use axum::http;
     use diesel::RunQueryDsl;
+    use flat_backend::worker::repository::{Friend, User};
+    use flat_backend::worker::schema::friends::dsl::*;
+    use flat_backend::worker::schema::users::dsl::*;
+    use flat_backend::worker::view::{SearchUser, UserCredential, UserView};
+    use flat_backend::worker::{model::db_util::establish_connection, view::IdPair};
 
     #[tokio::test]
     async fn get_search_user() {
@@ -132,12 +131,11 @@ mod search_user {
     }
 }
 
-#[cfg(test)]
 mod beacon {
-    // use crate::model::db_util::establish_connection;
-    // use crate::schema::users::dsl::*;
-    use crate::view::{ScannedBeacon, UserCredential, UserView};
+    // use flat_backend::worker::model::db_util::establish_connection;
+    // use flat_backend::worker::schema::users::dsl::*;
     use axum::http;
+    use flat_backend::worker::view::{ScannedBeacon, UserCredential, UserView};
     // use diesel::RunQueryDsl;
 
     #[tokio::test]
@@ -200,10 +198,9 @@ mod beacon {
     }
 }
 
-#[cfg(test)]
 mod create_user {
-    use crate::view::UserCredential;
     use axum::http;
+    use flat_backend::worker::view::UserCredential;
 
     #[tokio::test]
     async fn collect() {
@@ -297,11 +294,10 @@ mod create_user {
     }
 }
 
-#[cfg(test)]
 mod login {
     use axum::http;
 
-    use crate::view::UserCredential;
+    use flat_backend::worker::view::UserCredential;
 
     #[tokio::test]
     async fn collect() {
@@ -381,11 +377,10 @@ mod login {
     }
 }
 
-#[cfg(test)]
 mod logout {
     use axum::http;
 
-    use crate::{
+    use flat_backend::worker::{
         model::types::UserId,
         view::{UserCredential, UserView},
     };
@@ -456,11 +451,10 @@ mod logout {
     }
 }
 
-#[cfg(test)]
 pub mod update_name_test {
     use axum::http;
 
-    use crate::view::{IdAndName, UserCredential, UserView};
+    use flat_backend::worker::view::{IdAndName, UserCredential, UserView};
 
     #[tokio::test]
     async fn success() {
@@ -479,8 +473,8 @@ pub mod update_name_test {
 
         let user = create_usr.json::<UserView>().await.unwrap();
         let id = user.id;
-        let name_1 = user.name;
-        
+        // let name_1 = user.name;
+
         let update_name = client
             .post(base_url.to_string() + "/v1/user/name")
             .json(&IdAndName {
@@ -496,7 +490,6 @@ pub mod update_name_test {
         let name_2 = user_1.name;
 
         assert_eq!(name_2, String::from("usr_7_1_1"))
-
     }
     #[tokio::test]
     async fn success_update_same_name() {
@@ -544,7 +537,7 @@ pub mod update_name_test {
             .post(base_url.to_string() + "/v1/register")
             .json(&UserCredential {
                 name: "usr7_4".to_string(),
-                 password: "password".to_string(),
+                password: "password".to_string(),
             })
             .send()
             .await
@@ -565,11 +558,10 @@ pub mod update_name_test {
     }
 }
 
-#[cfg(test)]
 pub mod update_status_test {
     use axum::http;
 
-    use crate::view::{IdAndStatus, UserCredential, UserView};
+    use flat_backend::worker::view::{IdAndStatus, UserCredential, UserView};
 
     #[tokio::test]
     async fn success() {
@@ -644,14 +636,14 @@ pub mod update_status_test {
             http::StatusCode::UNPROCESSABLE_ENTITY
         );
 
-        let update_status__1 = client
+        let update_status_1 = client
             .post(base_url.to_string() + "/v1/user/status")
             .json(&IdAndStatus { id, status: -1 })
             .send()
             .await
             .unwrap();
         assert_eq!(
-            update_status__1.status(),
+            update_status_1.status(),
             http::StatusCode::UNPROCESSABLE_ENTITY
         );
     }

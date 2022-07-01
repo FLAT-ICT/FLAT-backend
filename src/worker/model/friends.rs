@@ -1,8 +1,8 @@
-use crate::model::db_util::*;
-use crate::model::types::SomeError;
-use crate::repository::{AddFriend, IdNamePath};
-// use crate::schema::friends;
-use crate::view::{FriendList, IdAndName, IdPair, SearchUser};
+use crate::worker::model::db_util::*;
+use crate::worker::model::types::SomeError;
+use crate::worker::repository::{AddFriend, IdNamePath};
+// use crate::worker::schema::friends;
+use crate::worker::view::{FriendList, IdAndName, IdPair, SearchUser};
 // use validator::Validate;
 
 // 友だち追加の流れ
@@ -154,7 +154,7 @@ pub fn get_friend_list(my_id: i32) -> FriendList {
 
 #[cfg(test)]
 mod tests {
-    use crate::{
+    use crate::worker::{
         model::{db_util::insert_friend, users::create_user},
         repository::AddFriend,
         view::{FriendList, IdPair, UserCredential},

@@ -2,7 +2,7 @@ use super::{
     db_util::{delete_loggedin_at, get_loggedin_at_from_name, get_user_view, is_exist_name},
     types::SomeError,
 };
-use crate::{
+use crate::worker::{
     model::db_util,
     repository::UserHashedCredential,
     view::{IsOtherUserLoggedIn, PreLoginView, UserCredential, UserTimestamp, UserView},
@@ -135,7 +135,7 @@ pub fn update_status(user_id: i32, status: i32) -> Result<UserView, diesel::resu
 
 #[cfg(test)]
 mod tests {
-    use crate::{model::users::update_beacon, view::UserCredential};
+    use crate::worker::{model::users::update_beacon, view::UserCredential};
 
     use super::create_user;
 

@@ -1,7 +1,5 @@
-use crate::schema::friends;
-use crate::schema::spots;
-use crate::schema::users;
-use crate::view::UserCredential;
+use crate::worker::schema::{friends, spots, users};
+use crate::worker::view::UserCredential;
 use chrono::DateTime;
 use chrono::NaiveDateTime;
 use chrono::Utc;
@@ -56,7 +54,6 @@ pub struct UserHashedCredential {
 
 impl UserCredential {
     pub fn to_hash(&self) -> UserHashedCredential {
-
         const CREDENTIAL_LEN: usize = digest::SHA512_OUTPUT_LEN;
         let n_iter = NonZeroU32::new(1).unwrap();
         let rng = rand::SystemRandom::new();

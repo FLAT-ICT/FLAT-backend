@@ -1,4 +1,4 @@
-use crate::{
+use crate::worker::{
     model::{
         db_util::{is_exist_id, is_exist_name},
         types::{SomeError, UserId},
