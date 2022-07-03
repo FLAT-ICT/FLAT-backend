@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Install dependencies first for cache ★1.b
 # Cargo.lock ないって怒られることがある
-# COPY ./Cargo.lock ./Cargo.lock
+COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
 # RUN rustup component add rustfmt
 RUN cargo build --release
@@ -23,8 +23,8 @@ COPY ./migrations ./migrations
 COPY ./src ./src
 # ★2.b
 # build を test では使用していないので冗長
-# RUN cargo install --locked --path .
-RUN cargo build --release
+RUN cargo install --locked --path .
+# RUN cargo build --release
 # cargo install command をキャッシュする方法がわからん。こいつに時間食われてる
 
 # ★2.a

@@ -123,14 +123,6 @@ pub fn search_user(id_and_name: IdAndName) -> Result<Vec<SearchUser>, SomeError>
         .collect::<Vec<SearchUser>>();
 
     return Ok(searched_users);
-    // let (ap, req) = get_friends_relation(my_id, target_name);
-    // return Ok(vec![SearchUser {
-    //     user_id: id,
-    //     user_name: name,
-    //     icon_path: path,
-    //     applied: ap,
-    //     requested: req,
-    // }]);
 }
 
 pub fn get_friend_list(my_id: i32) -> FriendList {
