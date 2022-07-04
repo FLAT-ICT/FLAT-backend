@@ -1,6 +1,12 @@
 # fun-location-backend
 
-初回ダウンロード時やってほしいこと
+install
+```
+git clone --recursive git@github.com:FLAT-ICT/FLAT-backend.git
+```
+
+
+clone するときに --recursive を忘れたらやること
 ```
 rm -rf espresso-beacons
 ./scripts/import_csv.sh
