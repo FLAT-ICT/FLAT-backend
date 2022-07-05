@@ -371,3 +371,14 @@ pub fn login(user_name: &String) -> UserView {
         .unwrap();
     return result;
 }
+
+pub fn update_icon(user_id: i32, base64EncodedImage: String) -> Result<UserView, diesel::result::Error> {
+    let conn = establish_connection();
+    if let Err(e) = diesel::update(users.find(&user_id))
+        .set(icon_path.eq(&icon_path))
+        .execute(&conn)
+    {
+        return Err(e);
+    }
+    _get_user_view(&conn, user_id)
+}

@@ -176,3 +176,12 @@ mod tests {
         assert_eq!(false, update_beacon(uv.id, 0, 0));
     }
 }
+
+pub fn update_icon(user_id: i32, icon: String) -> Result<UserView, SomeError> {
+    if let Err(_) = db_util::update_icon(user_id, icon){
+        return Err(SomeError::NotExist);
+    }else {
+        return Ok(get_user_view(user_id).unwrap());
+    }
+
+}
