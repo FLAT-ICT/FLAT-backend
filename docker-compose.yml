@@ -61,3 +61,12 @@ services:
     #   timeout: 10s
     #   retries: 10
     #   start_period: 0s
+
+  fake-gcs-server:
+    container_name: fake-gcs-server
+    ports:
+        - '4443:4443'
+    volumes:
+        - '${PWD}/examples/data:/data'
+    command: -scheme http 
+    image: fsouza/fake-gcs-server
