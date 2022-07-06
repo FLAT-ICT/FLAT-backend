@@ -19,9 +19,10 @@ regex = "1.5.4"
 diesel = { version = "1.4.8", features = ["mysql", "chrono"] }
 dotenv = "0.15.0"
 chrono = { version = "0.4.19", features = ["serde"] }
-reqwest = {version = "0.11.6", features = ["json"]}
+reqwest = { version = "0.11.6", features = ["json"] }
 csv = "1.1"
 ring = "0.16.20"
 data-encoding = "2.3.2"
 image = "0.24.2"
 base64 = "0.13.0"
+gcloud = "0.1.4"
