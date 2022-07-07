@@ -1,6 +1,12 @@
-use axum::response::IntoResponse;
-use hyper::{Body, Response, StatusCode};
+use axum::{
+    body::{self, Bytes},
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    routing::get,
+    Router,
+};
 use serde::{Deserialize, Serialize};
+// use http_body::combinators::box_body::UnsyncBoxBody;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct UserId {
@@ -17,15 +23,15 @@ pub enum SomeError {
 }
 
 impl IntoResponse for SomeError {
-    type Body = Body;
-    type BodyError = <Self::Body as axum::body::HttpBody>::Error;
-    fn into_response(self) -> Response<Self::Body> {
+    // type Body = Body;
+    // type BodyError = <Self::Body as axum::body::HttpBody>::Error;
+    fn into_response(self) -> Response {
         let body = match self {
-            SomeError::InvalidValidation => Body::from("invalid validation"),
-            SomeError::NotExist => Body::from("user not found"),
-            SomeError::AlreadyExistName => Body::from("the name is alreasy used"),
-            SomeError::InvalidPassword => Body::from("user not found"),
-            SomeError::InvalidStructure => Body::from("invalid structure"),
+            SomeError::InvalidValidation => "invalid validation",
+            SomeError::NotExist => "user not found",
+            SomeError::AlreadyExistName => "the name is alreasy used",
+            SomeError::InvalidPassword => "user not found",
+            SomeError::InvalidStructure => "invalid structure",
         };
 
         let status = match self {
@@ -36,6 +42,7 @@ impl IntoResponse for SomeError {
             SomeError::InvalidStructure => StatusCode::BAD_REQUEST,
         };
 
-        Response::builder().status(status).body(body).unwrap()
+        // Response::builder().status(status).body(body).unwrap()
+        (status, body).into_response()
     }
 }
