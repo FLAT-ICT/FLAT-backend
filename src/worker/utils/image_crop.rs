@@ -32,3 +32,4 @@ fn save_img(img: DynamicImage, path: &str) {
     let mut file = File::create(path).unwrap();
     img.write_to(&mut file, ImageOutputFormat::Png).unwrap();
 }
+
