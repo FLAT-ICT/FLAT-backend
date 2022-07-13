@@ -15,6 +15,7 @@ services:
       USER: "flat"
       CARGO_BUILD_TARGET_DIR: /target
       DATABASE_URL: mysql://docker:9Xu84SA1@mysql:3306/diesel_demo
+      SERAVICE_ACCOUNT: /path/to/service-account.json
     ports:
       - 3000:3000
     depends_on:
@@ -54,21 +55,15 @@ services:
     ports:
       - 3306:3306
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql_mode=''
-    # command: mysqld
-    # depends_on:
-    #   - flat_backend
-    # healthcheck:
-    #   test: mysql -udocker -p9Xu84SA1 -h127.0.0.1 diesel_demo
-    #   interval: 10s
-    #   timeout: 10s
-    #   retries: 10
-    #   start_period: 0s
 
-  fake-gcs-server:
-    container_name: fake-gcs-server
-    ports:
-        - 4443:4443
-    volumes:
-        - '/examples/data:/data'
-    command: -scheme http 
-    image: fsouza/fake-gcs-server
+secrets:
+  service_account_secrets: 
+    file: secrets/service-account.json
+  # fake-gcs-server:
+  #   container_name: fake-gcs-server
+  #   ports:
+  #       - 4443:4443
+  #   volumes:
+  #       - '/examples/data:/data'
+  #   command: -scheme http 
+  #   image: fsouza/fake-gcs-server

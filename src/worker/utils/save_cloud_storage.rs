@@ -1,6 +1,7 @@
-use cloud_storage::Client;
-use image::DynamicImage;
+use std::{env, io::Cursor};
 
+use cloud_storage::{Client, Object};
+use image::{DynamicImage, ImageOutputFormat};
 // セッションを作る
 // バケットに接続する/
 // バケットがなければ作成する
@@ -8,6 +9,12 @@ use image::DynamicImage;
 // バケットのURLを取得する
 
 // バケットのURLを指定する
+
+fn set_gcs_env() {
+    let key = "SERVICE_ACCOUNT";
+    // /run/secrets/service_account.json
+    env::set_var(key, "serice_account.json");
+}
 
 fn crate_client() -> Client {
     let client = Client::new();
@@ -22,10 +29,33 @@ async fn is_exist_bucket(client: &Client, bucket_name: &str) -> bool {
     }
 }
 
-// 画像の名前をどこできめるか
-async fn update_image(client: &Client, bucket_name: &str, image_name: &str, image: DynamicImage) {
-    client
-        .object()
-        .create(bucket_name, image.into_bytes(), image_name, "image/png")
-        .await;
+async fn get_item(client: &Client, bucket_name: &str, item_name: &str) -> Option<Object> {
+    if let Ok(item) = client.object().read(bucket_name, item_name).await {
+        Some(item)
+    } else {
+        None
+    }
 }
+
+async fn upload_image(
+    client: &Client,
+    bucket_name: &str,
+    image_name: &str,
+    image: DynamicImage,
+) -> Result<Object, cloud_storage::Error> {
+    let mut _bytes = Cursor::new(Vec::new());
+    image.write_to(&mut _bytes, ImageOutputFormat::Png).unwrap();
+    let bytes = _bytes.into_inner();
+
+    let result = client
+        .object()
+        .create(bucket_name, bytes, image_name, "image/png")
+        .await;
+
+    result
+}
+
+// ユーザーがアカウントを削除したときのために，後で実装する
+// async fn delete_image(){
+
+// }
