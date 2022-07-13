@@ -22,8 +22,8 @@ jobs:
           SSH_KEY_PATH: ./secret.txt
         run: | 
           echo ${{ env.SSH_KEY }} > ./secret.txt
-          docker-compose build
-          docker-compose run flat-backend-test
+          docker-compose -f docker-compose.yml -f docker-compose.test.yaml build flat_backend
+          docker-compose -f docker-compose.yml -f docker-compose.test.yaml run flat-backend
 
 # name: CI
 

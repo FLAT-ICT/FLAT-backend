@@ -27,9 +27,3 @@ pub fn resize_and_center_crop(img: DynamicImage, size: u32) -> DynamicImage {
 
     resized_img
 }
-
-fn save_img(img: DynamicImage, path: &str) {
-    let mut file = File::create(path).unwrap();
-    img.write_to(&mut file, ImageOutputFormat::Png).unwrap();
-}
-

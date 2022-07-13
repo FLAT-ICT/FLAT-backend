@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  flat_backend:
+    build:
+      context: .
+      dockerfile: ./Docker/rust/Dockerfile
+      target: test
+    container_name: flat-test
+    working_dir: /app
+    volumes:
+      - ./:/app
+    depends_on:
+      - mysql
+      - fake-gcs-server
+    command: ./scripts/start_test.sh
+
+  fake-gcs-server:
+    container_name: fake-gcs-server
+    ports:
+        - 4443:4443
+    volumes:
+        - '/examples/data:/data'
+    command: -scheme http 
+    image: fsouza/fake-gcs-server
+
+
+  # flat-backend-test:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Docker/rust/Dockerfile
+  #     target: test
+  #   container_name: flat-test
+  #   working_dir: /app
+  #   volumes:
+  #     - ./:/app
+  #   tty: true
+  #   environment:
+  #     USER: "flat"
+  #     CARGO_BUILD_TARGET_DIR: /target
+  #     DATABASE_URL: mysql://docker:9Xu84SA1@mysql:3306/diesel_demo
+  #   ports:
+  #     - 3001:3001
+  #   depends_on:
+  #     - mysql
+  #     - fake-gcs-server
+  #   command: ./scripts/start_test.sh
