@@ -20,6 +20,8 @@ pub enum SomeError {
     InvalidPassword,
     AlreadyExistName,
     InvalidStructure,
+    UploadImageError,
+    DontReach,
 }
 
 impl IntoResponse for SomeError {
@@ -32,6 +34,8 @@ impl IntoResponse for SomeError {
             SomeError::AlreadyExistName => "the name is alreasy used",
             SomeError::InvalidPassword => "user not found",
             SomeError::InvalidStructure => "invalid structure",
+            SomeError::UploadImageError => "can't upload image to gcs",
+            SomeError::DontReach => "this error is not reachable",
         };
 
         let status = match self {
@@ -40,6 +44,8 @@ impl IntoResponse for SomeError {
             SomeError::AlreadyExistName => StatusCode::BAD_REQUEST,
             SomeError::InvalidPassword => StatusCode::NOT_FOUND,
             SomeError::InvalidStructure => StatusCode::BAD_REQUEST,
+            SomeError::UploadImageError => StatusCode::INTERNAL_SERVER_ERROR,
+            SomeError::DontReach => StatusCode::BAD_REQUEST,
         };
 
         // Response::builder().status(status).body(body).unwrap()

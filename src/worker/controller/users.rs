@@ -191,12 +191,12 @@ pub async fn update_status(
 
 pub async fn update_icon(
     Json(payload): Json<IdAndIcon>
-) -> Result<StatusCode, SomeError> {
+) -> Result<(StatusCode, axum::Json<UserView>) , SomeError> {
     if let false = is_exist_id(payload.id) {
         return Err(SomeError::NotExist);
     }
-    match users::update_icon(payload.id, payload.image) {
-        Ok(_) => Ok(StatusCode::OK),
+    match users::update_icon(payload.id, payload.image).await {
+        Ok(result) => Ok((StatusCode::OK, Json(result))),
         Err(e) => Err(e),
     }
 }

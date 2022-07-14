@@ -1,16 +1,17 @@
 use super::{
-    db_util::{delete_loggedin_at, get_loggedin_at_from_name, get_user_view, is_exist_name},
+    db_util::{delete_loggedin_at, get_loggedin_at_from_name, get_user_view, is_exist_name, update_icon_url},
     types::SomeError,
 };
 use crate::worker::{
     model::db_util,
     repository::UserHashedCredential,
-    view::{IsOtherUserLoggedIn, PreLoginView, UserCredential, UserTimestamp, UserView},
+    view::{IsOtherUserLoggedIn, PreLoginView, UserCredential, UserTimestamp, UserView}, utils::image_crop::base64_to_image,
 };
 use chrono::NaiveDateTime;
 use db_util::{get_loggedin_at, get_secret, insert_user, update_spot};
 use ring::pbkdf2;
 use std::num::NonZeroU32;
+use crate::worker::utils::save_cloud_storage::{create_client, upload_image};
 
 pub fn create_user(credential: UserHashedCredential) -> Result<UserView, SomeError> {
     if let true = is_exist_name(&credential.name) {
@@ -177,11 +178,29 @@ mod tests {
     }
 }
 
-pub fn update_icon(user_id: i32, icon: String) -> Result<UserView, SomeError> {
-    if let Err(_) = db_util::update_icon(user_id, icon){
-        return Err(SomeError::NotExist);
-    }else {
-        return Ok(get_user_view(user_id).unwrap());
+pub async fn update_icon(user_id: i32, icon_string: String) -> Result<UserView, SomeError> {
+    let client = create_client();
+    let bucket_name = "user_icon";
+    let image_name = format!("{}.png", user_id);
+    let image = base64_to_image(&icon_string);
+    
+    match upload_image(&client, bucket_name, &image_name, image).await {
+        Ok(r)=> {
+            let url = r.media_link.as_str();
+            match update_icon_url(user_id, url){
+                Ok(r)=> Ok(r),
+                Err(e)=> Err(SomeError::AlreadyExistName)
+            }
+        }
+        Err(e) => {
+            Err(SomeError::UploadImageError)
+        }
     }
+
+    // if let Err(_) = upload_image(user_id, icon).await{
+    //     return Err(SomeError::NotExist);
+    // }else {
+    //     return Ok(get_user_view(user_id).unwrap());
+    // }
 
 }

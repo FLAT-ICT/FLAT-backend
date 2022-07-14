@@ -10,13 +10,13 @@ use image::{DynamicImage, ImageOutputFormat};
 
 // バケットのURLを指定する
 
-fn set_gcs_env() {
+pub fn set_gcs_env() {
     let key = "SERVICE_ACCOUNT";
     // /run/secrets/service_account.json
     env::set_var(key, "serice_account.json");
 }
 
-fn crate_client() -> Client {
+pub fn create_client() -> Client {
     let client = Client::new();
     client
 }
@@ -37,7 +37,7 @@ async fn get_item(client: &Client, bucket_name: &str, item_name: &str) -> Option
     }
 }
 
-async fn upload_image(
+pub async fn upload_image(
     client: &Client,
     bucket_name: &str,
     image_name: &str,
