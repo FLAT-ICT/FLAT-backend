@@ -13,7 +13,7 @@ use image::{DynamicImage, ImageOutputFormat};
 pub fn set_gcs_env() {
     let key = "SERVICE_ACCOUNT";
     // /run/secrets/service_account.json
-    env::set_var(key, "serice_account.json");
+    env::set_var(key, "/run/secrets/service-account.json");
 }
 
 pub fn create_client() -> Client {

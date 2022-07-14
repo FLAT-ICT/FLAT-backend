@@ -1,17 +1,21 @@
 use super::{
-    db_util::{delete_loggedin_at, get_loggedin_at_from_name, get_user_view, is_exist_name, update_icon_url},
+    db_util::{
+        delete_loggedin_at, get_loggedin_at_from_name, get_user_view, is_exist_name,
+        update_icon_url,
+    },
     types::SomeError,
 };
+use crate::worker::utils::save_cloud_storage::{create_client, upload_image};
 use crate::worker::{
     model::db_util,
     repository::UserHashedCredential,
-    view::{IsOtherUserLoggedIn, PreLoginView, UserCredential, UserTimestamp, UserView}, utils::image_crop::base64_to_image,
+    utils::image_crop::base64_to_image,
+    view::{IsOtherUserLoggedIn, PreLoginView, UserCredential, UserTimestamp, UserView},
 };
 use chrono::NaiveDateTime;
 use db_util::{get_loggedin_at, get_secret, insert_user, update_spot};
 use ring::pbkdf2;
 use std::num::NonZeroU32;
-use crate::worker::utils::save_cloud_storage::{create_client, upload_image};
 
 pub fn create_user(credential: UserHashedCredential) -> Result<UserView, SomeError> {
     if let true = is_exist_name(&credential.name) {
@@ -180,19 +184,23 @@ mod tests {
 
 pub async fn update_icon(user_id: i32, icon_string: String) -> Result<UserView, SomeError> {
     let client = create_client();
-    let bucket_name = "user_icon";
+    let bucket_name = "icons_bucket"; // Load from ENVIRONMENT
     let image_name = format!("{}.png", user_id);
     let image = base64_to_image(&icon_string);
-    
+
     match upload_image(&client, bucket_name, &image_name, image).await {
-        Ok(r)=> {
+        Ok(r) => {
             let url = r.media_link.as_str();
-            match update_icon_url(user_id, url){
-                Ok(r)=> Ok(r),
-                Err(e)=> Err(SomeError::AlreadyExistName)
+            match update_icon_url(user_id, url) {
+                Ok(r) => Ok(r),
+                Err(e) => {
+                    println!("{}", e);
+                    Err(SomeError::DontReach)
+                }
             }
         }
         Err(e) => {
+            println!("{}", e);
             Err(SomeError::UploadImageError)
         }
     }
@@ -202,5 +210,4 @@ pub async fn update_icon(user_id: i32, icon_string: String) -> Result<UserView, 
     // }else {
     //     return Ok(get_user_view(user_id).unwrap());
     // }
-
 }

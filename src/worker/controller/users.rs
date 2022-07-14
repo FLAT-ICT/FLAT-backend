@@ -192,6 +192,7 @@ pub async fn update_status(
 pub async fn update_icon(
     Json(payload): Json<IdAndIcon>
 ) -> Result<(StatusCode, axum::Json<UserView>) , SomeError> {
+    println!("called");
     if let false = is_exist_id(payload.id) {
         return Err(SomeError::NotExist);
     }

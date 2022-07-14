@@ -21,6 +21,9 @@ services:
     depends_on:
       - mysql
     command: ./scripts/start.sh
+    secrets:
+      - source: service_account_secrets
+        target: service-account.json
 
   mysql:
     image: mysql:5.7
@@ -35,5 +38,5 @@ services:
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql_mode=''
 
 secrets:
-  service_account_secrets: 
-    file: secrets/service-account.json
+  service_account_secrets:
+    file: secrets/beacon-fun-2021-flat-4db603e2850a.json
