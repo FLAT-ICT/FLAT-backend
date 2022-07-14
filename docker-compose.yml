@@ -16,6 +16,7 @@ services:
       CARGO_BUILD_TARGET_DIR: /target
       DATABASE_URL: mysql://docker:9Xu84SA1@mysql:3306/diesel_demo
       SERAVICE_ACCOUNT: /path/to/service-account.json
+      BUCKET_NAME: icons_bucket
     ports:
       - 3000:3000
     depends_on:

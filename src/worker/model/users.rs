@@ -184,11 +184,10 @@ mod tests {
 
 pub async fn update_icon(user_id: i32, icon_string: String) -> Result<UserView, SomeError> {
     let client = create_client();
-    let bucket_name = "icons_bucket"; // Load from ENVIRONMENT
     let image_name = format!("{}.png", user_id);
     let image = base64_to_image(&icon_string);
 
-    match upload_image(&client, bucket_name, &image_name, image).await {
+    match upload_image(&client, &image_name, image).await {
         Ok(r) => {
             let url = r.media_link.as_str();
             match update_icon_url(user_id, url) {

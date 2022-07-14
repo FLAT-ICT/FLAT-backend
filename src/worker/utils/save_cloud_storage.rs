@@ -39,17 +39,17 @@ pub fn create_client() -> Client {
 
 pub async fn upload_image(
     client: &Client,
-    bucket_name: &str,
     image_name: &str,
     image: DynamicImage,
 ) -> Result<Object, cloud_storage::Error> {
     let mut _bytes = Cursor::new(Vec::new());
     image.write_to(&mut _bytes, ImageOutputFormat::Png).unwrap();
     let bytes = _bytes.into_inner();
+    let bucket_name: String = env::var("BUCKET_NAME").unwrap();
 
     let result = client
         .object()
-        .create(bucket_name, bytes, image_name, "image/png")
+        .create(bucket_name.as_str(), bytes, image_name, "image/png")
         .await;
 
     result
