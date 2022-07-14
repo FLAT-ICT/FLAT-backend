@@ -184,7 +184,7 @@ mod tests {
 
 pub async fn update_icon(user_id: i32, icon_string: String) -> Result<UserView, SomeError> {
     let client = create_client();
-    let image_name = format!("{}.png", user_id);
+    let image_name = format!("{:>05}.png", user_id);
     let image = base64_to_image(&icon_string);
 
     match upload_image(&client, &image_name, image).await {
