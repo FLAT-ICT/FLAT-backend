@@ -1,6 +1,9 @@
-use axum::response::IntoResponse;
-use hyper::{Body, Response, StatusCode};
+use axum::{
+    http::StatusCode,
+    response::{IntoResponse, Response},
+};
 use serde::{Deserialize, Serialize};
+// use http_body::combinators::box_body::UnsyncBoxBody;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct UserId {
@@ -14,18 +17,20 @@ pub enum SomeError {
     InvalidPassword,
     AlreadyExistName,
     InvalidStructure,
+    UploadImageError,
+    DontReach,
 }
 
 impl IntoResponse for SomeError {
-    type Body = Body;
-    type BodyError = <Self::Body as axum::body::HttpBody>::Error;
-    fn into_response(self) -> Response<Self::Body> {
+    fn into_response(self) -> Response {
         let body = match self {
-            SomeError::InvalidValidation => Body::from("invalid validation"),
-            SomeError::NotExist => Body::from("user not found"),
-            SomeError::AlreadyExistName => Body::from("the name is alreasy used"),
-            SomeError::InvalidPassword => Body::from("user not found"),
-            SomeError::InvalidStructure => Body::from("invalid structure"),
+            SomeError::InvalidValidation => "invalid validation",
+            SomeError::NotExist => "user not found",
+            SomeError::AlreadyExistName => "the name is alreasy used",
+            SomeError::InvalidPassword => "user not found",
+            SomeError::InvalidStructure => "invalid structure",
+            SomeError::UploadImageError => "can't upload image to gcs",
+            SomeError::DontReach => "this error is not reachable",
         };
 
         let status = match self {
@@ -34,8 +39,9 @@ impl IntoResponse for SomeError {
             SomeError::AlreadyExistName => StatusCode::BAD_REQUEST,
             SomeError::InvalidPassword => StatusCode::NOT_FOUND,
             SomeError::InvalidStructure => StatusCode::BAD_REQUEST,
+            SomeError::UploadImageError => StatusCode::INTERNAL_SERVER_ERROR,
+            SomeError::DontReach => StatusCode::BAD_REQUEST,
         };
-
-        Response::builder().status(status).body(body).unwrap()
+        (status, body).into_response()
     }
 }

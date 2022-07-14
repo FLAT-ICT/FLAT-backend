@@ -120,10 +120,10 @@ pub struct IdAndStatus {
     pub status: i32,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct IdAndIcon {
     pub id: i32,
-    pub image: String, // 画像をbase64エンコーディング
+    pub image: String, // 画像をbase64エンコーディングしたものが飛んでくる．
 }
 
 pub enum UserTimestamp {

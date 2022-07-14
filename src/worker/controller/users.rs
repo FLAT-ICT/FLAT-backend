@@ -6,7 +6,7 @@ use crate::worker::{
     },
     view::{
         IdAndName, IdAndStatus, IsOtherUserLoggedIn, PreLoginView, ResultMessage, ScannedBeacon,
-        UserCredential, UserIdTimestamp, UserNameTimestamp, UserTimestamp, UserView,
+        UserCredential, UserIdTimestamp, UserNameTimestamp, UserTimestamp, UserView, IdAndIcon,
     },
 };
 use axum::{response::IntoResponse, Json};
@@ -186,5 +186,18 @@ pub async fn update_status(
         return Ok((StatusCode::OK, Json(result)));
     } else {
         return Err(SomeError::InvalidValidation);
+    }
+}
+
+pub async fn update_icon(
+    Json(payload): Json<IdAndIcon>
+) -> Result<(StatusCode, axum::Json<UserView>) , SomeError> {
+    println!("called");
+    if let false = is_exist_id(payload.id) {
+        return Err(SomeError::NotExist);
+    }
+    match users::update_icon(payload.id, payload.image).await {
+        Ok(result) => Ok((StatusCode::OK, Json(result))),
+        Err(e) => Err(e),
     }
 }

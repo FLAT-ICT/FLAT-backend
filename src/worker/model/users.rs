@@ -1,10 +1,15 @@
 use super::{
-    db_util::{delete_loggedin_at, get_loggedin_at_from_name, get_user_view, is_exist_name},
+    db_util::{
+        delete_loggedin_at, get_loggedin_at_from_name, get_user_view, is_exist_name,
+        update_icon_url,
+    },
     types::SomeError,
 };
+use crate::worker::utils::save_cloud_storage::{create_client, upload_image};
 use crate::worker::{
     model::db_util,
     repository::UserHashedCredential,
+    utils::image_crop::base64_to_image,
     view::{IsOtherUserLoggedIn, PreLoginView, UserCredential, UserTimestamp, UserView},
 };
 use chrono::NaiveDateTime;
@@ -175,4 +180,33 @@ mod tests {
         .unwrap();
         assert_eq!(false, update_beacon(uv.id, 0, 0));
     }
+}
+
+pub async fn update_icon(user_id: i32, icon_string: String) -> Result<UserView, SomeError> {
+    let client = create_client();
+    let image_name = format!("{:>05}.png", user_id);
+    let image = base64_to_image(&icon_string);
+
+    match upload_image(&client, &image_name, image).await {
+        Ok(r) => {
+            let url = r.media_link.as_str();
+            match update_icon_url(user_id, url) {
+                Ok(r) => Ok(r),
+                Err(e) => {
+                    println!("{}", e);
+                    Err(SomeError::DontReach)
+                }
+            }
+        }
+        Err(e) => {
+            println!("{}", e);
+            Err(SomeError::UploadImageError)
+        }
+    }
+
+    // if let Err(_) = upload_image(user_id, icon).await{
+    //     return Err(SomeError::NotExist);
+    // }else {
+    //     return Ok(get_user_view(user_id).unwrap());
+    // }
 }
