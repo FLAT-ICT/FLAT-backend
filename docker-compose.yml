@@ -40,4 +40,5 @@ services:
 
 secrets:
   service_account_secrets:
-    file: secrets/beacon-fun-2021-flat-4db603e2850a.json
+    # file: secrets/beacon-fun-2021-flat-4db603e2850a.json
+    file: secrets/dummy.json
