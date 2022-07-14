@@ -1,5 +1,5 @@
 use image::{imageops::FilterType, DynamicImage, GenericImageView, ImageFormat, ImageOutputFormat};
-use std::{fs::File, io::Cursor};
+use std::io::Cursor;
 
 fn image_to_base64(image_path: &str) -> String {
     let img = image::open(image_path).unwrap();
