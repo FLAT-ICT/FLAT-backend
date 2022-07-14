@@ -5,6 +5,7 @@ mod upload_gcs {
     use flat_backend::worker::view::{IdAndIcon, UserCredential, UserView};
 
     #[tokio::test]
+    #[ignore]
     async fn upload_image_test() {
         // creat user
         let base_url = "http://localhost:3000";
