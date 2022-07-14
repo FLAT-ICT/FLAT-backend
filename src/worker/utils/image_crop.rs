@@ -1,10 +1,9 @@
 use image::{imageops::FilterType, DynamicImage, GenericImageView, ImageFormat, ImageOutputFormat};
 use std::io::Cursor;
 
-fn image_to_base64(image_path: &str) -> String {
-    let img = image::open(image_path).unwrap();
+pub fn image_to_base64(image: DynamicImage) -> String {
     let mut buf = Cursor::new(Vec::new());
-    img.write_to(&mut buf, ImageOutputFormat::Png).unwrap();
+    image.write_to(&mut buf, ImageOutputFormat::Png).unwrap();
     let base64 = base64::encode(&buf.get_ref());
 
     base64

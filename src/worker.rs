@@ -9,7 +9,7 @@ use tracing_subscriber;
 mod controller;
 pub mod model;
 pub mod view;
-mod utils;
+pub mod utils;
 use controller::friends::{add_friend, check_friend_status, friend_list, reject_friend};
 use controller::users::create_user;
 use controller::users::update_beacon;
