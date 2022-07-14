@@ -1,9 +1,6 @@
 use axum::{
-    body::{self, Bytes},
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::get,
-    Router,
 };
 use serde::{Deserialize, Serialize};
 // use http_body::combinators::box_body::UnsyncBoxBody;
@@ -25,8 +22,6 @@ pub enum SomeError {
 }
 
 impl IntoResponse for SomeError {
-    // type Body = Body;
-    // type BodyError = <Self::Body as axum::body::HttpBody>::Error;
     fn into_response(self) -> Response {
         let body = match self {
             SomeError::InvalidValidation => "invalid validation",
@@ -47,8 +42,6 @@ impl IntoResponse for SomeError {
             SomeError::UploadImageError => StatusCode::INTERNAL_SERVER_ERROR,
             SomeError::DontReach => StatusCode::BAD_REQUEST,
         };
-
-        // Response::builder().status(status).body(body).unwrap()
         (status, body).into_response()
     }
 }

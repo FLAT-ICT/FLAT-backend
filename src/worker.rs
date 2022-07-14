@@ -1,4 +1,3 @@
-
 use axum::{
     routing::{get, post},
     Router,
@@ -8,12 +7,17 @@ use tracing;
 use tracing_subscriber;
 mod controller;
 pub mod model;
-pub mod view;
 pub mod utils;
+pub mod view;
+use crate::worker::{
+    controller::users::{
+        is_loggedin, login, logout, pre_login, update_icon, update_name, update_status,
+    },
+    utils::save_cloud_storage::set_gcs_env,
+};
 use controller::friends::{add_friend, check_friend_status, friend_list, reject_friend};
 use controller::users::create_user;
 use controller::users::update_beacon;
-use crate::worker::{controller::users::{is_loggedin, login, logout, pre_login, update_name, update_status, update_icon}, utils::save_cloud_storage::set_gcs_env};
 mod read_csv_and_write_db;
 pub mod repository;
 pub mod schema;
@@ -45,7 +49,6 @@ pub async fn main() {
         .route("/v1/user/status", post(update_status))
         .route("/v1/user/name", post(update_name))
         .route("/v1/user/icon", post(update_icon))
-        // .route(":id.png", get({}))
         .route("/v1/user/is_loggedin", post(is_loggedin))
         .route("/v1/friends", get(friend_list))
         .route("/v1/friends/add", post(add_friend))

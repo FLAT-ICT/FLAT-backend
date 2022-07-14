@@ -21,21 +21,21 @@ pub fn create_client() -> Client {
     client
 }
 
-async fn is_exist_bucket(client: &Client, bucket_name: &str) -> bool {
-    if let Ok(_) = client.bucket().read(bucket_name).await {
-        true
-    } else {
-        false
-    }
-}
+// async fn is_exist_bucket(client: &Client, bucket_name: &str) -> bool {
+//     if let Ok(_) = client.bucket().read(bucket_name).await {
+//         true
+//     } else {
+//         false
+//     }
+// }
 
-async fn get_item(client: &Client, bucket_name: &str, item_name: &str) -> Option<Object> {
-    if let Ok(item) = client.object().read(bucket_name, item_name).await {
-        Some(item)
-    } else {
-        None
-    }
-}
+// async fn get_item(client: &Client, bucket_name: &str, item_name: &str) -> Option<Object> {
+//     if let Ok(item) = client.object().read(bucket_name, item_name).await {
+//         Some(item)
+//     } else {
+//         None
+//     }
+// }
 
 pub async fn upload_image(
     client: &Client,
