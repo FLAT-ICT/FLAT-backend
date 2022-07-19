@@ -2,6 +2,7 @@ use crate::worker::repository::{
     AddFriend, Friend, IdNamePath, InsertableSpot, User, UserHashedCredential, UserSecret,
 };
 use crate::worker::schema;
+use crate::worker::utils::open_password::read_password_file;
 use crate::worker::view::UserTimestamp;
 use crate::worker::view::UserView;
 use chrono::NaiveDateTime;
@@ -19,9 +20,46 @@ use std::env;
 pub fn establish_connection() -> MysqlConnection {
     dotenv().ok();
 
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    MysqlConnection::establish(&database_url)
-        .expect(&format!("Error connetincg to {}", database_url))
+    let port = "3306";
+    // let password = read_password_file(&env::var("PASSWORD_FILE"));
+
+
+    // println!("{:?}", env::var("MYSQL_USER"));
+    // println!("{:?}", env::var("MYSQL_PASSWORD_FILE"));
+    // println!("{:?}", env::var("MYSQL_DATABASE"));
+    // println!("{:?}", env::var("MYSQL_HOST"));
+
+    match &env::var("MYSQL_PASSWORD_FILE") {
+        Ok(path) => {
+            let password = read_password_file(path).unwrap();
+            let database_url = format!(
+                "mysql://{}:{}@{}:{}/{}",
+                env::var("MYSQL_USER").unwrap(),
+                password,
+                env::var("MYSQL_HOST").unwrap(),
+                port,
+                env::var("MYSQL_DATABASE").unwrap(),
+            );
+            // println!("{}", database_url);
+            MysqlConnection::establish(&database_url)
+                .expect(&format!("Error connetincg to {}", database_url))
+        }
+        Err(e) => {
+            println!("{}", e);
+            std::process::exit(1);
+        }
+    }
+
+    // let database_url = format!(
+    //     "mysql://{}:{}@{}:{}/{}",
+    //     env::var("MYSQL_USER").unwrap(),
+    //     password,
+    //     port,
+    //     env::var("MYSQL_HOST").unwrap(),
+    //     env::var("MYSQL_DATABASE").unwrap(),
+    // );
+    // MysqlConnection::establish(&database_url)
+    //     .expect(&format!("Error connetincg to {}", database_url))
 }
 
 fn _get_user_view(
