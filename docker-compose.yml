@@ -17,40 +17,55 @@ services:
       # DATABASE_URL: mysql://docker:9Xu84SA1@mysql:3306/diesel_demo
       SERAVICE_ACCOUNT: /path/to/service-account.json
       BUCKET_NAME: icons_bucket
-      MYSQL_USER: docker
-      MYSQL_HOST: mysql
-      MYSQL_DATABASE: diesel_demo
-      MYSQL_PASSWORD_FILE: /run/secrets/MYSQL_PASSWORD_FILE
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD_FILE
+      POSTGRES_DB: diesel_demo
+      POSTGRES_HOST: postgres
     ports:
       - 3000:3000
     depends_on:
-      - mysql
+      # - mysql
+      - postgres
     command: ./scripts/start.sh
     secrets:
       - source: service_account_secrets
         target: service-account.json
-      - source: MYSQL_PASSWORD_FILE
-        target: MYSQL_PASSWORD_FILE
+      - source: POSTGRES_PASSWORD_FILE
+        target: POSTGRES_PASSWORD_FILE
 
-  mysql:
-    image: mysql:5.7
+  # mysql:
+  #   image: mysql:5.7
+  #   environment:
+  #     MYSQL_DATABASE: diesel_demo
+  #     MYSQL_USER: docker
+  #     MYSQL_PASSWORD_FILE: /run/secrets/MYSQL_PASSWORD_FILE
+  #     MYSQL_ROOT_PASSWORD_FILE: /run/secrets/MYSQL_PASSWORD_FILE
+  #     TZ: "Asia/Tokyo"
+  #     # MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+  #   ports:
+  #     - 3304:3304
+  #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql_mode=''
+  #   secrets:
+  #     - source: MYSQL_PASSWORD_FILE
+  #       target: MYSQL_PASSWORD_FILE
+
+  postgres:
+    image: postgres:14.4
     environment:
-      MYSQL_DATABASE: diesel_demo
-      MYSQL_USER: docker
-      MYSQL_PASSWORD_FILE: /run/secrets/MYSQL_PASSWORD_FILE
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/MYSQL_PASSWORD_FILE
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD_FILE
+      POSTGRES_DB: diesel_demo
       TZ: "Asia/Tokyo"
-      # MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      # POSTGRES_RANDOM_PASSWORD: "yes"
     ports:
-      - 3306:3306
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql_mode=''
+      - 5432:5432
     secrets:
-      - source: MYSQL_PASSWORD_FILE
-        target: MYSQL_PASSWORD_FILE
-
+      - source: POSTGRES_PASSWORD_FILE
+        target: POSTGRES_PASSWORD_FILE
 secrets:
   service_account_secrets:
     # file: secrets/beacon-fun-2021-flat-4db603e2850a.json
     file: secrets/dummy.json
-  MYSQL_PASSWORD_FILE:
-    file: secrets/MYSQL_PASSWORD_FILE.txt
+  # MYSQL_PASSWORD_FILE:
+  POSTGRES_PASSWORD_FILE:
+    file: secrets/POSTGRES_PASSWORD_FILE.txt

@@ -17,7 +17,7 @@ RUN rm src/*.rs
 RUN rm -rf target/*
 
 # Build my app ★1.c
-RUN cargo install diesel_cli --no-default-features --features mysql
+RUN cargo install diesel_cli --no-default-features --features postgres
 COPY ./scripts ./scripts
 COPY ./migrations ./migrations
 COPY ./src ./src
@@ -33,9 +33,9 @@ RUN cargo install --locked --path .
 FROM rust:buster as test
 COPY --from=builder /usr/local/cargo/bin/diesel /usr/local/bin/diesel
 COPY --from=builder /app/target/release/flat_backend /usr/local/bin/flat_backend
-RUN apt-get update && apt-get -y install git default-mysql-client && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get -y install git libpq-dev && rm -rf /var/lib/apt/lists/*
 
 FROM debian:buster-slim as prod
 COPY --from=builder /usr/local/cargo/bin/diesel /usr/local/bin/diesel
 COPY --from=builder /app/target/release/flat_backend /usr/local/bin/flat_backend
-RUN apt-get update && apt-get -y install git default-mysql-client && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get -y install git libpq-dev && rm -rf /var/lib/apt/lists/*
