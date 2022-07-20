@@ -63,6 +63,7 @@ pub async fn main() {
         .serve(app.into_make_service())
         .await
         .unwrap();
+    println!("----------\nServer started\n----------");
 }
 
 // basic handler that responds with a static string
