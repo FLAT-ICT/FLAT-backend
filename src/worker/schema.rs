@@ -1,7 +1,7 @@
 table! {
     friends (active, passive) {
-        active -> Integer,
-        passive -> Integer,
+        active -> Int4,
+        passive -> Int4,
         created_at -> Timestamp,
         blocked_at -> Nullable<Timestamp>,
     }
@@ -14,21 +14,21 @@ table! {
         region_identifier -> Text,
         available_term_from -> Timestamp,
         available_term_to -> Nullable<Timestamp>,
-        major -> Integer,
-        minor -> Integer,
+        major -> Int4,
+        minor -> Int4,
         note -> Nullable<Text>,
     }
 }
 
 table! {
     users (id) {
-        id -> Integer,
+        id -> Int4,
         name -> Varchar,
-        status -> Integer,
+        status -> Int4,
         spot -> Nullable<Text>,
         icon_path -> Text,
-        salt -> Binary,
-        hash -> Binary,
+        salt -> Bytea,
+        hash -> Bytea,
         created_at -> Timestamp,
         updated_at -> Timestamp,
         logged_in_at -> Nullable<Timestamp>,

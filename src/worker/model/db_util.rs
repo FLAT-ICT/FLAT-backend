@@ -6,8 +6,8 @@ use crate::worker::utils::open_password::read_password_file;
 use crate::worker::view::UserTimestamp;
 use crate::worker::view::UserView;
 use chrono::NaiveDateTime;
-// use diesel::mysql::Mysql;
-use diesel::mysql::MysqlConnection;
+// use diesel::POSTGRES::POSTGRES;
+use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::ExpressionMethods;
 use diesel::QueryDsl;
@@ -17,31 +17,31 @@ use schema::spots::dsl::*;
 use schema::users::dsl::*;
 use std::env;
 
-pub fn establish_connection() -> MysqlConnection {
+pub fn establish_connection() -> PgConnection {
     dotenv().ok();
 
-    let port = "3306";
+    let port = "5432";
     // let password = read_password_file(&env::var("PASSWORD_FILE"));
 
 
-    // println!("{:?}", env::var("MYSQL_USER"));
-    // println!("{:?}", env::var("MYSQL_PASSWORD_FILE"));
-    // println!("{:?}", env::var("MYSQL_DATABASE"));
-    // println!("{:?}", env::var("MYSQL_HOST"));
+    // println!("{:?}", env::var("POSTGRES_USER"));
+    // println!("{:?}", env::var("POSTGRES_PASSWORD_FILE"));
+    // println!("{:?}", env::var("POSTGRES_DB"));
+    // println!("{:?}", env::var("POSTGRES_HOST"));
 
-    match &env::var("MYSQL_PASSWORD_FILE") {
+    match &env::var("POSTGRES_PASSWORD_FILE") {
         Ok(path) => {
             let password = read_password_file(path).unwrap();
             let database_url = format!(
-                "mysql://{}:{}@{}:{}/{}",
-                env::var("MYSQL_USER").unwrap(),
+                "postgres://{}:{}@{}:{}/{}",
+                env::var("POSTGRES_USER").unwrap(),
                 password,
-                env::var("MYSQL_HOST").unwrap(),
+                env::var("POSTGRES_HOST").unwrap(),
                 port,
-                env::var("MYSQL_DATABASE").unwrap(),
+                env::var("POSTGRES_DB").unwrap(),
             );
             // println!("{}", database_url);
-            MysqlConnection::establish(&database_url)
+            PgConnection::establish(&database_url)
                 .expect(&format!("Error connetincg to {}", database_url))
         }
         Err(e) => {
@@ -51,19 +51,19 @@ pub fn establish_connection() -> MysqlConnection {
     }
 
     // let database_url = format!(
-    //     "mysql://{}:{}@{}:{}/{}",
-    //     env::var("MYSQL_USER").unwrap(),
+    //     "POSTGRES://{}:{}@{}:{}/{}",
+    //     env::var("POSTGRES_USER").unwrap(),
     //     password,
     //     port,
-    //     env::var("MYSQL_HOST").unwrap(),
-    //     env::var("MYSQL_DATABASE").unwrap(),
+    //     env::var("POSTGRES_HOST").unwrap(),
+    //     env::var("POSTGRES_DATABASE").unwrap(),
     // );
-    // MysqlConnection::establish(&database_url)
+    // PgConnection::establish(&database_url)
     //     .expect(&format!("Error connetincg to {}", database_url))
 }
 
 fn _get_user_view(
-    conn: &MysqlConnection,
+    conn: &PgConnection,
     target_id: i32,
 ) -> Result<UserView, diesel::result::Error> {
     users
@@ -179,7 +179,7 @@ pub fn get_friends_relation(my_id: i32, target_id: i32) -> (bool, bool) {
         }
     }
     // レコードをとってくる
-    fn get_friend_relation(conn: &MysqlConnection, id1: i32, id2: i32) -> Vec<Friend> {
+    fn get_friend_relation(conn: &PgConnection, id1: i32, id2: i32) -> Vec<Friend> {
         friends
             .filter(active.eq(id1))
             .filter(passive.eq(id2))
@@ -281,7 +281,7 @@ pub fn update_spot(my_id: i32, major_id: i32, minor_id: i32) -> bool {
     }
     return false;
 
-    pub fn get_spot(conn: &MysqlConnection, major_id: i32, minor_id: i32) -> Option<String> {
+    pub fn get_spot(conn: &PgConnection, major_id: i32, minor_id: i32) -> Option<String> {
         // let conn = establish_connection();
         let result = spots
             .filter(major.eq(&major_id))
