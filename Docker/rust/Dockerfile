@@ -1,7 +1,7 @@
 # 参考にした記事
 # [RustのDocker Build時間短縮したい](https://zenn.dev/ucwork/articles/acec204571362b)
 
-FROM rust:1.56.0 as builder
+FROM rust:1.67 as builder
 # ★1.a
 RUN USER=root cargo new --bin app
 WORKDIR /app
@@ -30,7 +30,7 @@ RUN cargo install --locked --path .
 # ★2.a
 # FROM debian:buster-slim as final
 # あとでcargoを使いたいので、rust:busterを使う
-FROM rust:buster as test
+FROM rust:1.67-buster as test
 COPY --from=builder /usr/local/cargo/bin/diesel /usr/local/bin/diesel
 COPY --from=builder /app/target/release/flat_backend /usr/local/bin/flat_backend
 RUN apt-get update && apt-get -y install git libpq-dev && rm -rf /var/lib/apt/lists/*

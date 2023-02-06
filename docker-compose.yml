@@ -2,10 +2,11 @@ version: "3"
 
 services:
   flat-backend:
-    build:
-      context: .
-      dockerfile: ./Docker/rust/Dockerfile
-      target: prod
+    # build:
+    #   context: .
+    #   dockerfile: ./Docker/rust/Dockerfile
+    #   target: prod
+    image: t4t5u0/flat-backend:latest
     container_name: flat
     working_dir: /app
     volumes:
